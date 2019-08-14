@@ -30,6 +30,7 @@ export class ContentfulStore<
     private readonly debug: Debugger;
     private readonly handleSyncError: (error: Error) => void;
 
+    private readonly autoSync: boolean;
     private readonly syncTimeout: number;
 
     private syncToken: string = '';
@@ -48,6 +49,7 @@ export class ContentfulStore<
         spaceId,
         baseLocale,
         extraLocales,
+        autoSync = false,
         syncTimeout = 5 * 60 * 1000,
         handleSyncError,
     }: {
@@ -55,6 +57,7 @@ export class ContentfulStore<
         spaceId: string;
         baseLocale: BaseLocale;
         extraLocales: ExtraLocales[];
+        autoSync?: boolean;
         syncTimeout?: number;
         handleSyncError?: () => void;
     }) {
@@ -64,6 +67,7 @@ export class ContentfulStore<
         this.baseLocale = baseLocale;
         this.locales = [baseLocale, ...extraLocales];
 
+        this.autoSync = autoSync;
         this.syncTimeout = syncTimeout;
         this.syncRequestCount = 0;
 
@@ -109,6 +113,8 @@ export class ContentfulStore<
     }
 
     private triggerSync() {
+        if (!this.autoSync) return;
+
         this.syncRequestCount++;
         if (this.syncRequestCount > 1) return;
 
