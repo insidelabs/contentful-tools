@@ -4,5 +4,5 @@
         "sourceRoot": "./src",
         "outDir": "./dist"
     },
-    "include": ["./src/**/*"]
+    "include": ["./src/**/*", "./__tests__/**/*", "./__stubs__/**/*"]
 }
