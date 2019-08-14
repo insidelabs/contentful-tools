@@ -1,5 +1,5 @@
 import createDebugger, { Debugger } from 'debug';
-import { ContentfulClientApi, createClient } from 'contentful';
+import { ContentfulClientApi } from 'contentful';
 import { Content } from '../types/Content';
 import { Resolved } from '../types/Resolved';
 import { Sync } from '../types/Sync';
@@ -21,8 +21,8 @@ export class ContentfulStore<
     BaseLocale extends string,
     ExtraLocales extends string
 > {
-    private readonly spaceId: string;
     private readonly client: ContentfulClientApi;
+    private readonly spaceId: string;
 
     private readonly baseLocale: BaseLocale;
     private readonly locales: (BaseLocale | ExtraLocales)[];
@@ -44,22 +44,22 @@ export class ContentfulStore<
     };
 
     constructor({
-        accessToken,
+        client,
         spaceId,
         baseLocale,
         extraLocales,
         syncTimeout = 5 * 60 * 1000,
         handleSyncError,
     }: {
-        accessToken: string;
+        client: ContentfulClientApi;
         spaceId: string;
         baseLocale: BaseLocale;
         extraLocales: ExtraLocales[];
         syncTimeout?: number;
         handleSyncError?: () => void;
     }) {
+        this.client = client;
         this.spaceId = spaceId;
-        this.client = createClient({ accessToken, space: spaceId });
 
         this.baseLocale = baseLocale;
         this.locales = [baseLocale, ...extraLocales];
