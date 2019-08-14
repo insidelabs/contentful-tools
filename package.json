@@ -1,9 +1,12 @@
 {
-  "name": "root",
-  "private": true,
-  "devDependencies": {
-    "@types/node": "^12.7.1",
-    "lerna": "^3.16.4",
-    "typescript": "^3.5.3"
-  }
+    "name": "root",
+    "private": true,
+    "devDependencies": {
+        "@types/node": "^12.7.1",
+        "lerna": "^3.16.4",
+        "typescript": "^3.5.3"
+    },
+    "scripts": {
+        "publish": "lerna run build && lerna publish"
+    }
 }
