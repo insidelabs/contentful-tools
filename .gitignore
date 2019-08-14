@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+*-debug.log
+*-error.log
+node_modules/
+.env
