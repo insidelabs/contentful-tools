@@ -3,7 +3,8 @@ import { Link } from './Link';
 import { SysType } from './SysType';
 
 export namespace Sync {
-    export type Query = ({ initial: true } | { nextSyncToken: string }) & {
+    export type Query = {
+        initial?: boolean;
         locale?: string;
         resolveLinks?: boolean;
         nextSyncToken?: string;
