@@ -48,6 +48,7 @@
     },
     "scripts": {
         "build": "rm -rf dist && tsc",
-        "test": "jest"
+        "test": "jest",
+        "test:watch": "jest --watch"
     }
 }
