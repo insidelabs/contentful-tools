@@ -1,6 +1,6 @@
 {
     "name": "@insidelabs/contentful-store",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "A self-synchronizing in-memory store for Contentful content",
     "keywords": [
         "contentful"

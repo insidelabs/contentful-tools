@@ -7,4 +7,5 @@ export enum SysType {
 export enum LinkType {
     Asset = 'Asset',
     Entry = 'Entry',
+    ContentType = 'ContentType',
 }

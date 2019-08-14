@@ -1,11 +1,46 @@
-import { Asset as ContentfulAsset, Entry as ContentfulEntry } from 'contentful';
 import { LinkType, SysType } from './enums';
-import { PlainObject } from './utils';
 
-export type Asset = PlainObject<ContentfulAsset>;
+export interface Asset {
+    sys: {
+        id: string;
+        type: SysType.Asset;
+        createdAt: string;
+        updatedAt: string;
+        revision: number;
+    };
+    fields: {
+        title?: string;
+        description?: string;
+        file: {
+            url: string;
+            details: {
+                size: number;
+                image?: {
+                    width: number;
+                    height: number;
+                };
+            };
+            fileName: string;
+            contentType: string;
+        };
+    }
+}
 
-export interface Entry<ContentTypeId extends string> extends PlainObject<ContentfulEntry<{}>> {
-    sys: ContentfulEntry<{}>['sys'] & { contentType: ContentTypeLink<ContentTypeId> };
+export interface Entry<ContentTypeId extends string> {
+    sys: {
+        id: string;
+        type: SysType.Entry;
+        createdAt: string;
+        updatedAt: string;
+        revision: number;
+        contentType: {
+            sys: {
+                type: SysType.Link;
+                linkType: LinkType.ContentType;
+                id: ContentTypeId;
+            },
+        },
+    },
     fields: EntryFields;
 }
 
@@ -17,14 +52,6 @@ export type EntryFields = {
         | EntryLink<Entry<string>>[]
         | unknown;
 };
-
-interface ContentTypeLink<ContentTypeId extends string> {
-    sys: {
-        type: 'Link';
-        linkType: 'ContentType';
-        id: ContentTypeId;
-    };
-}
 
 export interface AssetLink {
     sys: {
@@ -41,3 +68,5 @@ export interface EntryLink<E extends Entry<string>> {
         id: string;
     };
 }
+
+export type GetContentTypeId<E extends Entry<string>> = E['sys']['contentType']['sys']['id'];
