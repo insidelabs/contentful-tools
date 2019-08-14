@@ -1,34 +1,27 @@
 import createDebugger, { Debugger } from 'debug';
 import { ContentfulClientApi, createClient } from 'contentful';
-import {
-    Asset,
-    Entry,
-    GetContentTypeId,
-    Resolved,
-    ResolvedFields,
-    SyncAsset,
-    SyncEntry,
-    SyncResult,
-    WithLocales,
-} from '../types';
+import { Content } from '../types/Content';
+import { Resolved } from '../types/Resolved';
+import { Sync } from '../types/Sync';
+import { Util } from '../types/Util';
 import { isAssetLink, isAssetLinkArray, isEntryLink, isEntryLinkArray } from './guards';
 
-type LocaleMapped<T> = { [locale in string]: T };
-type AssetMap = Map<string, Asset>;
-type EntryMap = Map<string, Resolved<Entry<string>>>;
+namespace ContentfulStore {
+    export type Assets = LocaleMapped<AssetMap>;
+    export type Entries = LocaleMapped<EntryMap>;
 
-type SyncQuery = ({ initial: true } | { nextSyncToken: string }) & {
-    locale?: string;
-    resolveLinks?: boolean;
-    nextSyncToken?: string;
-};
+    type AssetMap = Map<string, Content.Asset>;
+    type EntryMap = Map<string, Resolved.Entry>;
+
+    type LocaleMapped<T> = { [locale in string]: T };
+}
 
 export class ContentfulStore<
     ContentTypeId extends string,
     BaseLocale extends string,
     ExtraLocales extends string
 > {
-    readonly spaceId: string;
+    private readonly spaceId: string;
     private readonly client: ContentfulClientApi;
 
     private readonly baseLocale: BaseLocale;
@@ -42,8 +35,8 @@ export class ContentfulStore<
     private syncToken: string = '';
     private syncRequestCount: number;
 
-    private readonly assets: LocaleMapped<AssetMap> = {};
-    private readonly entries: LocaleMapped<EntryMap> = {};
+    private readonly assets: ContentfulStore.Assets = {};
+    private readonly entries: ContentfulStore.Entries = {};
 
     private defaultSyncErrorHandler = (error: Error) => {
         console.error(`Error syncing ContentfulStore (${this.spaceId})`);
@@ -78,40 +71,40 @@ export class ContentfulStore<
         this.handleSyncError = handleSyncError || this.defaultSyncErrorHandler;
     }
 
-    getAsset(id: string, locale = this.baseLocale): Asset | null {
+    public getAsset(id: string, locale = this.baseLocale): Content.Asset | null {
         this.triggerSync();
         return this.assets[locale].get(id) || null;
     }
 
-    getAssets(locale = this.baseLocale): Asset[] {
+    public getAssets(locale = this.baseLocale): Content.Asset[] {
         this.triggerSync();
         return Array.from(this.assets[locale].values());
     }
 
-    getEntry<E extends Entry<string> = Entry<string>>(
+    public getEntry<E extends Content.Entry = Content.Entry>(
         id: string,
-        contentTypeId?: GetContentTypeId<E>,
+        contentTypeId?: Util.GetContentTypeId<E>,
         locale = this.baseLocale,
-    ): Resolved<E> | null {
+    ): Resolved.Entry<E> | null {
         this.triggerSync();
         const entry = this.entries[locale].get(id);
         return entry && (entry.sys.contentType.sys.id === contentTypeId || !contentTypeId)
-            ? (entry as Resolved<E>)
+            ? (entry as Resolved.Entry<E>)
             : null;
     }
 
-    getEntries<E extends Entry<string> = Entry<string>>(
-        contentTypeId?: GetContentTypeId<E>,
+    public getEntries<E extends Content.Entry = Content.Entry>(
+        contentTypeId?: Util.GetContentTypeId<E>,
         locale = this.baseLocale,
-    ): Resolved<E>[] {
+    ): Resolved.Entry<E>[] {
         this.triggerSync();
         const entries = Array.from(this.entries[locale].values());
         return (contentTypeId
             ? entries.filter(entry => entry.sys.contentType.sys.id === contentTypeId)
-            : entries) as Resolved<E>[];
+            : entries) as Resolved.Entry<E>[];
     }
 
-    async sync(): Promise<void> {
+    public async sync(): Promise<void> {
         return this.syncToken ? this.reSync() : this.initialSync();
     }
 
@@ -128,13 +121,13 @@ export class ContentfulStore<
     }
 
     private async initialSync(): Promise<void> {
-        const query: SyncQuery = {
+        const query: Sync.Query = {
             initial: true,
             resolveLinks: false,
         };
 
         const result = (await this.client.sync(query)).toPlainObject();
-        const { assets, entries, nextSyncToken } = result as SyncResult<BaseLocale, ExtraLocales>;
+        const { assets, entries, nextSyncToken } = result as Sync.Result<BaseLocale, ExtraLocales>;
 
         this.debug('Synced with Contentful');
         this.debug(`Assets: +${assets.length}`);
@@ -154,7 +147,7 @@ export class ContentfulStore<
     }
 
     private async reSync(): Promise<void> {
-        const query: SyncQuery = {
+        const query: Sync.Query = {
             nextSyncToken: this.syncToken,
             resolveLinks: false,
         };
@@ -166,7 +159,7 @@ export class ContentfulStore<
             deletedAssets,
             deletedEntries,
             nextSyncToken,
-        } = result as SyncResult<BaseLocale, ExtraLocales>;
+        } = result as Sync.Result<BaseLocale, ExtraLocales>;
 
         this.debug('Synced with Contentful');
         this.debug(`Assets: +${assets.length} −${deletedAssets.length}`);
@@ -194,9 +187,9 @@ export class ContentfulStore<
     }
 
     private processSyncAsset(
-        asset: SyncAsset<BaseLocale, ExtraLocales>,
+        asset: Sync.Asset<BaseLocale, ExtraLocales>,
         locale: BaseLocale | ExtraLocales,
-    ): Asset {
+    ): Content.Asset {
         return {
             sys: asset.sys,
             fields: this.processFieldsForLocale(locale, asset.fields),
@@ -204,9 +197,9 @@ export class ContentfulStore<
     }
 
     private processSyncEntry(
-        entry: SyncEntry<BaseLocale, ExtraLocales>,
+        entry: Sync.Entry<BaseLocale, ExtraLocales>,
         locale: BaseLocale | ExtraLocales,
-    ): Resolved<Entry<string>> {
+    ): Resolved.Entry {
         return this.createResolvedEntry(locale, {
             sys: entry.sys,
             fields: this.processFieldsForLocale(locale, entry.fields),
@@ -215,7 +208,7 @@ export class ContentfulStore<
 
     private processFieldsForLocale<F extends { [key: string]: any }>(
         locale: BaseLocale | ExtraLocales,
-        fields: WithLocales<F, BaseLocale, ExtraLocales>,
+        fields: Sync.Fields<F, BaseLocale, ExtraLocales>,
     ): F {
         return Object.assign(
             {},
@@ -225,10 +218,10 @@ export class ContentfulStore<
         );
     }
 
-    private createResolvedEntry<E extends Entry<string>>(
+    private createResolvedEntry<E extends Content.Entry>(
         locale: BaseLocale | ExtraLocales,
         entry: E,
-    ): Resolved<E> {
+    ): Resolved.Entry<E> {
         const fields: { [key: string]: unknown } = {};
 
         for (const [key, value] of Object.entries(entry.fields)) {
@@ -255,7 +248,7 @@ export class ContentfulStore<
 
         return {
             sys: entry.sys,
-            fields: fields as ResolvedFields<E['fields']>,
-        };
+            fields: fields,
+        } as Resolved.Entry<E>;
     }
 }
