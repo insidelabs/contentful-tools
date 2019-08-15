@@ -6,7 +6,7 @@
         "contentful"
     ],
     "author": "Inside Labs",
-    "homepage": "https://github.com/insidelabs/contentful-utils/tree/master/packages/contentful-store#readme",
+    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/contentful-store#readme",
     "license": "MIT",
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
@@ -19,11 +19,11 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/insidelabs/contentful-utils.git",
+        "url": "git+https://github.com/insidelabs/contentful-tools.git",
         "directory": "packages/contentful-store"
     },
     "bugs": {
-        "url": "https://github.com/insidelabs/contentful-utils/issues"
+        "url": "https://github.com/insidelabs/contentful-tools/issues"
     },
     "engines": {
         "node": ">=8.0.0"
