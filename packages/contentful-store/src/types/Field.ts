@@ -5,4 +5,6 @@ export namespace Field {
     }
 
     export type JSON = { [key: string]: any } | any[];
+
+    export type RichText = any;
 }

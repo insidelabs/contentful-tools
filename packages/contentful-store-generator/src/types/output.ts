@@ -12,4 +12,5 @@ export enum Content {
 export enum Field {
     Location = 'Location',
     JSON = 'JSON',
+    RichText = 'RichText',
 }

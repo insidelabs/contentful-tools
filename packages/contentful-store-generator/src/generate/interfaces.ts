@@ -138,7 +138,7 @@ function contentTypeField(
                 return ref(Namespace.Field, Field.JSON);
 
             case FieldType.RichText:
-                return any();
+                return ref(Namespace.Field, Field.RichText);
 
             case FieldType.Link:
                 return linkWithImports(field.linkType, field.validations);
