@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { CommonType } from '../schema/types';
+import { CommonType } from '../types/input';
 import { enumDecl } from '../common/enums';
 import { tsFile } from '../common/files';
 import { importDecl, importSpec } from '../common/imports';

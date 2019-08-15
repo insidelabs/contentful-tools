@@ -1,4 +1,5 @@
 export enum FileName {
+    store = '@insidelabs/contentful-store',
     common = 'common',
     utils = 'utils',
 }

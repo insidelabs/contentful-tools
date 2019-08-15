@@ -1,16 +1,16 @@
 import * as c from 'contentful-management';
 import * as ts from 'typescript';
 import { flatMap } from 'lodash';
-import { CommonType, FieldType, LinkType } from '../schema/types';
+import { CommonType, FieldType, FileName, LinkType } from '../types/input';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
 import { tsFile } from '../common/files';
 import { importDecl, importSpec } from '../common/imports';
-import { ref } from '../common/refs';
+import { qualifiedTypeRef, ref } from '../common/refs';
 import { any, boolean, number, string } from '../common/scalars';
 import { extendsExpression, interfaceDecl, propertySignature, union } from '../common/types';
-import { commonImportDecl } from './common';
 import { contentTypeIdImportDecl } from './contentTypeId';
+import { Content, Field, Namespace } from '../types/output';
 
 export function generateInterface(
     contentType: c.ContentType,
@@ -18,19 +18,23 @@ export function generateInterface(
 ): ts.SourceFile {
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
-    const { declarations, commonImports, interfaceImports, fields } = fieldsFromContentType(
+    const { declarations, storeImports, interfaceImports, fields } = fieldsFromContentType(
         contentType,
         interfaceName,
         contentTypeNameMap,
     );
 
     return tsFile(interfaceName, [
-        commonImportDecl(CommonType.Entry, ...commonImports),
+        storeImportDecl(Namespace.Content, ...storeImports),
         contentTypeIdImportDecl(),
         ...interfaceImportDecls(interfaceImports),
         contentTypeInterfaceDecl(interfaceName, fields),
         ...(declarations as ts.DeclarationStatement[]),
     ]);
+}
+
+function storeImportDecl(...namespaces: Namespace[]): ts.ImportDeclaration {
+    return importDecl(namespaces.sort().map(importSpec), FileName.store, '', false);
 }
 
 function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
@@ -41,7 +45,11 @@ function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
 
 function contentTypeInterfaceDecl(interfaceName: string, fields: ts.TypeNode) {
     return interfaceDecl(interfaceName, { fields }, undefined, [
-        extendsExpression(CommonType.Entry, ref(CommonType.ContentTypeId, interfaceName)),
+        extendsExpression(
+            Namespace.Content,
+            Content.Entry,
+            ref(CommonType.ContentTypeId, interfaceName),
+        ),
     ]);
 }
 
@@ -51,23 +59,23 @@ function fieldsFromContentType(
     contentTypeNameMap: Map<string, string>,
 ): {
     declarations: ts.Declaration[];
-    commonImports: CommonType[];
+    storeImports: Namespace[];
     interfaceImports: string[];
     fields: ts.TypeNode;
 } {
     const allDeclarations: ts.Declaration[] = [];
-    const allCommonImports: Set<CommonType> = new Set();
+    const allNamespaceImports: Set<Namespace> = new Set();
     const allInterfaceImports: Set<string> = new Set();
 
     const members = contentType.fields.map(field => {
-        const { declarations, commonImports, interfaceImports, signature } = contentTypeField(
+        const { declarations, storeImports, interfaceImports, signature } = contentTypeField(
             field,
             interfaceName,
             contentTypeNameMap,
         );
 
         for (const d of declarations) allDeclarations.push(d);
-        for (const i of commonImports) allCommonImports.add(i);
+        for (const i of storeImports) allNamespaceImports.add(i);
         for (const i of interfaceImports) allInterfaceImports.add(i);
 
         return signature;
@@ -75,7 +83,7 @@ function fieldsFromContentType(
 
     return {
         declarations: allDeclarations,
-        commonImports: Array.from(allCommonImports).sort(),
+        storeImports: Array.from(allNamespaceImports).sort(),
         interfaceImports: Array.from(allInterfaceImports).sort(),
         fields: ts.createTypeLiteralNode(members),
     };
@@ -87,12 +95,12 @@ function contentTypeField(
     contentTypeNameMap: Map<string, string>,
 ): {
     declarations: ts.Declaration[];
-    commonImports: Set<CommonType>;
+    storeImports: Set<Namespace>;
     interfaceImports: Set<string>;
     signature: ts.PropertySignature;
 } {
     const declarations: ts.Declaration[] = [];
-    const commonImports: Set<CommonType> = new Set();
+    const storeImports: Set<Namespace> = new Set();
     const interfaceImports: Set<string> = new Set();
 
     const typeNode = createFieldTypeNode();
@@ -100,7 +108,7 @@ function contentTypeField(
 
     return {
         declarations,
-        commonImports,
+        storeImports,
         interfaceImports,
         signature,
     };
@@ -122,12 +130,12 @@ function contentTypeField(
                 return textWithEnums(field.validations);
 
             case FieldType.Location:
-                commonImports.add(CommonType.Location);
-                return ref(CommonType.Location);
+                storeImports.add(Namespace.Field);
+                return ref(Namespace.Field, Field.Location);
 
             case FieldType.Object:
-                commonImports.add(CommonType.JSON);
-                return ref(CommonType.JSON);
+                storeImports.add(Namespace.Field);
+                return ref(Namespace.Field, Field.JSON);
 
             case FieldType.RichText:
                 return any();
@@ -193,12 +201,12 @@ function contentTypeField(
     }
 
     function assetLink(validations: c.LinkedAssetValidation[]): ts.TypeNode {
-        commonImports.add(CommonType.AssetLink);
-        return ref(CommonType.AssetLink);
+        storeImports.add(Namespace.Link);
+        return ref(Namespace.Link, LinkType.Asset);
     }
 
     function entryLink(validations: c.LinkedEntryValidation[]): ts.TypeNode {
-        commonImports.add(CommonType.EntryLink);
+        storeImports.add(Namespace.Link);
         if (validations.length > 0) {
             const linkedContentTypes = flatMap(
                 validations,
@@ -206,8 +214,9 @@ function contentTypeField(
             );
 
             if (linkedContentTypes.length > 0) {
-                return ref(
-                    CommonType.EntryLink,
+                return qualifiedTypeRef(
+                    Namespace.Link,
+                    LinkType.Entry,
                     union(
                         linkedContentTypes.map(contentTypeId => {
                             const interfaceName = contentTypeNameMap.get(contentTypeId) as string;
@@ -219,6 +228,6 @@ function contentTypeField(
             }
         }
 
-        return ref(CommonType.EntryLink, ref(CommonType.Entry, ref(CommonType.ContentTypeId)));
+        return ref(Namespace.Link, LinkType.Entry);
     }
 }

@@ -17,10 +17,14 @@ export function ref(
     }
 }
 
-function qualifiedTypeRef(name: string, qualifier: string): ts.TypeReferenceNode {
+export function qualifiedTypeRef(
+    name: string,
+    qualifier: string,
+    ...typeArguments: ts.TypeNode[]
+): ts.TypeReferenceNode {
     return ts.createTypeReferenceNode(
         ts.createQualifiedName(ts.createIdentifier(name), qualifier),
-        undefined,
+        typeArguments,
     );
 }
 

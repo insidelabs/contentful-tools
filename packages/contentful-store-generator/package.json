@@ -36,6 +36,7 @@
         "node": ">=8.0.0"
     },
     "dependencies": {
+        "@insidelabs/contentful-store": "^1.0.2",
         "@oclif/command": "^1.5.18",
         "@oclif/config": "^1.13.2",
         "@oclif/plugin-help": "^2.2.0",
@@ -54,6 +55,7 @@
         "typescript": "^3.5.3"
     },
     "devDependencies": {
+        "@insidelabs/contentful-store": "^1.0.2",
         "@types/camelcase": "^5.2.0",
         "@types/debug": "^4.1.5",
         "@types/dotenv": "^6.1.1",

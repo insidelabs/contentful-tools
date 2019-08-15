@@ -34,9 +34,13 @@ export function extendsClause(
 
 export function extendsExpression(
     name: string,
+    qualifier: string,
     ...typeArguments: ts.TypeNode[]
 ): ts.ExpressionWithTypeArguments {
-    return ts.createExpressionWithTypeArguments(typeArguments, ts.createIdentifier(name));
+    return ts.createExpressionWithTypeArguments(
+        typeArguments,
+        ts.createPropertyAccess(ts.createIdentifier(name), qualifier),
+    );
 }
 
 export function typeLiteral(members: TypeMembers): ts.TypeLiteralNode {
