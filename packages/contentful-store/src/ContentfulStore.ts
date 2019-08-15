@@ -12,8 +12,9 @@ export namespace ContentfulStore {
         spaceId: string;
         locales: [BaseLocale, ...ExtraLocales[]];
         handleError?: ErrorHandler;
-        autoSync?: boolean;
-        autoSyncMinInterval?: number;
+        autoSync?: {
+            minInterval: number;
+        };
     }
 
     export type ErrorHandler = (error: Error) => void;
@@ -55,8 +56,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         spaceId,
         locales,
         handleError,
-        autoSync = false,
-        autoSyncMinInterval = 5 * 60 * 1000,
+        autoSync,
     }: ContentfulStore.Config<BaseLocale, ExtraLocales>) {
         this.client = client;
         this.locales = locales;
@@ -70,8 +70,8 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
             });
 
         this.autoSync = {
-            enabled: autoSync,
-            minInterval: autoSyncMinInterval,
+            enabled: autoSync != null,
+            minInterval: autoSync ? autoSync.minInterval : 0,
             requestCount: 0,
             timeout: null,
         };

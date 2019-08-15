@@ -20,7 +20,7 @@ interface Widget extends Content.Entry<'Widget'> {
 }
 
 describe('ContentfulStore', () => {
-    const autoSyncMinInterval = 10000;
+    const autoSync = { minInterval: 10000 };
     let store: ContentfulStore<BaseLocale, ExtraLocales>;
 
     function createStore(config: Partial<ContentfulStore.Config<BaseLocale, ExtraLocales>> = {}) {
@@ -29,7 +29,6 @@ describe('ContentfulStore', () => {
             client,
             spaceId: 'widget-space',
             locales: ['en', 'de'],
-            autoSyncMinInterval,
         });
     }
 
@@ -60,7 +59,7 @@ describe('ContentfulStore', () => {
         });
 
         beforeEach(async () => {
-            store = createStore({ autoSync: true });
+            store = createStore({ autoSync });
             await store.sync();
             spy = (jest.spyOn(client, 'sync') as unknown) as SpyInstance<typeof client.sync>;
         });
@@ -104,7 +103,7 @@ describe('ContentfulStore', () => {
             store.getEntries();
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(1);
-            jest.advanceTimersByTime(autoSyncMinInterval);
+            jest.advanceTimersByTime(autoSync.minInterval);
             expect(spy).toHaveBeenCalledTimes(2);
         });
 
@@ -112,10 +111,18 @@ describe('ContentfulStore', () => {
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(1);
 
-            jest.advanceTimersByTime(autoSyncMinInterval);
+            jest.advanceTimersByTime(autoSync.minInterval);
 
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(2);
+        });
+
+        it('should only auto-sync if enabled', async () => {
+            store = createStore();
+            await store.sync();
+            spy.mockReset();
+            store.getAsset('bargis');
+            expect(spy).not.toBeCalled();
         });
     });
 
