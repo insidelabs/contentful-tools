@@ -1,8 +1,6 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "importHelpers": true,
-        "esModuleInterop": true,
         "module": "commonjs",
         "strict": true,
         "target": "es2017",
