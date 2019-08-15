@@ -17,17 +17,16 @@ interface Widget extends Content.Entry<'Widget'> {
 }
 
 describe('ContentfulStore', () => {
-    const autoSyncInterval = 10000;
+    const autoSyncMinInterval = 10000;
     let store: ContentfulStore<BaseLocale, ExtraLocales>;
 
-    function createStore(autoSync = false) {
+    function createStore(config: Partial<ContentfulStore.Config<BaseLocale, ExtraLocales>> = {}) {
         return new ContentfulStore({
+            ...config,
             client,
-            spaceId: 'bar',
-            baseLocale: 'en',
-            extraLocales: ['de'],
-            autoSync,
-            autoSyncInterval,
+            spaceId: 'WidgetSpace',
+            locales: ['en', 'de'],
+            autoSyncMinInterval,
         });
     }
 
@@ -37,13 +36,13 @@ describe('ContentfulStore', () => {
         });
 
         it('should load', async () => {
-            await store.load();
+            await store.sync();
             expect(store.getEntries()).toMatchSnapshot();
             expect(store.getAssets()).toMatchSnapshot();
         });
 
         it('should sync', async () => {
-            await store.load();
+            await store.sync();
             await store.sync();
             expect(store.getEntries()).toMatchSnapshot();
             expect(store.getAssets()).toMatchSnapshot();
@@ -58,8 +57,8 @@ describe('ContentfulStore', () => {
         });
 
         beforeEach(async () => {
-            store = createStore(true);
-            await store.load();
+            store = createStore({ autoSync: true });
+            await store.sync();
             spy = (jest.spyOn(client, 'sync') as unknown) as SpyInstance<typeof client.sync>;
         });
 
@@ -102,7 +101,7 @@ describe('ContentfulStore', () => {
             store.getEntries();
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(1);
-            jest.advanceTimersByTime(autoSyncInterval);
+            jest.advanceTimersByTime(autoSyncMinInterval);
             expect(spy).toHaveBeenCalledTimes(2);
         });
 
@@ -110,7 +109,7 @@ describe('ContentfulStore', () => {
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(1);
 
-            jest.advanceTimersByTime(autoSyncInterval);
+            jest.advanceTimersByTime(autoSyncMinInterval);
 
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(2);
@@ -120,7 +119,7 @@ describe('ContentfulStore', () => {
     describe('content', () => {
         beforeAll(async () => {
             store = createStore();
-            await store.load();
+            await store.sync();
         });
 
         it('should return an asset', () => {
@@ -139,7 +138,7 @@ describe('ContentfulStore', () => {
 
         beforeAll(async () => {
             store = await createStore();
-            await store.load();
+            await store.sync();
         });
 
         beforeEach(() => {

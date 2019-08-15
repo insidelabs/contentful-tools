@@ -6,7 +6,27 @@ import { Sync } from '../types/Sync';
 import { Util } from '../types/Util';
 import { isAssetLink, isAssetLinkArray, isEntryLink, isEntryLinkArray } from './guards';
 
-namespace ContentfulStore {
+export namespace ContentfulStore {
+    export interface Config<BaseLocale extends string, ExtraLocales extends string> {
+        client: ContentfulClientApi;
+        spaceId: string;
+        locales: [BaseLocale, ...ExtraLocales[]];
+        handleSyncError?: SyncErrorHandler;
+        autoSync?: boolean;
+        autoSyncMinInterval?: number;
+    }
+
+    export type SyncErrorHandler = (error: Error) => void;
+}
+
+namespace Internals {
+    export interface AutoSync {
+        readonly enabled: boolean;
+        readonly minInterval: number;
+        requestCount: number;
+        timeout: NodeJS.Timeout | null;
+    }
+
     export type Assets = LocaleMapped<AssetMap>;
     export type Entries = LocaleMapped<EntryMap>;
 
@@ -14,78 +34,66 @@ namespace ContentfulStore {
     type EntryMap = Map<string, Resolved.Entry>;
 
     type LocaleMapped<T> = { [locale in string]: T };
-
-    export interface AutoSync {
-        readonly enabled: boolean;
-        readonly interval: number;
-        timeout: NodeJS.Timeout | null;
-        requestCount: number;
-    }
 }
 
 export class ContentfulStore<BaseLocale extends string, ExtraLocales extends string> {
     private readonly client: ContentfulClientApi;
-    private readonly spaceId: string;
-
-    private readonly baseLocale: BaseLocale;
-    private readonly locales: (BaseLocale | ExtraLocales)[];
+    private readonly locales: [BaseLocale, ...ExtraLocales[]];
 
     private readonly debug: Debugger;
-    private readonly handleSyncError: (error: Error) => void;
+    private readonly handleSyncError: ContentfulStore.SyncErrorHandler;
 
-    private readonly autoSync: ContentfulStore.AutoSync;
+    private readonly autoSync: Internals.AutoSync;
 
-    private readonly assets: ContentfulStore.Assets = {};
-    private readonly entries: ContentfulStore.Entries = {};
+    private readonly assets: Internals.Assets = {};
+    private readonly entries: Internals.Entries = {};
 
-    private syncToken: string = '';
-
-    private defaultSyncErrorHandler = (error: Error) => {
-        console.error(`Error syncing ContentfulStore (${this.spaceId})`);
-        console.error(error);
-    };
+    private syncToken?: string;
 
     constructor({
         client,
         spaceId,
-        baseLocale,
-        extraLocales,
-        autoSync = false,
-        autoSyncInterval = 5 * 60 * 1000,
+        locales,
         handleSyncError,
-    }: {
-        client: ContentfulClientApi;
-        spaceId: string;
-        baseLocale: BaseLocale;
-        extraLocales: ExtraLocales[];
-        autoSync?: boolean;
-        autoSyncInterval?: number;
-        handleSyncError?: () => void;
-    }) {
+        autoSync = false,
+        autoSyncMinInterval = 5 * 60 * 1000,
+    }: ContentfulStore.Config<BaseLocale, ExtraLocales>) {
         this.client = client;
-        this.spaceId = spaceId;
+        this.locales = locales;
 
-        this.baseLocale = baseLocale;
-        this.locales = [baseLocale, ...extraLocales];
+        this.debug = createDebugger(`contentful-store:${spaceId}`);
+
+        this.handleSyncError =
+            handleSyncError ||
+            ((error: Error) => {
+                console.error(`Error syncing ContentfulStore (${spaceId})`);
+                console.error(error);
+            });
 
         this.autoSync = {
             enabled: autoSync,
-            interval: autoSyncInterval,
+            minInterval: autoSyncMinInterval,
             requestCount: 0,
             timeout: null,
         };
 
-        this.debug = createDebugger(`contentful-store:${spaceId}`);
-        this.handleSyncError = handleSyncError || this.defaultSyncErrorHandler;
+        for (const locale of locales) {
+            this.assets[locale] = new Map();
+            this.entries[locale] = new Map();
+        }
+    }
+
+    private get baseLocale(): BaseLocale {
+        return this.locales[0];
     }
 
     public getAsset(id: string, locale = this.baseLocale): Content.Asset | null {
-        this.triggerAutoSync();
+        this.onContentAccess();
         return this.assets[locale].get(id) || null;
     }
 
     public getAssets(locale = this.baseLocale): Content.Asset[] {
-        this.triggerAutoSync();
+        this.onContentAccess();
         return Array.from(this.assets[locale].values());
     }
 
@@ -94,7 +102,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         contentTypeId?: Util.GetContentTypeId<E>,
         locale = this.baseLocale,
     ): Resolved.Entry<E> | null {
-        this.triggerAutoSync();
+        this.onContentAccess();
         const entry = this.entries[locale].get(id);
         return entry && (entry.sys.contentType.sys.id === contentTypeId || !contentTypeId)
             ? (entry as Resolved.Entry<E>)
@@ -105,19 +113,18 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         contentTypeId?: Util.GetContentTypeId<E>,
         locale = this.baseLocale,
     ): Resolved.Entry<E>[] {
-        this.triggerAutoSync();
+        this.onContentAccess();
         const entries = Array.from(this.entries[locale].values());
         return (contentTypeId
             ? entries.filter(entry => entry.sys.contentType.sys.id === contentTypeId)
             : entries) as Resolved.Entry<E>[];
     }
 
-    public resetAutoSync(): void {
-        this.autoSync.requestCount = 0;
-        if (this.autoSync.timeout != null) clearTimeout(this.autoSync.timeout);
-    }
+    private onContentAccess() {
+        if (!this.syncToken) {
+            this.handleSyncError(Error('Content accessed without initial sync'));
+        }
 
-    private triggerAutoSync() {
         if (!this.autoSync.enabled) return;
 
         this.autoSync.requestCount++;
@@ -128,55 +135,29 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         this.autoSync.timeout = setTimeout(() => {
             if (this.autoSync.requestCount > 1) this.sync().catch(this.handleSyncError);
             this.autoSync.requestCount = 0;
-        }, this.autoSync.interval);
-    }
-
-    public async load(): Promise<void> {
-        const query: Sync.Query = {
-            initial: true,
-            resolveLinks: false,
-        };
-
-        const result = (await this.client.sync(query)).toPlainObject();
-        const { assets, entries, nextSyncToken } = result as Sync.Result<BaseLocale, ExtraLocales>;
-
-        this.debug('Loaded from Contentful');
-        this.debug(`Assets: ${assets.length}`);
-        this.debug(`Entries: ${entries.length}`);
-
-        this.syncToken = nextSyncToken;
-
-        for (const locale of this.locales) {
-            this.assets[locale] = new Map(
-                assets.map(asset => [asset.sys.id, this.processSyncAsset(asset, locale)]),
-            );
-
-            this.entries[locale] = new Map(
-                entries.map(entry => [entry.sys.id, this.processSyncEntry(entry, locale)]),
-            );
-        }
+        }, this.autoSync.minInterval);
     }
 
     public async sync(): Promise<void> {
-        if (!this.syncToken) throw Error('Attempted to sync without first loading content');
+        const query: Sync.Query = { resolveLinks: false };
 
-        const query: Sync.Query = {
-            nextSyncToken: this.syncToken,
-            resolveLinks: false,
-        };
+        if (this.syncToken) query.nextSyncToken = this.syncToken;
+        else query.initial = true;
 
-        const result = (await this.client.sync(query)).toPlainObject();
+        const result = await this.client.sync(query);
+
         const {
             assets,
             entries,
             deletedAssets,
             deletedEntries,
             nextSyncToken,
-        } = result as Sync.Result<BaseLocale, ExtraLocales>;
+        } = result.toPlainObject() as Sync.Result<BaseLocale, ExtraLocales>;
 
-        this.debug('Synced with Contentful');
-        this.debug(`Assets: +${assets.length} −${deletedAssets.length}`);
-        this.debug(`Entries: +${entries.length} −${deletedEntries.length}`);
+        this.debug(`Synced ${assets.length} assets`);
+        this.debug(`Synced ${entries.length} entries`);
+        this.debug(`Deleted ${deletedAssets.length} assets`);
+        this.debug(`Deleted ${deletedEntries.length} entries`);
 
         this.syncToken = nextSyncToken;
 
@@ -189,13 +170,8 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
                 this.entries[locale].set(entry.sys.id, this.processSyncEntry(entry, locale));
             }
 
-            for (const asset of deletedAssets) {
-                this.assets[locale].delete(asset.sys.id);
-            }
-
-            for (const entry of deletedEntries) {
-                this.entries[locale].delete(entry.sys.id);
-            }
+            for (const asset of deletedAssets) this.assets[locale].delete(asset.sys.id);
+            for (const entry of deletedEntries) this.entries[locale].delete(entry.sys.id);
         }
     }
 
