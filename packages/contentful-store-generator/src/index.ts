@@ -13,7 +13,6 @@ import { resolveTypeNames } from './lib/typeNames';
 import { generateCommon } from './generate/common';
 import { generateInterface } from './generate/interfaces';
 import { generateContentTypeId } from './generate/contentTypeId';
-import { generateUtils } from './generate/utils';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);
@@ -31,7 +30,6 @@ export async function generate(
     const allFiles = [
         generateCommon(),
         generateContentTypeId(resolvedNameMap),
-        generateUtils(),
         ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap)),
     ];
 

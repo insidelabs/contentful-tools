@@ -16,12 +16,6 @@ export enum CommonType {
     SysType = 'SysType',
 }
 
-export enum UtilType {
-    FullyResolved = 'FullyResolved',
-    Resolved = 'Resolved',
-    Unresolved = 'Unresolved',
-}
-
 export enum FieldType {
     Array = 'Array',
     Boolean = 'Boolean',
