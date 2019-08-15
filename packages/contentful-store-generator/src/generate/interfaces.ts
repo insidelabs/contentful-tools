@@ -1,16 +1,15 @@
 import * as c from 'contentful-management';
 import * as ts from 'typescript';
 import { flatMap } from 'lodash';
-import { CommonType, FieldType, FileName, LinkType } from '../types/input';
+import { Field, FieldType, FileName, LinkType, Namespace, Type } from '../types';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
 import { tsFile } from '../common/files';
 import { importDecl, importSpec } from '../common/imports';
 import { qualifiedTypeRef, ref } from '../common/refs';
-import { any, boolean, number, string } from '../common/scalars';
+import { boolean, number, string } from '../common/scalars';
 import { extendsExpression, interfaceDecl, propertySignature, union } from '../common/types';
 import { contentTypeIdImportDecl } from './contentTypeId';
-import { Content, Field, Namespace } from '../types/output';
 
 export function generateInterface(
     contentType: c.ContentType,
@@ -45,11 +44,7 @@ function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
 
 function contentTypeInterfaceDecl(interfaceName: string, fields: ts.TypeNode) {
     return interfaceDecl(interfaceName, { fields }, undefined, [
-        extendsExpression(
-            Namespace.Content,
-            Content.Entry,
-            ref(CommonType.ContentTypeId, interfaceName),
-        ),
+        extendsExpression(Namespace.Content, Type.Entry, ref(Type.ContentTypeId, interfaceName)),
     ]);
 }
 
@@ -202,7 +197,7 @@ function contentTypeField(
 
     function assetLink(validations: c.LinkedAssetValidation[]): ts.TypeNode {
         storeImports.add(Namespace.Link);
-        return ref(Namespace.Link, LinkType.Asset);
+        return ref(Namespace.Link, Type.Asset);
     }
 
     function entryLink(validations: c.LinkedEntryValidation[]): ts.TypeNode {
@@ -216,7 +211,7 @@ function contentTypeField(
             if (linkedContentTypes.length > 0) {
                 return qualifiedTypeRef(
                     Namespace.Link,
-                    LinkType.Entry,
+                    Type.Entry,
                     union(
                         linkedContentTypes.map(contentTypeId => {
                             const interfaceName = contentTypeNameMap.get(contentTypeId) as string;
@@ -228,6 +223,6 @@ function contentTypeField(
             }
         }
 
-        return ref(Namespace.Link, LinkType.Entry);
+        return ref(Namespace.Link, Type.Entry);
     }
 }
