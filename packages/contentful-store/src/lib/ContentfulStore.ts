@@ -14,6 +14,13 @@ namespace ContentfulStore {
     type EntryMap = Map<string, Resolved.Entry>;
 
     type LocaleMapped<T> = { [locale in string]: T };
+
+    export interface AutoSync {
+        readonly enabled: boolean;
+        readonly interval: number;
+        timeout: NodeJS.Timeout | null;
+        requestCount: number;
+    }
 }
 
 export class ContentfulStore<BaseLocale extends string, ExtraLocales extends string> {
@@ -26,14 +33,12 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     private readonly debug: Debugger;
     private readonly handleSyncError: (error: Error) => void;
 
-    private readonly autoSync: boolean;
-    private readonly syncTimeout: number;
-
-    private syncToken: string = '';
-    private syncRequestCount: number;
+    private readonly autoSync: ContentfulStore.AutoSync;
 
     private readonly assets: ContentfulStore.Assets = {};
     private readonly entries: ContentfulStore.Entries = {};
+
+    private syncToken: string = '';
 
     private defaultSyncErrorHandler = (error: Error) => {
         console.error(`Error syncing ContentfulStore (${this.spaceId})`);
@@ -46,7 +51,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         baseLocale,
         extraLocales,
         autoSync = false,
-        syncTimeout = 5 * 60 * 1000,
+        autoSyncInterval = 5 * 60 * 1000,
         handleSyncError,
     }: {
         client: ContentfulClientApi;
@@ -54,7 +59,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         baseLocale: BaseLocale;
         extraLocales: ExtraLocales[];
         autoSync?: boolean;
-        syncTimeout?: number;
+        autoSyncInterval?: number;
         handleSyncError?: () => void;
     }) {
         this.client = client;
@@ -63,21 +68,24 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         this.baseLocale = baseLocale;
         this.locales = [baseLocale, ...extraLocales];
 
-        this.autoSync = autoSync;
-        this.syncTimeout = syncTimeout;
-        this.syncRequestCount = 0;
+        this.autoSync = {
+            enabled: autoSync,
+            interval: autoSyncInterval,
+            requestCount: 0,
+            timeout: null,
+        };
 
         this.debug = createDebugger(`contentful-store:${spaceId}`);
         this.handleSyncError = handleSyncError || this.defaultSyncErrorHandler;
     }
 
     public getAsset(id: string, locale = this.baseLocale): Content.Asset | null {
-        this.triggerSync();
+        this.triggerAutoSync();
         return this.assets[locale].get(id) || null;
     }
 
     public getAssets(locale = this.baseLocale): Content.Asset[] {
-        this.triggerSync();
+        this.triggerAutoSync();
         return Array.from(this.assets[locale].values());
     }
 
@@ -86,7 +94,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         contentTypeId?: Util.GetContentTypeId<E>,
         locale = this.baseLocale,
     ): Resolved.Entry<E> | null {
-        this.triggerSync();
+        this.triggerAutoSync();
         const entry = this.entries[locale].get(id);
         return entry && (entry.sys.contentType.sys.id === contentTypeId || !contentTypeId)
             ? (entry as Resolved.Entry<E>)
@@ -97,32 +105,33 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         contentTypeId?: Util.GetContentTypeId<E>,
         locale = this.baseLocale,
     ): Resolved.Entry<E>[] {
-        this.triggerSync();
+        this.triggerAutoSync();
         const entries = Array.from(this.entries[locale].values());
         return (contentTypeId
             ? entries.filter(entry => entry.sys.contentType.sys.id === contentTypeId)
             : entries) as Resolved.Entry<E>[];
     }
 
-    public async sync(): Promise<void> {
-        return this.syncToken ? this.reSync() : this.initialSync();
+    public resetAutoSync(): void {
+        this.autoSync.requestCount = 0;
+        if (this.autoSync.timeout != null) clearTimeout(this.autoSync.timeout);
     }
 
-    private triggerSync() {
-        if (!this.autoSync) return;
+    private triggerAutoSync() {
+        if (!this.autoSync.enabled) return;
 
-        this.syncRequestCount++;
-        if (this.syncRequestCount > 1) return;
+        this.autoSync.requestCount++;
+        if (this.autoSync.requestCount > 1) return;
 
         this.sync().catch(this.handleSyncError);
 
-        setTimeout(() => {
-            if (this.syncRequestCount > 1) this.sync().catch(this.handleSyncError);
-            this.syncRequestCount = 0;
-        }, this.syncTimeout);
+        this.autoSync.timeout = setTimeout(() => {
+            if (this.autoSync.requestCount > 1) this.sync().catch(this.handleSyncError);
+            this.autoSync.requestCount = 0;
+        }, this.autoSync.interval);
     }
 
-    private async initialSync(): Promise<void> {
+    public async load(): Promise<void> {
         const query: Sync.Query = {
             initial: true,
             resolveLinks: false,
@@ -131,9 +140,9 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         const result = (await this.client.sync(query)).toPlainObject();
         const { assets, entries, nextSyncToken } = result as Sync.Result<BaseLocale, ExtraLocales>;
 
-        this.debug('Synced with Contentful');
-        this.debug(`Assets: +${assets.length}`);
-        this.debug(`Entries: +${entries.length}`);
+        this.debug('Loaded from Contentful');
+        this.debug(`Assets: ${assets.length}`);
+        this.debug(`Entries: ${entries.length}`);
 
         this.syncToken = nextSyncToken;
 
@@ -148,7 +157,9 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         }
     }
 
-    private async reSync(): Promise<void> {
+    public async sync(): Promise<void> {
+        if (!this.syncToken) throw Error('Attempted to sync without first loading content');
+
         const query: Sync.Query = {
             nextSyncToken: this.syncToken,
             resolveLinks: false,
