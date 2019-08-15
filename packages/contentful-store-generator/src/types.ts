@@ -24,7 +24,7 @@ export enum FileName {
 export enum Namespace {
     Content = 'Content',
     Field = 'Field',
-    Link = 'Link'
+    Link = 'Link',
 }
 
 export enum Type {
