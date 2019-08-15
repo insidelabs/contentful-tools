@@ -1,6 +1,6 @@
 {
     "name": "@insidelabs/contentful-store-generator",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A generator for type declarations based on Contentful content types",
     "keywords": [
         "contentful",
@@ -36,7 +36,7 @@
         "node": ">=8.0.0"
     },
     "dependencies": {
-        "@insidelabs/contentful-store": "^1.1.0",
+        "@insidelabs/contentful-store": "^1.1.1",
         "@oclif/command": "^1.5.18",
         "@oclif/config": "^1.13.2",
         "@oclif/plugin-help": "^2.2.0",
