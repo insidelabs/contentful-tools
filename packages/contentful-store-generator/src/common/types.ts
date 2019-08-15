@@ -1,14 +1,5 @@
 import * as ts from 'typescript';
 import { exportModifiers } from './imports';
-import { stringLiteral } from './scalars';
-
-export function typeAlias(
-    name: string,
-    type: ts.TypeNode,
-    ...typeParameters: ts.TypeParameterDeclaration[]
-): ts.TypeAliasDeclaration {
-    return ts.createTypeAliasDeclaration(undefined, exportModifiers(), name, typeParameters, type);
-}
 
 export function interfaceDecl(
     interfaceName: string,
@@ -86,38 +77,6 @@ export function propertySignature(
     return ts.createPropertySignature(undefined, name, questionToken, type, undefined);
 }
 
-export function infer(name: string | ts.Identifier): ts.InferTypeNode {
-    return ts.createInferTypeNode(typeParameter(name));
-}
-
-export function conditional(
-    checkType: ts.TypeNode,
-    extendsType: ts.TypeNode,
-    trueType: ts.TypeNode,
-    falseType: ts.TypeNode,
-): ts.ConditionalTypeNode {
-    return ts.createConditionalTypeNode(checkType, extendsType, trueType, falseType);
-}
-
-export function parens(type: ts.TypeNode) {
-    return ts.createParenthesizedType(type);
-}
-
-export function typeParameter(
-    name: string | ts.Identifier,
-    constraint?: ts.TypeNode,
-    defaultType?: ts.TypeNode,
-) {
-    return ts.createTypeParameterDeclaration(name, constraint, defaultType);
-}
-
-export function mapped(
-    typeParameter: ts.TypeParameterDeclaration,
-    type: ts.TypeNode,
-): ts.MappedTypeNode {
-    return ts.createMappedTypeNode(undefined, typeParameter, undefined, type);
-}
-
 export function union(...types: ts.TypeNode[]): ts.TypeNode;
 export function union(types: ts.TypeNode[]): ts.TypeNode;
 export function union(
@@ -127,25 +86,4 @@ export function union(
     return Array.isArray(typeOrTypes)
         ? ts.createUnionTypeNode(typeOrTypes)
         : ts.createUnionTypeNode([typeOrTypes, ...restTypes]);
-}
-
-export function indexed(...types: Array<string | ts.TypeNode>): ts.TypeNode {
-    if (types.length >= 2) {
-        return ts.createIndexedAccessTypeNode(
-            indexed(...types.slice(0, -1)),
-            resolve(types.slice(-1)[0]),
-        );
-    } else {
-        return resolve(types[0]);
-    }
-
-    function resolve(stringOrTypeNode: string | ts.TypeNode): ts.TypeNode {
-        return typeof stringOrTypeNode === 'string'
-            ? stringLiteral(stringOrTypeNode)
-            : stringOrTypeNode;
-    }
-}
-
-export function keyof(type: ts.TypeNode): ts.TypeOperatorNode {
-    return ts.createTypeOperatorNode(ts.SyntaxKind.KeyOfKeyword, type);
 }

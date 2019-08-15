@@ -4,10 +4,6 @@ export function any(): ts.KeywordTypeNode {
     return ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
 }
 
-export function unknown(): ts.KeywordTypeNode {
-    return ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
-}
-
 export function boolean(): ts.KeywordTypeNode {
     return ts.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
 }
