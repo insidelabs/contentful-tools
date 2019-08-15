@@ -1,0 +1,81 @@
+{
+    "name": "@insidelabs/contentful-store-generator",
+    "version": "0.0.1",
+    "description": "A generator for type declarations based on Contentful content types",
+    "keywords": [
+        "contentful",
+        "typescript",
+        "codegen"
+    ],
+    "author": "Inside Labs",
+    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/contentful-store-generator#readme",
+    "license": "MIT",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "directories": {
+        "bin": "bin",
+        "lib": "lib",
+        "test": "lib/__tests__"
+    },
+    "files": [
+        "/bin",
+        "/lib"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/insidelabs/contentful-tools.git",
+        "directory": "packages/contentful-store-generator"
+    },
+    "bugs": {
+        "url": "https://github.com/insidelabs/contentful-tools/issues"
+    },
+    "engines": {
+        "node": ">=8.0.0"
+    },
+    "dependencies": {
+        "@oclif/command": "^1.5.18",
+        "@oclif/config": "^1.13.2",
+        "@oclif/plugin-help": "^2.2.0",
+        "camelcase": "^5.3.1",
+        "contentful-management": "^5.9.0",
+        "debug": "^4.1.1",
+        "fp-ts": "^2.0.5",
+        "io-ts": "^2.0.1",
+        "listr": "^0.14.3",
+        "lodash": "^4.17.15",
+        "mkdirp": "^0.5.1",
+        "pluralize": "^8.0.0",
+        "prettier": "^1.18.2",
+        "rimraf": "^2.6.3",
+        "rxjs": "^6.5.2",
+        "typescript": "^3.5.3"
+    },
+    "devDependencies": {
+        "@types/camelcase": "^5.2.0",
+        "@types/debug": "^4.1.5",
+        "@types/dotenv": "^6.1.1",
+        "@types/listr": "^0.14.2",
+        "@types/lodash": "^4.14.136",
+        "@types/mkdirp": "^0.5.2",
+        "@types/node": "^10.14.15",
+        "@types/pluralize": "0.0.29",
+        "@types/prettier": "^1.18.2",
+        "@types/rimraf": "^2.0.2",
+        "dotenv": "^8.0.0",
+        "jest": "^24.8.0",
+        "ts-jest": "^24.0.2",
+        "ts-node": "^8.3.0"
+    },
+    "oclif": {
+        "bin": "generate-contentful-client"
+    },
+    "scripts": {
+        "test": "echo NO TESTS",
+        "format": "prettier --write 'src/**/*.ts'",
+        "prepack": "rm -rf lib && tsc",
+        "version": "npm run format && git add -A src"
+    }
+}
