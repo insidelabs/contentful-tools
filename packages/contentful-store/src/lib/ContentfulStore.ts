@@ -16,11 +16,7 @@ namespace ContentfulStore {
     type LocaleMapped<T> = { [locale in string]: T };
 }
 
-export class ContentfulStore<
-    ContentTypeId extends string,
-    BaseLocale extends string,
-    ExtraLocales extends string
-> {
+export class ContentfulStore<BaseLocale extends string, ExtraLocales extends string> {
     private readonly client: ContentfulClientApi;
     private readonly spaceId: string;
 
