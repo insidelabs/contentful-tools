@@ -1,5 +1,6 @@
 module.exports = {
-    testPathIgnorePatterns: ["__stubs__", "dist"],
+    testPathIgnorePatterns: ["lib", "__stubs__"],
+    coveragePathIgnorePatterns: ["__stubs__"],
     testEnvironment: 'node',
     transform: {
         '^.+\\.ts$': 'ts-jest',

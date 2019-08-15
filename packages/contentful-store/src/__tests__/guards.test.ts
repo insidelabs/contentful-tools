@@ -1,4 +1,4 @@
-import { isAssetLink, isAssetLinkArray, isEntryLink, isEntryLinkArray } from '../src/lib/guards';
+import { isAssetLink, isAssetLinkArray, isEntryLink, isEntryLinkArray } from '../guards';
 
 describe('Type guards', () => {
     const assetLink = {

@@ -1,5 +1,5 @@
 import { ContentfulClientApi } from 'contentful';
-import { Sync } from '../../src';
+import { Sync } from '../../types/Sync';
 
 class ClientStub {
     sync({ initial }: Sync.Query): Sync.Result<'en', 'de'> {

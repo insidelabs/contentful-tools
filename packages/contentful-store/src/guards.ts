@@ -1,5 +1,5 @@
-import { Link } from '../types/Link';
-import { SysType } from '../types/SysType';
+import { Link } from './types/Link';
+import { SysType } from './types/SysType';
 
 export function isAssetLink(value: unknown): value is Link.Asset {
     return isLink(value) && value.sys.linkType === SysType.Asset;

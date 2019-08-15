@@ -1,4 +1,7 @@
-import { ContentfulStore, Content, Link, Resolved } from '../src';
+import { ContentfulStore } from '../ContentfulStore';
+import { Content } from '../types/Content';
+import { Link } from '../types/Link';
+import { Resolved } from '../types/Resolved';
 import { client } from './__stubs__/contentful.stub';
 import SpyInstance = jest.SpyInstance;
 

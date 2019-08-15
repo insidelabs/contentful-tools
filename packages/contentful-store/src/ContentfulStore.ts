@@ -1,9 +1,9 @@
 import createDebugger, { Debugger } from 'debug';
 import { ContentfulClientApi } from 'contentful';
-import { Content } from '../types/Content';
-import { Resolved } from '../types/Resolved';
-import { Sync } from '../types/Sync';
-import { Util } from '../types/Util';
+import { Content } from './types/Content';
+import { Resolved } from './types/Resolved';
+import { Sync } from './types/Sync';
+import { Util } from './types/Util';
 import { isAssetLink, isAssetLinkArray, isEntryLink, isEntryLinkArray } from './guards';
 
 export namespace ContentfulStore {

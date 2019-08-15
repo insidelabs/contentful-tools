@@ -3,5 +3,6 @@
 *-debug.log
 *-error.log
 node_modules/
+lib/
 .env
 tsconfig.tsbuildinfo
