@@ -17,7 +17,7 @@ export function isEntryLinkArray(value: unknown): value is Link.Entry[] {
     return Array.isArray(value) && value.length > 0 && isEntryLink(value[0]);
 }
 
-function isLink(value: unknown): value is Link.Link<SysType> {
+function isLink(value: unknown): value is Link.Link {
     return (
         isRecord(value) &&
         isRecord(value.sys) &&
