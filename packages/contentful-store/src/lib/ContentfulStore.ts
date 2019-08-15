@@ -120,24 +120,6 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
             : entries) as Resolved.Entry<E>[];
     }
 
-    private onContentAccess() {
-        if (!this.syncToken) {
-            this.handleSyncError(Error('Content accessed without initial sync'));
-        }
-
-        if (!this.autoSync.enabled) return;
-
-        this.autoSync.requestCount++;
-        if (this.autoSync.requestCount > 1) return;
-
-        this.sync().catch(this.handleSyncError);
-
-        this.autoSync.timeout = setTimeout(() => {
-            if (this.autoSync.requestCount > 1) this.sync().catch(this.handleSyncError);
-            this.autoSync.requestCount = 0;
-        }, this.autoSync.minInterval);
-    }
-
     public async sync(): Promise<void> {
         const query: Sync.Query = { resolveLinks: false };
 
@@ -239,5 +221,23 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
             sys: entry.sys,
             fields: fields,
         } as Resolved.Entry<E>;
+    }
+
+    private onContentAccess() {
+        if (!this.syncToken) {
+            this.handleSyncError(Error('Content accessed without initial sync'));
+        }
+
+        if (!this.autoSync.enabled) return;
+
+        this.autoSync.requestCount++;
+        if (this.autoSync.requestCount > 1) return;
+
+        this.sync().catch(this.handleSyncError);
+
+        this.autoSync.timeout = setTimeout(() => {
+            if (this.autoSync.requestCount > 1) this.sync().catch(this.handleSyncError);
+            this.autoSync.requestCount = 0;
+        }, this.autoSync.minInterval);
     }
 }
