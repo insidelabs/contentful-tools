@@ -7,8 +7,8 @@ import * as rimraf from 'rimraf';
 import { Observer } from 'rxjs';
 import * as ts from 'typescript';
 
-import { Config } from './lib/config';
-import { resolveTypeNames } from './lib/typeNames';
+import { Config } from './config';
+import { resolveTypeNames } from './typeNames';
 
 import { generateInterface } from './generate/interfaces';
 import { generateContentTypeId } from './generate/contentTypeId';

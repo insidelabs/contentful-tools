@@ -4,8 +4,8 @@ import createDebugger from 'debug';
 import Listr from 'listr';
 import { Environment } from 'contentful-management';
 import { Observable } from 'rxjs';
-import { getContentfulEnvironment } from './lib/contentful';
-import { Config, getConfig } from './lib/config';
+import { getContentfulEnvironment } from './contentful';
+import { Config, getConfig } from './config';
 import { generateWithObserver } from './index';
 
 const debug = createDebugger('cli');
