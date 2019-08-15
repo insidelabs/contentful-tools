@@ -186,4 +186,24 @@ describe('ContentfulStore', () => {
             `);
         });
     });
+
+    describe('errors', () => {
+        let spy: jest.Mock;
+
+        beforeEach(() => {
+            spy = jest.fn();
+            store = createStore({
+                handleSyncError: spy,
+            });
+        });
+
+        afterEach(() => {
+            spy.mockRestore();
+        });
+
+        it('should error on content access if not yet loaded', async () => {
+            store.getEntries();
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
 });
