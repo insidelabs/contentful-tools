@@ -137,9 +137,19 @@ describe('ContentfulStore', () => {
             expect(asset!.sys.id).toMatchInlineSnapshot(`"bargis"`);
         });
 
+        it('should return null for a missing asset', () => {
+            const asset = store.getAsset('missing');
+            expect(asset).toBeNull();
+        });
+
         it('should return an entry', () => {
             const entry = store.getEntry<Widget>('foo');
             expect(entry!.sys.id).toMatchInlineSnapshot(`"foo"`);
+        });
+
+        it('should return null for a missing entry', () => {
+            const entry = store.getEntry('missing');
+            expect(entry).toBeNull();
         });
 
         it('should return entries of a specific content type', () => {
