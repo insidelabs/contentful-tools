@@ -27,7 +27,7 @@ describe('ContentfulStore', () => {
         return new ContentfulStore({
             ...config,
             client,
-            spaceId: 'WidgetSpace',
+            spaceId: 'widget-space',
             locales: ['en', 'de'],
             autoSyncMinInterval,
         });
@@ -191,22 +191,25 @@ describe('ContentfulStore', () => {
     });
 
     describe('errors', () => {
-        let spy: jest.Mock;
-
-        beforeEach(() => {
-            spy = jest.fn();
-            store = createStore({
-                handleSyncError: spy,
-            });
-        });
-
-        afterEach(() => {
-            spy.mockRestore();
-        });
-
-        it('should error on content access if not yet loaded', async () => {
+        it('should log error on content access if not yet loaded', () => {
+            const spy = jest.spyOn(global.console, 'error').mockImplementation(() => {});
+            store = createStore();
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(1);
+            expect(spy.mock.calls[0]).toMatchInlineSnapshot(`
+                Array [
+                  "Error in ContentfulStore (widget-space)",
+                  [Error: Content accessed without initial sync],
+                ]
+            `);
+        });
+
+        it('should pass error to a custom handler', () => {
+            const spy = jest.fn();
+            store = createStore({ handleError: spy });
+            store.getEntries();
+            expect(spy).toHaveBeenCalledTimes(1);
+            spy.mockRestore();
         });
     });
 });

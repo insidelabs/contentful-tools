@@ -11,12 +11,12 @@ export namespace ContentfulStore {
         client: ContentfulClientApi;
         spaceId: string;
         locales: [BaseLocale, ...ExtraLocales[]];
-        handleSyncError?: SyncErrorHandler;
+        handleError?: ErrorHandler;
         autoSync?: boolean;
         autoSyncMinInterval?: number;
     }
 
-    export type SyncErrorHandler = (error: Error) => void;
+    export type ErrorHandler = (error: Error) => void;
 }
 
 namespace Internals {
@@ -41,7 +41,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     private readonly locales: [BaseLocale, ...ExtraLocales[]];
 
     private readonly debug: Debugger;
-    private readonly handleSyncError: ContentfulStore.SyncErrorHandler;
+    private readonly handleError: ContentfulStore.ErrorHandler;
 
     private readonly autoSync: Internals.AutoSync;
 
@@ -54,7 +54,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         client,
         spaceId,
         locales,
-        handleSyncError,
+        handleError,
         autoSync = false,
         autoSyncMinInterval = 5 * 60 * 1000,
     }: ContentfulStore.Config<BaseLocale, ExtraLocales>) {
@@ -63,11 +63,10 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
 
         this.debug = createDebugger(`contentful-store:${spaceId}`);
 
-        this.handleSyncError =
-            handleSyncError ||
+        this.handleError =
+            handleError ||
             ((error: Error) => {
-                console.error(`Error syncing ContentfulStore (${spaceId})`);
-                console.error(error);
+                console.error(`Error in ContentfulStore (${spaceId})`, error);
             });
 
         this.autoSync = {
@@ -225,7 +224,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
 
     private onContentAccess() {
         if (!this.syncToken) {
-            this.handleSyncError(Error('Content accessed without initial sync'));
+            this.handleError(Error('Content accessed without initial sync'));
         }
 
         if (!this.autoSync.enabled) return;
@@ -233,10 +232,10 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         this.autoSync.requestCount++;
         if (this.autoSync.requestCount > 1) return;
 
-        this.sync().catch(this.handleSyncError);
+        this.sync().catch(this.handleError);
 
         this.autoSync.timeout = setTimeout(() => {
-            if (this.autoSync.requestCount > 1) this.sync().catch(this.handleSyncError);
+            if (this.autoSync.requestCount > 1) this.sync().catch(this.handleError);
             this.autoSync.requestCount = 0;
         }, this.autoSync.minInterval);
     }
