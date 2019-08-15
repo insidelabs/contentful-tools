@@ -2,8 +2,8 @@
     "compilerOptions": {
         "declaration": true,
         "module": "commonjs",
+        "sourceMap": true,
         "strict": true,
-        "target": "es2017",
-        "sourceMap": true
+        "target": "es2017"
     }
 }

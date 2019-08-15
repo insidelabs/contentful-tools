@@ -9,7 +9,11 @@
     "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/contentful-store#readme",
     "license": "MIT",
     "main": "lib/index.js",
-    "typings": "lib/index.d.ts",
+    "types": "lib/index.d.ts",
+    "directories": {
+        "lib": "lib",
+        "test": "lib/__tests__"
+    },
     "files": [
         "/lib/types/",
         "/lib/*.*"
@@ -47,9 +51,12 @@
         "typescript": "^3.5.3"
     },
     "scripts": {
-        "build": "rm -rf dist && tsc",
         "test": "jest",
         "test:watch": "jest --watch",
-        "coverage": "jest --coverage"
+        "coverage": "jest --coverage",
+        "format": "prettier --write 'src/**/*.ts'",
+        "prepublishOnly": "npm test",
+        "prepack": "rm -rf lib && tsc",
+        "version": "npm run format && git add -A src"
     }
 }
