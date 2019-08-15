@@ -10,7 +10,6 @@ import * as ts from 'typescript';
 import { Config } from './lib/config';
 import { resolveTypeNames } from './lib/typeNames';
 
-import { generateCommon } from './generate/common';
 import { generateInterface } from './generate/interfaces';
 import { generateContentTypeId } from './generate/contentTypeId';
 
@@ -28,7 +27,6 @@ export async function generate(
 
     const resolvedNameMap = resolveTypeNames(contentTypes, config);
     const allFiles = [
-        generateCommon(),
         generateContentTypeId(resolvedNameMap),
         ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap)),
     ];
