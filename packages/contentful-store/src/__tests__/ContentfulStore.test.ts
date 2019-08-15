@@ -134,6 +134,12 @@ describe('ContentfulStore', () => {
             const entry = store.getEntry<Widget>('foo');
             expect(entry!.sys.id).toMatchInlineSnapshot(`"foo"`);
         });
+
+        it('should return entries of a specific content type', () => {
+            const entries = store.getEntries('Gadget');
+            expect(entries).toHaveLength(1);
+            expect(entries[0].sys.id).toMatchInlineSnapshot(`"doodah"`);
+        });
     });
 
     describe('links', () => {

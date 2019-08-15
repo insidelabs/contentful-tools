@@ -272,6 +272,41 @@ const load = {
                 },
             },
         },
+        {
+            sys: {
+                id: 'doodah',
+                type: 'Entry',
+                space: {
+                    sys: {
+                        type: 'Link',
+                        linkType: 'Space',
+                        id: 'abc',
+                    },
+                },
+                environment: {
+                    sys: {
+                        type: 'Link',
+                        linkType: 'Environment',
+                        id: 'master',
+                    },
+                },
+                contentType: {
+                    sys: {
+                        type: 'Link',
+                        linkType: 'ContentType',
+                        id: 'Gadget',
+                    },
+                },
+                createdAt: '2019-08-14T16:47:00.889Z',
+                updatedAt: '2019-08-14T16:47:48.358Z',
+                revision: 2,
+            },
+            fields: {
+                name: {
+                    en: 'Doodah',
+                },
+            },
+        },
     ],
     assets: [
         {

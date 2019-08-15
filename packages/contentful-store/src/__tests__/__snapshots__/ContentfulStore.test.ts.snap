@@ -1385,6 +1385,39 @@ Array [
       "updatedAt": "2019-08-14T16:47:48.358Z",
     },
   },
+  Object {
+    "fields": Object {
+      "name": "Doodah",
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Gadget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:47:00.889Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "doodah",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:47:48.358Z",
+    },
+  },
 ]
 `;
 
@@ -1778,6 +1811,39 @@ Array [
         },
       },
       "id": "qux",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:47:48.358Z",
+    },
+  },
+  Object {
+    "fields": Object {
+      "name": "Doodah",
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Gadget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:47:00.889Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "doodah",
       "revision": 2,
       "space": Object {
         "sys": Object {
