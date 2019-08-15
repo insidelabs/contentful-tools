@@ -1,0 +1,1837 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ContentfulStore store should load 1`] = `
+Array [
+  Object {
+    "fields": Object {
+      "child": Object {
+        "fields": Object {
+          "child": Object {
+            "fields": Object {
+              "child": Object {
+                "fields": Object {
+                  "child": [Circular],
+                  "image": Object {
+                    "fields": Object {
+                      "file": Object {
+                        "contentType": "image/jpeg",
+                        "details": Object {
+                          "image": Object {
+                            "height": 2828,
+                            "width": 4242,
+                          },
+                          "size": 3996687,
+                        },
+                        "fileName": "bargis.jpg",
+                        "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                      },
+                      "title": "Bargis",
+                    },
+                    "sys": Object {
+                      "createdAt": "2019-08-14T16:51:29.168Z",
+                      "environment": Object {
+                        "sys": Object {
+                          "id": "master",
+                          "linkType": "Environment",
+                          "type": "Link",
+                        },
+                      },
+                      "id": "bargis",
+                      "revision": 1,
+                      "space": Object {
+                        "sys": Object {
+                          "id": "abc",
+                          "linkType": "Space",
+                          "type": "Link",
+                        },
+                      },
+                      "type": "Asset",
+                      "updatedAt": "2019-08-14T16:51:29.168Z",
+                    },
+                  },
+                  "name": "Qux",
+                },
+                "sys": Object {
+                  "contentType": Object {
+                    "sys": Object {
+                      "id": "Widget",
+                      "linkType": "ContentType",
+                      "type": "Link",
+                    },
+                  },
+                  "createdAt": "2019-08-14T16:47:00.889Z",
+                  "environment": Object {
+                    "sys": Object {
+                      "id": "master",
+                      "linkType": "Environment",
+                      "type": "Link",
+                    },
+                  },
+                  "id": "qux",
+                  "revision": 2,
+                  "space": Object {
+                    "sys": Object {
+                      "id": "abc",
+                      "linkType": "Space",
+                      "type": "Link",
+                    },
+                  },
+                  "type": "Entry",
+                  "updatedAt": "2019-08-14T16:47:48.358Z",
+                },
+              },
+              "image": Object {
+                "fields": Object {
+                  "file": Object {
+                    "contentType": "image/jpeg",
+                    "details": Object {
+                      "image": Object {
+                        "height": 2828,
+                        "width": 4242,
+                      },
+                      "size": 3996687,
+                    },
+                    "fileName": "bargis.jpg",
+                    "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                  },
+                  "title": "Bargis",
+                },
+                "sys": Object {
+                  "createdAt": "2019-08-14T16:51:29.168Z",
+                  "environment": Object {
+                    "sys": Object {
+                      "id": "master",
+                      "linkType": "Environment",
+                      "type": "Link",
+                    },
+                  },
+                  "id": "bargis",
+                  "revision": 1,
+                  "space": Object {
+                    "sys": Object {
+                      "id": "abc",
+                      "linkType": "Space",
+                      "type": "Link",
+                    },
+                  },
+                  "type": "Asset",
+                  "updatedAt": "2019-08-14T16:51:29.168Z",
+                },
+              },
+              "name": "Baz",
+            },
+            "sys": Object {
+              "contentType": Object {
+                "sys": Object {
+                  "id": "Widget",
+                  "linkType": "ContentType",
+                  "type": "Link",
+                },
+              },
+              "createdAt": "2019-08-14T16:46:37.241Z",
+              "environment": Object {
+                "sys": Object {
+                  "id": "master",
+                  "linkType": "Environment",
+                  "type": "Link",
+                },
+              },
+              "id": "baz",
+              "revision": 2,
+              "space": Object {
+                "sys": Object {
+                  "id": "abc",
+                  "linkType": "Space",
+                  "type": "Link",
+                },
+              },
+              "type": "Entry",
+              "updatedAt": "2019-08-14T16:47:39.548Z",
+            },
+          },
+          "image": Object {
+            "fields": Object {
+              "file": Object {
+                "contentType": "image/jpeg",
+                "details": Object {
+                  "image": Object {
+                    "height": 3000,
+                    "width": 4000,
+                  },
+                  "size": 5080466,
+                },
+                "fileName": "padasjoki.jpg",
+                "url": "//images.ctfassets.net/abc/padasjoki/123/padasjoki.jpg",
+              },
+              "title": "padasjoki",
+            },
+            "sys": Object {
+              "createdAt": "2019-08-14T16:58:20.971Z",
+              "environment": Object {
+                "sys": Object {
+                  "id": "master",
+                  "linkType": "Environment",
+                  "type": "Link",
+                },
+              },
+              "id": "padasjoki",
+              "revision": 1,
+              "space": Object {
+                "sys": Object {
+                  "id": "abc",
+                  "linkType": "Space",
+                  "type": "Link",
+                },
+              },
+              "type": "Asset",
+              "updatedAt": "2019-08-14T16:58:20.971Z",
+            },
+          },
+          "name": "Bar",
+          "relatives": Array [
+            [Circular],
+          ],
+        },
+        "sys": Object {
+          "contentType": Object {
+            "sys": Object {
+              "id": "Widget",
+              "linkType": "ContentType",
+              "type": "Link",
+            },
+          },
+          "createdAt": "2019-08-14T16:46:30.644Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "bar",
+          "revision": 2,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Entry",
+          "updatedAt": "2019-08-14T16:48:00.450Z",
+        },
+      },
+      "description": "An English Foo",
+      "image": Object {
+        "fields": Object {
+          "file": Object {
+            "contentType": "image/jpeg",
+            "details": Object {
+              "image": Object {
+                "height": 2828,
+                "width": 4242,
+              },
+              "size": 3996687,
+            },
+            "fileName": "bargis.jpg",
+            "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+          },
+          "title": "Bargis",
+        },
+        "sys": Object {
+          "createdAt": "2019-08-14T16:51:29.168Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "bargis",
+          "revision": 1,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Asset",
+          "updatedAt": "2019-08-14T16:51:29.168Z",
+        },
+      },
+      "images": Array [
+        Object {
+          "fields": Object {
+            "file": Object {
+              "contentType": "image/jpeg",
+              "details": Object {
+                "image": Object {
+                  "height": 2828,
+                  "width": 4242,
+                },
+                "size": 3996687,
+              },
+              "fileName": "bargis.jpg",
+              "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+            },
+            "title": "Bargis",
+          },
+          "sys": Object {
+            "createdAt": "2019-08-14T16:51:29.168Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "bargis",
+            "revision": 1,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Asset",
+            "updatedAt": "2019-08-14T16:51:29.168Z",
+          },
+        },
+        Object {
+          "fields": Object {
+            "file": Object {
+              "contentType": "image/jpeg",
+              "details": Object {
+                "image": Object {
+                  "height": 3000,
+                  "width": 4000,
+                },
+                "size": 5080466,
+              },
+              "fileName": "padasjoki.jpg",
+              "url": "//images.ctfassets.net/abc/padasjoki/123/padasjoki.jpg",
+            },
+            "title": "padasjoki",
+          },
+          "sys": Object {
+            "createdAt": "2019-08-14T16:58:20.971Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "padasjoki",
+            "revision": 1,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Asset",
+            "updatedAt": "2019-08-14T16:58:20.971Z",
+          },
+        },
+      ],
+      "name": "Foo",
+      "relatives": Array [
+        Object {
+          "fields": Object {
+            "child": Object {
+              "fields": Object {
+                "child": [Circular],
+                "image": Object {
+                  "fields": Object {
+                    "file": Object {
+                      "contentType": "image/jpeg",
+                      "details": Object {
+                        "image": Object {
+                          "height": 2828,
+                          "width": 4242,
+                        },
+                        "size": 3996687,
+                      },
+                      "fileName": "bargis.jpg",
+                      "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                    },
+                    "title": "Bargis",
+                  },
+                  "sys": Object {
+                    "createdAt": "2019-08-14T16:51:29.168Z",
+                    "environment": Object {
+                      "sys": Object {
+                        "id": "master",
+                        "linkType": "Environment",
+                        "type": "Link",
+                      },
+                    },
+                    "id": "bargis",
+                    "revision": 1,
+                    "space": Object {
+                      "sys": Object {
+                        "id": "abc",
+                        "linkType": "Space",
+                        "type": "Link",
+                      },
+                    },
+                    "type": "Asset",
+                    "updatedAt": "2019-08-14T16:51:29.168Z",
+                  },
+                },
+                "name": "Qux",
+              },
+              "sys": Object {
+                "contentType": Object {
+                  "sys": Object {
+                    "id": "Widget",
+                    "linkType": "ContentType",
+                    "type": "Link",
+                  },
+                },
+                "createdAt": "2019-08-14T16:47:00.889Z",
+                "environment": Object {
+                  "sys": Object {
+                    "id": "master",
+                    "linkType": "Environment",
+                    "type": "Link",
+                  },
+                },
+                "id": "qux",
+                "revision": 2,
+                "space": Object {
+                  "sys": Object {
+                    "id": "abc",
+                    "linkType": "Space",
+                    "type": "Link",
+                  },
+                },
+                "type": "Entry",
+                "updatedAt": "2019-08-14T16:47:48.358Z",
+              },
+            },
+            "image": Object {
+              "fields": Object {
+                "file": Object {
+                  "contentType": "image/jpeg",
+                  "details": Object {
+                    "image": Object {
+                      "height": 2828,
+                      "width": 4242,
+                    },
+                    "size": 3996687,
+                  },
+                  "fileName": "bargis.jpg",
+                  "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                },
+                "title": "Bargis",
+              },
+              "sys": Object {
+                "createdAt": "2019-08-14T16:51:29.168Z",
+                "environment": Object {
+                  "sys": Object {
+                    "id": "master",
+                    "linkType": "Environment",
+                    "type": "Link",
+                  },
+                },
+                "id": "bargis",
+                "revision": 1,
+                "space": Object {
+                  "sys": Object {
+                    "id": "abc",
+                    "linkType": "Space",
+                    "type": "Link",
+                  },
+                },
+                "type": "Asset",
+                "updatedAt": "2019-08-14T16:51:29.168Z",
+              },
+            },
+            "name": "Baz",
+          },
+          "sys": Object {
+            "contentType": Object {
+              "sys": Object {
+                "id": "Widget",
+                "linkType": "ContentType",
+                "type": "Link",
+              },
+            },
+            "createdAt": "2019-08-14T16:46:37.241Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "baz",
+            "revision": 2,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Entry",
+            "updatedAt": "2019-08-14T16:47:39.548Z",
+          },
+        },
+        Object {
+          "fields": Object {
+            "child": [Circular],
+            "image": Object {
+              "fields": Object {
+                "file": Object {
+                  "contentType": "image/jpeg",
+                  "details": Object {
+                    "image": Object {
+                      "height": 2828,
+                      "width": 4242,
+                    },
+                    "size": 3996687,
+                  },
+                  "fileName": "bargis.jpg",
+                  "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                },
+                "title": "Bargis",
+              },
+              "sys": Object {
+                "createdAt": "2019-08-14T16:51:29.168Z",
+                "environment": Object {
+                  "sys": Object {
+                    "id": "master",
+                    "linkType": "Environment",
+                    "type": "Link",
+                  },
+                },
+                "id": "bargis",
+                "revision": 1,
+                "space": Object {
+                  "sys": Object {
+                    "id": "abc",
+                    "linkType": "Space",
+                    "type": "Link",
+                  },
+                },
+                "type": "Asset",
+                "updatedAt": "2019-08-14T16:51:29.168Z",
+              },
+            },
+            "name": "Qux",
+          },
+          "sys": Object {
+            "contentType": Object {
+              "sys": Object {
+                "id": "Widget",
+                "linkType": "ContentType",
+                "type": "Link",
+              },
+            },
+            "createdAt": "2019-08-14T16:47:00.889Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "qux",
+            "revision": 2,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Entry",
+            "updatedAt": "2019-08-14T16:47:48.358Z",
+          },
+        },
+      ],
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Widget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:46:21.338Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "foo",
+      "revision": 6,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:58:32.573Z",
+    },
+  },
+  Object {
+    "fields": Object {
+      "child": Object {
+        "fields": Object {
+          "child": Object {
+            "fields": Object {
+              "child": [Circular],
+              "image": Object {
+                "fields": Object {
+                  "file": Object {
+                    "contentType": "image/jpeg",
+                    "details": Object {
+                      "image": Object {
+                        "height": 2828,
+                        "width": 4242,
+                      },
+                      "size": 3996687,
+                    },
+                    "fileName": "bargis.jpg",
+                    "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                  },
+                  "title": "Bargis",
+                },
+                "sys": Object {
+                  "createdAt": "2019-08-14T16:51:29.168Z",
+                  "environment": Object {
+                    "sys": Object {
+                      "id": "master",
+                      "linkType": "Environment",
+                      "type": "Link",
+                    },
+                  },
+                  "id": "bargis",
+                  "revision": 1,
+                  "space": Object {
+                    "sys": Object {
+                      "id": "abc",
+                      "linkType": "Space",
+                      "type": "Link",
+                    },
+                  },
+                  "type": "Asset",
+                  "updatedAt": "2019-08-14T16:51:29.168Z",
+                },
+              },
+              "name": "Qux",
+            },
+            "sys": Object {
+              "contentType": Object {
+                "sys": Object {
+                  "id": "Widget",
+                  "linkType": "ContentType",
+                  "type": "Link",
+                },
+              },
+              "createdAt": "2019-08-14T16:47:00.889Z",
+              "environment": Object {
+                "sys": Object {
+                  "id": "master",
+                  "linkType": "Environment",
+                  "type": "Link",
+                },
+              },
+              "id": "qux",
+              "revision": 2,
+              "space": Object {
+                "sys": Object {
+                  "id": "abc",
+                  "linkType": "Space",
+                  "type": "Link",
+                },
+              },
+              "type": "Entry",
+              "updatedAt": "2019-08-14T16:47:48.358Z",
+            },
+          },
+          "image": Object {
+            "fields": Object {
+              "file": Object {
+                "contentType": "image/jpeg",
+                "details": Object {
+                  "image": Object {
+                    "height": 2828,
+                    "width": 4242,
+                  },
+                  "size": 3996687,
+                },
+                "fileName": "bargis.jpg",
+                "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+              },
+              "title": "Bargis",
+            },
+            "sys": Object {
+              "createdAt": "2019-08-14T16:51:29.168Z",
+              "environment": Object {
+                "sys": Object {
+                  "id": "master",
+                  "linkType": "Environment",
+                  "type": "Link",
+                },
+              },
+              "id": "bargis",
+              "revision": 1,
+              "space": Object {
+                "sys": Object {
+                  "id": "abc",
+                  "linkType": "Space",
+                  "type": "Link",
+                },
+              },
+              "type": "Asset",
+              "updatedAt": "2019-08-14T16:51:29.168Z",
+            },
+          },
+          "name": "Baz",
+        },
+        "sys": Object {
+          "contentType": Object {
+            "sys": Object {
+              "id": "Widget",
+              "linkType": "ContentType",
+              "type": "Link",
+            },
+          },
+          "createdAt": "2019-08-14T16:46:37.241Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "baz",
+          "revision": 2,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Entry",
+          "updatedAt": "2019-08-14T16:47:39.548Z",
+        },
+      },
+      "image": Object {
+        "fields": Object {
+          "file": Object {
+            "contentType": "image/jpeg",
+            "details": Object {
+              "image": Object {
+                "height": 3000,
+                "width": 4000,
+              },
+              "size": 5080466,
+            },
+            "fileName": "padasjoki.jpg",
+            "url": "//images.ctfassets.net/abc/padasjoki/123/padasjoki.jpg",
+          },
+          "title": "padasjoki",
+        },
+        "sys": Object {
+          "createdAt": "2019-08-14T16:58:20.971Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "padasjoki",
+          "revision": 1,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Asset",
+          "updatedAt": "2019-08-14T16:58:20.971Z",
+        },
+      },
+      "name": "Bar",
+      "relatives": Array [
+        Object {
+          "fields": Object {
+            "child": [Circular],
+            "description": "An English Foo",
+            "image": Object {
+              "fields": Object {
+                "file": Object {
+                  "contentType": "image/jpeg",
+                  "details": Object {
+                    "image": Object {
+                      "height": 2828,
+                      "width": 4242,
+                    },
+                    "size": 3996687,
+                  },
+                  "fileName": "bargis.jpg",
+                  "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                },
+                "title": "Bargis",
+              },
+              "sys": Object {
+                "createdAt": "2019-08-14T16:51:29.168Z",
+                "environment": Object {
+                  "sys": Object {
+                    "id": "master",
+                    "linkType": "Environment",
+                    "type": "Link",
+                  },
+                },
+                "id": "bargis",
+                "revision": 1,
+                "space": Object {
+                  "sys": Object {
+                    "id": "abc",
+                    "linkType": "Space",
+                    "type": "Link",
+                  },
+                },
+                "type": "Asset",
+                "updatedAt": "2019-08-14T16:51:29.168Z",
+              },
+            },
+            "images": Array [
+              Object {
+                "fields": Object {
+                  "file": Object {
+                    "contentType": "image/jpeg",
+                    "details": Object {
+                      "image": Object {
+                        "height": 2828,
+                        "width": 4242,
+                      },
+                      "size": 3996687,
+                    },
+                    "fileName": "bargis.jpg",
+                    "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                  },
+                  "title": "Bargis",
+                },
+                "sys": Object {
+                  "createdAt": "2019-08-14T16:51:29.168Z",
+                  "environment": Object {
+                    "sys": Object {
+                      "id": "master",
+                      "linkType": "Environment",
+                      "type": "Link",
+                    },
+                  },
+                  "id": "bargis",
+                  "revision": 1,
+                  "space": Object {
+                    "sys": Object {
+                      "id": "abc",
+                      "linkType": "Space",
+                      "type": "Link",
+                    },
+                  },
+                  "type": "Asset",
+                  "updatedAt": "2019-08-14T16:51:29.168Z",
+                },
+              },
+              Object {
+                "fields": Object {
+                  "file": Object {
+                    "contentType": "image/jpeg",
+                    "details": Object {
+                      "image": Object {
+                        "height": 3000,
+                        "width": 4000,
+                      },
+                      "size": 5080466,
+                    },
+                    "fileName": "padasjoki.jpg",
+                    "url": "//images.ctfassets.net/abc/padasjoki/123/padasjoki.jpg",
+                  },
+                  "title": "padasjoki",
+                },
+                "sys": Object {
+                  "createdAt": "2019-08-14T16:58:20.971Z",
+                  "environment": Object {
+                    "sys": Object {
+                      "id": "master",
+                      "linkType": "Environment",
+                      "type": "Link",
+                    },
+                  },
+                  "id": "padasjoki",
+                  "revision": 1,
+                  "space": Object {
+                    "sys": Object {
+                      "id": "abc",
+                      "linkType": "Space",
+                      "type": "Link",
+                    },
+                  },
+                  "type": "Asset",
+                  "updatedAt": "2019-08-14T16:58:20.971Z",
+                },
+              },
+            ],
+            "name": "Foo",
+            "relatives": Array [
+              Object {
+                "fields": Object {
+                  "child": Object {
+                    "fields": Object {
+                      "child": [Circular],
+                      "image": Object {
+                        "fields": Object {
+                          "file": Object {
+                            "contentType": "image/jpeg",
+                            "details": Object {
+                              "image": Object {
+                                "height": 2828,
+                                "width": 4242,
+                              },
+                              "size": 3996687,
+                            },
+                            "fileName": "bargis.jpg",
+                            "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                          },
+                          "title": "Bargis",
+                        },
+                        "sys": Object {
+                          "createdAt": "2019-08-14T16:51:29.168Z",
+                          "environment": Object {
+                            "sys": Object {
+                              "id": "master",
+                              "linkType": "Environment",
+                              "type": "Link",
+                            },
+                          },
+                          "id": "bargis",
+                          "revision": 1,
+                          "space": Object {
+                            "sys": Object {
+                              "id": "abc",
+                              "linkType": "Space",
+                              "type": "Link",
+                            },
+                          },
+                          "type": "Asset",
+                          "updatedAt": "2019-08-14T16:51:29.168Z",
+                        },
+                      },
+                      "name": "Qux",
+                    },
+                    "sys": Object {
+                      "contentType": Object {
+                        "sys": Object {
+                          "id": "Widget",
+                          "linkType": "ContentType",
+                          "type": "Link",
+                        },
+                      },
+                      "createdAt": "2019-08-14T16:47:00.889Z",
+                      "environment": Object {
+                        "sys": Object {
+                          "id": "master",
+                          "linkType": "Environment",
+                          "type": "Link",
+                        },
+                      },
+                      "id": "qux",
+                      "revision": 2,
+                      "space": Object {
+                        "sys": Object {
+                          "id": "abc",
+                          "linkType": "Space",
+                          "type": "Link",
+                        },
+                      },
+                      "type": "Entry",
+                      "updatedAt": "2019-08-14T16:47:48.358Z",
+                    },
+                  },
+                  "image": Object {
+                    "fields": Object {
+                      "file": Object {
+                        "contentType": "image/jpeg",
+                        "details": Object {
+                          "image": Object {
+                            "height": 2828,
+                            "width": 4242,
+                          },
+                          "size": 3996687,
+                        },
+                        "fileName": "bargis.jpg",
+                        "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                      },
+                      "title": "Bargis",
+                    },
+                    "sys": Object {
+                      "createdAt": "2019-08-14T16:51:29.168Z",
+                      "environment": Object {
+                        "sys": Object {
+                          "id": "master",
+                          "linkType": "Environment",
+                          "type": "Link",
+                        },
+                      },
+                      "id": "bargis",
+                      "revision": 1,
+                      "space": Object {
+                        "sys": Object {
+                          "id": "abc",
+                          "linkType": "Space",
+                          "type": "Link",
+                        },
+                      },
+                      "type": "Asset",
+                      "updatedAt": "2019-08-14T16:51:29.168Z",
+                    },
+                  },
+                  "name": "Baz",
+                },
+                "sys": Object {
+                  "contentType": Object {
+                    "sys": Object {
+                      "id": "Widget",
+                      "linkType": "ContentType",
+                      "type": "Link",
+                    },
+                  },
+                  "createdAt": "2019-08-14T16:46:37.241Z",
+                  "environment": Object {
+                    "sys": Object {
+                      "id": "master",
+                      "linkType": "Environment",
+                      "type": "Link",
+                    },
+                  },
+                  "id": "baz",
+                  "revision": 2,
+                  "space": Object {
+                    "sys": Object {
+                      "id": "abc",
+                      "linkType": "Space",
+                      "type": "Link",
+                    },
+                  },
+                  "type": "Entry",
+                  "updatedAt": "2019-08-14T16:47:39.548Z",
+                },
+              },
+              Object {
+                "fields": Object {
+                  "child": [Circular],
+                  "image": Object {
+                    "fields": Object {
+                      "file": Object {
+                        "contentType": "image/jpeg",
+                        "details": Object {
+                          "image": Object {
+                            "height": 2828,
+                            "width": 4242,
+                          },
+                          "size": 3996687,
+                        },
+                        "fileName": "bargis.jpg",
+                        "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+                      },
+                      "title": "Bargis",
+                    },
+                    "sys": Object {
+                      "createdAt": "2019-08-14T16:51:29.168Z",
+                      "environment": Object {
+                        "sys": Object {
+                          "id": "master",
+                          "linkType": "Environment",
+                          "type": "Link",
+                        },
+                      },
+                      "id": "bargis",
+                      "revision": 1,
+                      "space": Object {
+                        "sys": Object {
+                          "id": "abc",
+                          "linkType": "Space",
+                          "type": "Link",
+                        },
+                      },
+                      "type": "Asset",
+                      "updatedAt": "2019-08-14T16:51:29.168Z",
+                    },
+                  },
+                  "name": "Qux",
+                },
+                "sys": Object {
+                  "contentType": Object {
+                    "sys": Object {
+                      "id": "Widget",
+                      "linkType": "ContentType",
+                      "type": "Link",
+                    },
+                  },
+                  "createdAt": "2019-08-14T16:47:00.889Z",
+                  "environment": Object {
+                    "sys": Object {
+                      "id": "master",
+                      "linkType": "Environment",
+                      "type": "Link",
+                    },
+                  },
+                  "id": "qux",
+                  "revision": 2,
+                  "space": Object {
+                    "sys": Object {
+                      "id": "abc",
+                      "linkType": "Space",
+                      "type": "Link",
+                    },
+                  },
+                  "type": "Entry",
+                  "updatedAt": "2019-08-14T16:47:48.358Z",
+                },
+              },
+            ],
+          },
+          "sys": Object {
+            "contentType": Object {
+              "sys": Object {
+                "id": "Widget",
+                "linkType": "ContentType",
+                "type": "Link",
+              },
+            },
+            "createdAt": "2019-08-14T16:46:21.338Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "foo",
+            "revision": 6,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Entry",
+            "updatedAt": "2019-08-14T16:58:32.573Z",
+          },
+        },
+      ],
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Widget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:46:30.644Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "bar",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:48:00.450Z",
+    },
+  },
+  Object {
+    "fields": Object {
+      "child": Object {
+        "fields": Object {
+          "child": [Circular],
+          "image": Object {
+            "fields": Object {
+              "file": Object {
+                "contentType": "image/jpeg",
+                "details": Object {
+                  "image": Object {
+                    "height": 2828,
+                    "width": 4242,
+                  },
+                  "size": 3996687,
+                },
+                "fileName": "bargis.jpg",
+                "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+              },
+              "title": "Bargis",
+            },
+            "sys": Object {
+              "createdAt": "2019-08-14T16:51:29.168Z",
+              "environment": Object {
+                "sys": Object {
+                  "id": "master",
+                  "linkType": "Environment",
+                  "type": "Link",
+                },
+              },
+              "id": "bargis",
+              "revision": 1,
+              "space": Object {
+                "sys": Object {
+                  "id": "abc",
+                  "linkType": "Space",
+                  "type": "Link",
+                },
+              },
+              "type": "Asset",
+              "updatedAt": "2019-08-14T16:51:29.168Z",
+            },
+          },
+          "name": "Qux",
+        },
+        "sys": Object {
+          "contentType": Object {
+            "sys": Object {
+              "id": "Widget",
+              "linkType": "ContentType",
+              "type": "Link",
+            },
+          },
+          "createdAt": "2019-08-14T16:47:00.889Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "qux",
+          "revision": 2,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Entry",
+          "updatedAt": "2019-08-14T16:47:48.358Z",
+        },
+      },
+      "image": Object {
+        "fields": Object {
+          "file": Object {
+            "contentType": "image/jpeg",
+            "details": Object {
+              "image": Object {
+                "height": 2828,
+                "width": 4242,
+              },
+              "size": 3996687,
+            },
+            "fileName": "bargis.jpg",
+            "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+          },
+          "title": "Bargis",
+        },
+        "sys": Object {
+          "createdAt": "2019-08-14T16:51:29.168Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "bargis",
+          "revision": 1,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Asset",
+          "updatedAt": "2019-08-14T16:51:29.168Z",
+        },
+      },
+      "name": "Baz",
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Widget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:46:37.241Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "baz",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:47:39.548Z",
+    },
+  },
+  Object {
+    "fields": Object {
+      "child": [Circular],
+      "image": Object {
+        "fields": Object {
+          "file": Object {
+            "contentType": "image/jpeg",
+            "details": Object {
+              "image": Object {
+                "height": 2828,
+                "width": 4242,
+              },
+              "size": 3996687,
+            },
+            "fileName": "bargis.jpg",
+            "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+          },
+          "title": "Bargis",
+        },
+        "sys": Object {
+          "createdAt": "2019-08-14T16:51:29.168Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "bargis",
+          "revision": 1,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Asset",
+          "updatedAt": "2019-08-14T16:51:29.168Z",
+        },
+      },
+      "name": "Qux",
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Widget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:47:00.889Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "qux",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:47:48.358Z",
+    },
+  },
+]
+`;
+
+exports[`ContentfulStore store should load 2`] = `
+Array [
+  Object {
+    "fields": Object {
+      "file": Object {
+        "contentType": "image/jpeg",
+        "details": Object {
+          "image": Object {
+            "height": 2828,
+            "width": 4242,
+          },
+          "size": 3996687,
+        },
+        "fileName": "bargis.jpg",
+        "url": "//images.ctfassets.net/abc/bargis/456/bargis.jpg",
+      },
+      "title": "Bargis",
+    },
+    "sys": Object {
+      "createdAt": "2019-08-14T16:51:29.168Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "bargis",
+      "revision": 1,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Asset",
+      "updatedAt": "2019-08-14T16:51:29.168Z",
+    },
+  },
+  Object {
+    "fields": Object {
+      "file": Object {
+        "contentType": "image/jpeg",
+        "details": Object {
+          "image": Object {
+            "height": 3000,
+            "width": 4000,
+          },
+          "size": 5080466,
+        },
+        "fileName": "padasjoki.jpg",
+        "url": "//images.ctfassets.net/abc/padasjoki/123/padasjoki.jpg",
+      },
+      "title": "padasjoki",
+    },
+    "sys": Object {
+      "createdAt": "2019-08-14T16:58:20.971Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "padasjoki",
+      "revision": 1,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Asset",
+      "updatedAt": "2019-08-14T16:58:20.971Z",
+    },
+  },
+]
+`;
+
+exports[`ContentfulStore store should sync 1`] = `
+Array [
+  Object {
+    "fields": Object {
+      "child": Object {
+        "fields": Object {
+          "child": [Circular],
+          "image": undefined,
+          "name": "Qux",
+        },
+        "sys": Object {
+          "contentType": Object {
+            "sys": Object {
+              "id": "Widget",
+              "linkType": "ContentType",
+              "type": "Link",
+            },
+          },
+          "createdAt": "2019-08-14T16:47:00.889Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "qux",
+          "revision": 2,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Entry",
+          "updatedAt": "2019-08-14T16:47:48.358Z",
+        },
+      },
+      "description": "An updated Foo",
+      "images": Array [
+        Object {
+          "fields": Object {
+            "file": Object {
+              "contentType": "image/jpeg",
+              "details": Object {
+                "image": Object {
+                  "height": 3000,
+                  "width": 4000,
+                },
+                "size": 5080466,
+              },
+              "fileName": "padasjoki.jpg",
+              "url": "//images.ctfassets.net/abc/padasjoki/789/padasjoki.jpg",
+            },
+            "title": "Padasjoki Updated",
+          },
+          "sys": Object {
+            "createdAt": "2019-08-14T16:58:20.971Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "padasjoki",
+            "revision": 2,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Asset",
+            "updatedAt": "2019-08-14T16:58:20.971Z",
+          },
+        },
+      ],
+      "name": "Foo",
+      "relatives": Array [
+        Object {
+          "fields": Object {
+            "child": Object {
+              "fields": Object {
+                "child": [Circular],
+                "image": undefined,
+                "name": "Qux",
+              },
+              "sys": Object {
+                "contentType": Object {
+                  "sys": Object {
+                    "id": "Widget",
+                    "linkType": "ContentType",
+                    "type": "Link",
+                  },
+                },
+                "createdAt": "2019-08-14T16:47:00.889Z",
+                "environment": Object {
+                  "sys": Object {
+                    "id": "master",
+                    "linkType": "Environment",
+                    "type": "Link",
+                  },
+                },
+                "id": "qux",
+                "revision": 2,
+                "space": Object {
+                  "sys": Object {
+                    "id": "abc",
+                    "linkType": "Space",
+                    "type": "Link",
+                  },
+                },
+                "type": "Entry",
+                "updatedAt": "2019-08-14T16:47:48.358Z",
+              },
+            },
+            "image": undefined,
+            "name": "Baz",
+          },
+          "sys": Object {
+            "contentType": Object {
+              "sys": Object {
+                "id": "Widget",
+                "linkType": "ContentType",
+                "type": "Link",
+              },
+            },
+            "createdAt": "2019-08-14T16:46:37.241Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "baz",
+            "revision": 2,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Entry",
+            "updatedAt": "2019-08-14T16:47:39.548Z",
+          },
+        },
+        Object {
+          "fields": Object {
+            "child": [Circular],
+            "image": undefined,
+            "name": "Qux",
+          },
+          "sys": Object {
+            "contentType": Object {
+              "sys": Object {
+                "id": "Widget",
+                "linkType": "ContentType",
+                "type": "Link",
+              },
+            },
+            "createdAt": "2019-08-14T16:47:00.889Z",
+            "environment": Object {
+              "sys": Object {
+                "id": "master",
+                "linkType": "Environment",
+                "type": "Link",
+              },
+            },
+            "id": "qux",
+            "revision": 2,
+            "space": Object {
+              "sys": Object {
+                "id": "abc",
+                "linkType": "Space",
+                "type": "Link",
+              },
+            },
+            "type": "Entry",
+            "updatedAt": "2019-08-14T16:47:48.358Z",
+          },
+        },
+      ],
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Widget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:46:21.338Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "foo",
+      "revision": 6,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:58:32.573Z",
+    },
+  },
+  Object {
+    "fields": Object {
+      "child": Object {
+        "fields": Object {
+          "child": [Circular],
+          "image": undefined,
+          "name": "Qux",
+        },
+        "sys": Object {
+          "contentType": Object {
+            "sys": Object {
+              "id": "Widget",
+              "linkType": "ContentType",
+              "type": "Link",
+            },
+          },
+          "createdAt": "2019-08-14T16:47:00.889Z",
+          "environment": Object {
+            "sys": Object {
+              "id": "master",
+              "linkType": "Environment",
+              "type": "Link",
+            },
+          },
+          "id": "qux",
+          "revision": 2,
+          "space": Object {
+            "sys": Object {
+              "id": "abc",
+              "linkType": "Space",
+              "type": "Link",
+            },
+          },
+          "type": "Entry",
+          "updatedAt": "2019-08-14T16:47:48.358Z",
+        },
+      },
+      "image": undefined,
+      "name": "Baz",
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Widget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:46:37.241Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "baz",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:47:39.548Z",
+    },
+  },
+  Object {
+    "fields": Object {
+      "child": [Circular],
+      "image": undefined,
+      "name": "Qux",
+    },
+    "sys": Object {
+      "contentType": Object {
+        "sys": Object {
+          "id": "Widget",
+          "linkType": "ContentType",
+          "type": "Link",
+        },
+      },
+      "createdAt": "2019-08-14T16:47:00.889Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "qux",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Entry",
+      "updatedAt": "2019-08-14T16:47:48.358Z",
+    },
+  },
+]
+`;
+
+exports[`ContentfulStore store should sync 2`] = `
+Array [
+  Object {
+    "fields": Object {
+      "file": Object {
+        "contentType": "image/jpeg",
+        "details": Object {
+          "image": Object {
+            "height": 3000,
+            "width": 4000,
+          },
+          "size": 5080466,
+        },
+        "fileName": "padasjoki.jpg",
+        "url": "//images.ctfassets.net/abc/padasjoki/789/padasjoki.jpg",
+      },
+      "title": "Padasjoki Updated",
+    },
+    "sys": Object {
+      "createdAt": "2019-08-14T16:58:20.971Z",
+      "environment": Object {
+        "sys": Object {
+          "id": "master",
+          "linkType": "Environment",
+          "type": "Link",
+        },
+      },
+      "id": "padasjoki",
+      "revision": 2,
+      "space": Object {
+        "sys": Object {
+          "id": "abc",
+          "linkType": "Space",
+          "type": "Link",
+        },
+      },
+      "type": "Asset",
+      "updatedAt": "2019-08-14T16:58:20.971Z",
+    },
+  },
+]
+`;
