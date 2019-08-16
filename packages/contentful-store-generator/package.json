@@ -43,6 +43,7 @@
         "camelcase": "^5.3.1",
         "contentful-management": "^5.9.0",
         "debug": "^4.1.1",
+        "dotenv": "^8.0.0",
         "fp-ts": "^2.0.5",
         "io-ts": "^2.0.1",
         "listr": "^0.14.3",
@@ -55,7 +56,6 @@
         "typescript": "^3.5.3"
     },
     "devDependencies": {
-        "@insidelabs/contentful-store": "^1.0.2",
         "@types/camelcase": "^5.2.0",
         "@types/debug": "^4.1.5",
         "@types/dotenv": "^6.1.1",
@@ -66,7 +66,6 @@
         "@types/pluralize": "0.0.29",
         "@types/prettier": "^1.18.2",
         "@types/rimraf": "^2.0.2",
-        "dotenv": "^8.0.0",
         "jest": "^24.8.0",
         "ts-jest": "^24.0.2",
         "ts-node": "^8.3.0"
