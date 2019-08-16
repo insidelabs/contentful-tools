@@ -1,6 +1,6 @@
 {
-    "name": "@insidelabs/contentful-store-generator",
-    "version": "1.0.1",
+    "name": "@insidelabs/contentful-generator",
+    "version": "0.0.0",
     "description": "A generator for type declarations based on Contentful content types",
     "keywords": [
         "contentful",
@@ -8,7 +8,7 @@
         "codegen"
     ],
     "author": "Inside Labs",
-    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/contentful-store-generator#readme",
+    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/contentful-generator#readme",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -27,7 +27,7 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/insidelabs/contentful-tools.git",
-        "directory": "packages/contentful-store-generator"
+        "directory": "packages/contentful-generator"
     },
     "bugs": {
         "url": "https://github.com/insidelabs/contentful-tools/issues"
