@@ -86,12 +86,15 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         return this.locales[0];
     }
 
-    public getAsset(id: string, locale = this.baseLocale): Content.Asset | null {
+    public getAsset(
+        id: string,
+        locale: BaseLocale | ExtraLocales = this.baseLocale,
+    ): Content.Asset | null {
         this.onContentAccess();
         return this.assets[locale].get(id) || null;
     }
 
-    public getAssets(locale = this.baseLocale): Content.Asset[] {
+    public getAssets(locale: BaseLocale | ExtraLocales = this.baseLocale): Content.Asset[] {
         this.onContentAccess();
         return Array.from(this.assets[locale].values());
     }
@@ -99,7 +102,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     public getEntry<E extends Content.Entry = Content.Entry>(
         id: string,
         contentTypeId?: Util.GetContentTypeId<E>,
-        locale = this.baseLocale,
+        locale: BaseLocale | ExtraLocales = this.baseLocale,
     ): Resolved.Entry<E> | null {
         this.onContentAccess();
         const entry = this.entries[locale].get(id);
@@ -110,7 +113,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
 
     public getEntries<E extends Content.Entry = Content.Entry>(
         contentTypeId?: Util.GetContentTypeId<E>,
-        locale = this.baseLocale,
+        locale: BaseLocale | ExtraLocales = this.baseLocale,
     ): Resolved.Entry<E>[] {
         this.onContentAccess();
         const entries = Array.from(this.entries[locale].values());
