@@ -11,7 +11,7 @@ import { Config } from './config';
 import { resolveTypeNames } from './typeNames';
 
 import { generateInterface } from './generate/interfaces';
-import { generateContentTypeId } from './generate/contentTypeId';
+import { generateContentTypeId } from './generate/ContentTypeId';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);

@@ -9,7 +9,7 @@ import { importDecl, importSpec } from '../common/imports';
 import { qualifiedTypeRef, ref } from '../common/refs';
 import { boolean, number, string } from '../common/scalars';
 import { extendsExpression, interfaceDecl, propertySignature, union } from '../common/types';
-import { contentTypeIdImportDecl } from './contentTypeId';
+import { contentTypeIdImportDecl } from './ContentTypeId';
 
 export function generateInterface(
     contentType: c.ContentType,
