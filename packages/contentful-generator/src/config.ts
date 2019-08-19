@@ -29,7 +29,7 @@ const defaults: Required<Optionals> = {
 
 const config = t.intersection([required, optionals]);
 
-const debug = createDebugger('config');
+const debug = createDebugger('contentful-generator:config');
 
 export function getConfig(configFilePath: string): Config {
     if (!existsSync(configFilePath)) {
