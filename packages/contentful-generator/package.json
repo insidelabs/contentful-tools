@@ -36,7 +36,7 @@
         "node": ">=8.0.0"
     },
     "peerDependencies": {
-        "@insidelabs/contentful-store": "^1.1.1"
+        "@insidelabs/contentful-store": "*"
     },
     "dependencies": {
         "@oclif/command": "^1.5.18",
