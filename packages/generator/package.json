@@ -1,6 +1,6 @@
 {
     "name": "@contentful-tools/generator",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "A generator for type declarations based on Contentful content types",
     "keywords": [
         "contentful",
