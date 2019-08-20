@@ -4,10 +4,7 @@ import { Config } from './config';
 
 export function resolveTypeNames(contentTypes: ContentType[], config: Config): Map<string, string> {
     return new Map(
-        contentTypes.map(contentType => [
-            contentType.sys.id,
-            formatTypeName(contentType.sys.id),
-        ]),
+        contentTypes.map(contentType => [contentType.sys.id, formatTypeName(contentType.sys.id)]),
     );
 
     function formatTypeName(sysId: string): string {

@@ -40,7 +40,7 @@ export function generateInterface(
             sortedArray(storeImports),
         ),
         contentTypeIdImportDecl(),
-        interfaceImportDecls(sortedArray(interfaceImports)),
+        interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
         resolved && resolvedType(interfaceName, resolved.prefix, resolved.suffix),
         aliases,
         interfaceDeclaration,

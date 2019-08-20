@@ -8,7 +8,10 @@ import { ref } from '../common/refs';
 import { collapse } from '../common/whitespace';
 
 export function generateAsset(config: Config): ts.SourceFile | null {
-    const { fileExtension, generate: { assetType: typeName } } = config;
+    const {
+        fileExtension,
+        generate: { assetType: typeName },
+    } = config;
 
     if (!typeName) return null;
 

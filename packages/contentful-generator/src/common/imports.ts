@@ -35,8 +35,11 @@ export function storeImportDecl(
     return importDecl(specs, FileName.store, '', false);
 }
 
-export function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
+export function interfaceImportDecls(
+    imports: string[],
+    fileExtension: string = '',
+): ts.ImportDeclaration[] {
     return imports.map(interfaceName =>
-        importDecl([importSpec(interfaceName)], `./${interfaceName}`),
+        importDecl([importSpec(interfaceName)], `./${interfaceName}${fileExtension}`),
     );
 }

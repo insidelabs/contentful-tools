@@ -21,18 +21,18 @@ export function generateGetters(
     contentTypeNameMap: Map<string, string>,
     config: Config,
 ): ts.SourceFile | null {
-    const { assetType, entryType, getters: fileName } = config.generate;
+    const { fileExtension, generate } = config;
+    const { assetType, entryType, getters: fileName } = generate;
+
     if (!fileName) return null;
 
     const typeNames = Array.from(contentTypeNameMap.values()).sort();
-
-    const interfaceImports = entryType
-        ? [Type.ContentTypeId, entryType, ...typeNames]
-        : [Type.ContentTypeId, ...typeNames];
+    const interfaceImports = entryType ? [entryType, ...typeNames] : typeNames;
 
     return tsFile(fileName, [
         storeImportDecl(StoreExport.ContentfulStore, StoreExport.Content, StoreExport.Resolved),
-        interfaceImportDecls(interfaceImports),
+        interfaceImportDecls([Type.ContentTypeId]),
+        interfaceImportDecls(interfaceImports, fileExtension),
         collapse(localeTypeDecls(config)),
         collapse(localeConstDecls(config)),
         store(),
