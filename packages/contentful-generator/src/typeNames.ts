@@ -6,15 +6,15 @@ export function resolveTypeNames(contentTypes: ContentType[], config: Config): M
     return new Map(
         contentTypes.map(contentType => [
             contentType.sys.id,
-            formatInterfaceName(contentType.sys.id),
+            formatTypeName(contentType.sys.id),
         ]),
     );
 
-    function formatInterfaceName(sysId: string): string {
+    function formatTypeName(sysId: string): string {
         return (
-            config.interfaceName.prefix +
+            config.baseType.prefix +
             camelCase(config.contentTypeNameMap[sysId] || sysId, { pascalCase: true }) +
-            config.interfaceName.suffix
+            config.baseType.suffix
         );
     }
 }

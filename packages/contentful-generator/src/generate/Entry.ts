@@ -13,12 +13,12 @@ import { interfaceDecl, propertySignature } from '../common/types';
 import { contentTypeIdImportDecl } from './ContentTypeId';
 
 export function generateEntry(contentTypes: c.ContentType[], config: Config): ts.SourceFile | null {
-    const { generate, resolvedType: resolved } = config;
+    const { generate, fileExtension, resolvedType: resolved } = config;
 
     const interfaceName = generate.entryType;
     if (!interfaceName) return null;
 
-    return tsFile(interfaceName, [
+    return tsFile(interfaceName + fileExtension, [
         storeImportDecl(StoreExport.Content, resolved && StoreExport.Resolved),
         contentTypeIdImportDecl(),
         resolved && resolvedType(interfaceName, resolved.prefix, resolved.suffix),

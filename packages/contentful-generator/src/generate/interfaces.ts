@@ -22,7 +22,7 @@ export function generateInterface(
     contentTypeNameMap: Map<string, string>,
     config: Config,
 ): ts.SourceFile {
-    const { resolvedType: resolved } = config;
+    const { fileExtension, resolvedType: resolved } = config;
 
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
@@ -33,7 +33,7 @@ export function generateInterface(
 
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
-    return tsFile(interfaceName, [
+    return tsFile(interfaceName + fileExtension, [
         storeImportDecl(
             StoreExport.Content,
             resolved && StoreExport.Resolved,

@@ -17,12 +17,13 @@ const required = t.interface({
 const options = t.partial({
     clean: t.boolean,
     contentTypeNameMap: t.record(t.string, t.string),
+    fileExtension: t.string,
     generate: t.partial({
         assetType: t.string,
         entryType: t.string,
         getters: t.union([t.string, t.boolean]),
     }),
-    interfaceName: t.partial({
+    baseType: t.partial({
         prefix: t.string,
         suffix: t.string,
     }),
@@ -54,29 +55,31 @@ export function getConfig(configFilePath: string) {
     debug('Configuration validated');
 
     const {
-        clean,
+        clean = false,
         contentTypeNameMap = {},
-        generate = {},
-        interfaceName = {},
+        fileExtension = '',
         locales,
         outDir,
+        generate = {},
+        baseType = {},
         resolvedType,
     } = parsed;
 
     return {
-        clean: clean || false,
+        clean,
         contentTypeNameMap,
+        fileExtension,
+        locales,
+        outDir,
         generate: {
             assetType: generate.assetType || 'Asset',
             entryType: generate.entryType || 'Entry',
             getters: (generate.getters === true ? 'index' : generate.getters) || '',
         },
-        interfaceName: {
-            prefix: interfaceName.prefix || '',
-            suffix: interfaceName.suffix || '',
+        baseType: {
+            prefix: baseType.prefix || '',
+            suffix: baseType.suffix || '',
         },
-        locales,
-        outDir,
         resolvedType: resolvedType && {
             prefix: resolvedType.prefix || resolvedType.suffix ? '' : 'Resolved',
             suffix: resolvedType.suffix || '',

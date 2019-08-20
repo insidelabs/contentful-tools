@@ -8,7 +8,8 @@ import { ref } from '../common/refs';
 import { collapse } from '../common/whitespace';
 
 export function generateAsset(config: Config): ts.SourceFile | null {
-    const typeName = config.generate.assetType;
+    const { fileExtension, generate: { assetType: typeName } } = config;
+
     if (!typeName) return null;
 
     const typeAliases = [typeAlias(typeName, ref(StoreExport.Content, Type.Asset))];
@@ -22,7 +23,7 @@ export function generateAsset(config: Config): ts.SourceFile | null {
         );
     }
 
-    return tsFile(config.generate.assetType, [
+    return tsFile(typeName + fileExtension, [
         storeImportDecl(StoreExport.Content),
         collapse(typeAliases),
     ]);
