@@ -2,7 +2,7 @@ import { Environment } from 'contentful-management';
 import { writeFileSync } from 'fs';
 import { sync as mkdirSync } from 'mkdirp';
 import { resolve } from 'path';
-import { format } from 'prettier';
+import * as prettier from 'prettier';
 import * as rimraf from 'rimraf';
 import { Observer } from 'rxjs';
 import * as ts from 'typescript';
@@ -43,16 +43,24 @@ export async function generate(
         newLine: ts.NewLineKind.LineFeed,
     });
 
+    const format = await getFormatter(config.outDir);
+
     for (const sourceFile of allFiles) {
         if (!sourceFile) continue;
         let result = printer.printFile(sourceFile);
 
-        result = format(result, { parser: 'typescript', ...config.prettier });
+        result = format(result);
         result = processNewLines(result);
 
         writeFileSync(resolve(config.outDir, sourceFile.fileName), result);
         log(`Generated ${sourceFile.fileName}`);
     }
+}
+
+async function getFormatter(outDir: string) {
+    const resolved = await prettier.resolveConfig(outDir);
+    const options = { ...resolved, parser: 'typescript' as 'typescript' };
+    return (source: string) => prettier.format(source, options);
 }
 
 export function generateWithObserver(

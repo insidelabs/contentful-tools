@@ -26,7 +26,6 @@ const options = t.partial({
         prefix: t.string,
         suffix: t.string,
     }),
-    prettier: t.record(t.string, t.unknown),
     resolvedType: t.partial({
         prefix: t.string,
         suffix: t.string,
@@ -61,7 +60,6 @@ export function getConfig(configFilePath: string) {
         interfaceName = {},
         locales,
         outDir,
-        prettier,
         resolvedType,
     } = parsed;
 
@@ -79,7 +77,6 @@ export function getConfig(configFilePath: string) {
         },
         locales,
         outDir,
-        prettier: prettier || {},
         resolvedType: resolvedType && {
             prefix: resolvedType.prefix || resolvedType.suffix ? '' : 'Resolved',
             suffix: resolvedType.suffix || '',

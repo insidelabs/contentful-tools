@@ -12,10 +12,7 @@ import { string } from '../common/scalars';
 import { interfaceDecl, propertySignature } from '../common/types';
 import { contentTypeIdImportDecl } from './ContentTypeId';
 
-export function generateEntry(
-    contentTypes: c.ContentType[],
-    config: Config,
-): ts.SourceFile | null {
+export function generateEntry(contentTypes: c.ContentType[], config: Config): ts.SourceFile | null {
     const { generate, resolvedType: resolved } = config;
 
     const interfaceName = generate.entryType;
