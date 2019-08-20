@@ -13,8 +13,8 @@ import { resolveTypeNames } from './typeNames';
 import { processNewLines } from './common/whitespace';
 
 import { generateAsset } from './generate/Asset';
-import { generateCommonEntry } from './generate/CommonEntry';
 import { generateContentTypeId } from './generate/ContentTypeId';
+import { generateEntry } from './generate/Entry';
 import { generateGetters } from './generate/getters';
 import { generateInterface } from './generate/interfaces';
 
@@ -34,7 +34,7 @@ export async function generate(
     const allFiles = [
         generateContentTypeId(resolvedNameMap),
         generateAsset(config),
-        generateCommonEntry(contentTypes, config),
+        generateEntry(contentTypes, config),
         generateGetters(resolvedNameMap, config),
         ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap, config)),
     ];

@@ -12,13 +12,13 @@ import { string } from '../common/scalars';
 import { interfaceDecl, propertySignature } from '../common/types';
 import { contentTypeIdImportDecl } from './ContentTypeId';
 
-export function generateCommonEntry(
+export function generateEntry(
     contentTypes: c.ContentType[],
     config: Config,
 ): ts.SourceFile | null {
     const { generate, resolvedType: resolved } = config;
 
-    const interfaceName = generate.commonEntryType;
+    const interfaceName = generate.entryType;
     if (!interfaceName) return null;
 
     return tsFile(interfaceName, [

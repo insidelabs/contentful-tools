@@ -19,7 +19,7 @@ const options = t.partial({
     contentTypeNameMap: t.record(t.string, t.string),
     generate: t.partial({
         assetType: t.string,
-        commonEntryType: t.string,
+        entryType: t.string,
         getters: t.union([t.string, t.boolean]),
     }),
     interfaceName: t.partial({
@@ -69,8 +69,8 @@ export function getConfig(configFilePath: string) {
         clean: clean || false,
         contentTypeNameMap,
         generate: {
-            assetType: generate.assetType || '',
-            commonEntryType: generate.commonEntryType || '',
+            assetType: generate.assetType || 'Asset',
+            entryType: generate.entryType || 'Entry',
             getters: (generate.getters === true ? 'index' : generate.getters) || '',
         },
         interfaceName: {

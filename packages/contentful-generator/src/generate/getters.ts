@@ -21,13 +21,13 @@ export function generateGetters(
     contentTypeNameMap: Map<string, string>,
     config: Config,
 ): ts.SourceFile | null {
-    const { assetType, commonEntryType, getters: fileName } = config.generate;
+    const { assetType, entryType, getters: fileName } = config.generate;
     if (!fileName) return null;
 
     const typeNames = Array.from(contentTypeNameMap.values()).sort();
 
-    const interfaceImports = commonEntryType
-        ? [Type.ContentTypeId, commonEntryType, ...typeNames]
+    const interfaceImports = entryType
+        ? [Type.ContentTypeId, entryType, ...typeNames]
         : [Type.ContentTypeId, ...typeNames];
 
     return tsFile(fileName, [
@@ -38,7 +38,7 @@ export function generateGetters(
         store(),
         storeSetter(),
         assetGetters(assetType),
-        commonEntryType ? entryGetters(commonEntryType) : null,
+        entryType ? entryGetters(entryType) : null,
         flatMap(typeNames, typeName => {
             return entryGetters(typeName, prop(Type.ContentTypeId, typeName));
         }),
