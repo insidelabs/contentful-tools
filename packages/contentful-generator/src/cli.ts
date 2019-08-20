@@ -32,7 +32,7 @@ class ContentfulClientGenerator extends Command {
         config: flags.string({
             char: 'c',
             description: 'Path to JSON configuration file',
-            default: 'contentful.config.json',
+            default: 'contentful.json',
         }),
 
         token: flags.string({
