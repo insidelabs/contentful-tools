@@ -1,6 +1,10 @@
+import { flatten } from 'lodash';
 import * as ts from 'typescript';
 
-export function tsFile(fileName: string, statements: ts.Statement[]): ts.SourceFile {
+export function tsFile(
+    fileName: string,
+    statements: Array<ts.Statement | ts.Statement[]>,
+): ts.SourceFile {
     const sourceFile = ts.createSourceFile(
         fileName + '.ts',
         '',
@@ -8,5 +12,5 @@ export function tsFile(fileName: string, statements: ts.Statement[]): ts.SourceF
         false,
         ts.ScriptKind.TS,
     );
-    return ts.updateSourceFileNode(sourceFile, statements);
+    return ts.updateSourceFileNode(sourceFile, flatten(statements));
 }

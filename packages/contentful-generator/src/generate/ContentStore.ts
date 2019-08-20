@@ -32,9 +32,9 @@ export function generateContentStore(
 
     return tsFile(className, [
         storeImportDecl(StoreExport.ContentfulStore, StoreExport.Content, StoreExport.Resolved),
-        ...interfaceImportDecls(interfaceImports),
-        ...collapse(localeTypeDecls(config)),
-        ...collapse(localeConstDecls(config)),
+        interfaceImportDecls(interfaceImports),
+        collapse(localeTypeDecls(config)),
+        collapse(localeConstDecls(config)),
         storeClass(className, typeNames, config),
     ]);
 }

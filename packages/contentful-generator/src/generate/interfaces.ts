@@ -3,6 +3,7 @@ import * as ts from 'typescript';
 import { flatMap } from 'lodash';
 import { Config } from '../config';
 import { Field, FieldType, LinkType, StoreExport, Type } from '../types';
+import { resolvedContentType } from '../common/aliases';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
 import { tsFile } from '../common/files';
@@ -11,8 +12,8 @@ import { extendsExpression } from '../common/heritage';
 import { qualifiedTypeRef, ref } from '../common/refs';
 import { boolean, number, string } from '../common/scalars';
 import { interfaceDecl, propertySignature, union } from '../common/types';
+import { sortedArray } from '../util/arrays';
 import { contentTypeIdImportDecl } from './ContentTypeId';
-import { resolvedContentType } from '../common/aliases';
 
 export function generateInterface(
     contentType: c.ContentType,
@@ -21,105 +22,56 @@ export function generateInterface(
 ): ts.SourceFile {
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
-    const { declarations, storeImports, interfaceImports, fields } = fieldsFromContentType(
-        contentType,
-        interfaceName,
-        contentTypeNameMap,
-    );
+    const enums: ts.DeclarationStatement[] = [];
+    const storeImports: Set<StoreExport> = new Set();
+    const interfaceImports: Set<string> = new Set();
+
+    const interfaceDeclaration = contentTypeInterfaceDecl();
 
     return tsFile(interfaceName, [
         storeImportDecl(
             StoreExport.Content,
             config.resolvedType && StoreExport.Resolved,
-            ...storeImports,
+            sortedArray(storeImports),
         ),
         contentTypeIdImportDecl(),
-        ...interfaceImportDecls(interfaceImports),
+        interfaceImportDecls(sortedArray(interfaceImports)),
         resolvedContentType(interfaceName, config),
-        contentTypeInterfaceDecl(interfaceName, fields),
-        ...(declarations as ts.DeclarationStatement[]),
+        interfaceDeclaration,
+        enums,
     ]);
-}
 
-function contentTypeInterfaceDecl(
-    interfaceName: string,
-    fields: ts.TypeNode,
-): ts.InterfaceDeclaration {
-    return interfaceDecl(
-        interfaceName,
-        undefined,
-        [
-            extendsExpression(
-                StoreExport.Content,
-                Type.Entry,
-                ref(Type.ContentTypeId, interfaceName),
-            ),
-        ],
-        { fields },
-    );
-}
-
-function fieldsFromContentType(
-    contentType: c.ContentType,
-    interfaceName: string,
-    contentTypeNameMap: Map<string, string>,
-): {
-    declarations: ts.Declaration[];
-    storeImports: StoreExport[];
-    interfaceImports: string[];
-    fields: ts.TypeNode;
-} {
-    const allDeclarations: ts.Declaration[] = [];
-    const allStoreImports: Set<StoreExport> = new Set();
-    const allInterfaceImports: Set<string> = new Set();
-
-    const members = contentType.fields.map(field => {
-        const { declarations, storeImports, interfaceImports, signature } = contentTypeField(
-            field,
+    function contentTypeInterfaceDecl(): ts.InterfaceDeclaration {
+        return interfaceDecl(
             interfaceName,
-            contentTypeNameMap,
+            undefined,
+            [
+                extendsExpression(
+                    StoreExport.Content,
+                    Type.Entry,
+                    ref(Type.ContentTypeId, interfaceName),
+                ),
+            ],
+            {
+                fields: fieldsFromContentType(),
+            },
         );
+    }
 
-        for (const d of declarations) allDeclarations.push(d);
-        for (const i of storeImports) allStoreImports.add(i);
-        for (const i of interfaceImports) allInterfaceImports.add(i);
+    function fieldsFromContentType(): ts.TypeNode {
+        return ts.createTypeLiteralNode(
+            contentType.fields.map(field => {
+                return contentTypeField(field);
+            }),
+        );
+    }
 
-        return signature;
-    });
+    function contentTypeField(field: c.ContentTypeField): ts.PropertySignature {
+        const typeNode = createFieldTypeNode(field);
+        return propertySignature(field.id, field.required, typeNode);
+    }
 
-    return {
-        declarations: allDeclarations,
-        storeImports: Array.from(allStoreImports).sort(),
-        interfaceImports: Array.from(allInterfaceImports).sort(),
-        fields: ts.createTypeLiteralNode(members),
-    };
-}
-
-function contentTypeField(
-    field: c.ContentTypeField,
-    interfaceName: string,
-    contentTypeNameMap: Map<string, string>,
-): {
-    declarations: ts.Declaration[];
-    storeImports: Set<StoreExport>;
-    interfaceImports: Set<string>;
-    signature: ts.PropertySignature;
-} {
-    const declarations: ts.Declaration[] = [];
-    const storeImports: Set<StoreExport> = new Set();
-    const interfaceImports: Set<string> = new Set();
-
-    const typeNode = createFieldTypeNode();
-    const signature = propertySignature(field.id, field.required, typeNode);
-
-    return {
-        declarations,
-        storeImports,
-        interfaceImports,
-        signature,
-    };
-
-    function createFieldTypeNode(): ts.TypeNode {
+    function createFieldTypeNode(field: c.ContentTypeField): ts.TypeNode {
         switch (field.type) {
             case FieldType.Boolean:
                 return boolean();
@@ -133,7 +85,7 @@ function contentTypeField(
 
             case FieldType.Symbol:
             case FieldType.Text:
-                return textWithEnums(field.validations);
+                return textWithEnums(field.id, field.validations);
 
             case FieldType.Location:
                 storeImports.add(StoreExport.Field);
@@ -157,37 +109,25 @@ function contentTypeField(
                         );
 
                     case FieldType.Symbol:
-                        return array(textWithEnums(field.items.validations));
+                        return array(textWithEnums(field.id, field.items.validations));
 
                     default:
-                        return throwBadArrayNode();
+                        throw Error(`${interfaceName}.${field.name}: unknown array type`);
                 }
 
             default:
-                return throwBadTypeNode();
-        }
-
-        function throwBadArrayNode(): never {
-            throw Error(
-                `Failed to resolve array type for field ${field.name} on interface ${interfaceName}`,
-            );
-        }
-
-        function throwBadTypeNode(): never {
-            throw Error(
-                `Failed to resolve node type for field ${field.name} on interface ${interfaceName}`,
-            );
+                throw Error(`${interfaceName}.${field.name}: unknown type`);
         }
     }
 
-    function textWithEnums(validations: c.TextValidation[]): ts.TypeNode {
+    function textWithEnums(id: string, validations: c.TextValidation[]): ts.TypeNode {
         const validation = validations.find(v => v.hasOwnProperty('in')) as
             | c.EnumStringValidation
             | undefined;
 
         if (validation) {
-            const declaration = enumFromValidation(interfaceName, field.id, validation.in);
-            declarations.push(declaration);
+            const declaration = enumFromValidation(interfaceName, id, validation.in);
+            enums.push(declaration);
             return ref(ts.idText(declaration.name));
         } else {
             return string();
@@ -200,13 +140,13 @@ function contentTypeField(
     ): ts.TypeNode {
         switch (linkType) {
             case LinkType.Asset:
-                return assetLink(validations as c.LinkedAssetValidation[]);
+                return assetLink(/* validations as c.LinkedAssetValidation[] */);
             case LinkType.Entry:
                 return entryLink(validations as c.LinkedEntryValidation[]);
         }
     }
 
-    function assetLink(validations: c.LinkedAssetValidation[]): ts.TypeNode {
+    function assetLink(/* validations: c.LinkedAssetValidation[] */): ts.TypeNode {
         storeImports.add(StoreExport.Link);
         return ref(StoreExport.Link, Type.Asset);
     }

@@ -1,3 +1,4 @@
+import { flatten } from 'lodash';
 import { join } from 'path';
 import * as ts from 'typescript';
 import { FileName, StoreExport } from '../types';
@@ -24,9 +25,10 @@ export function importDecl(
     );
 }
 
-export function storeImportDecl(...exports: Nullable<StoreExport>[]): ts.ImportDeclaration {
-    const specs = exports
-        .filter(isNonNullable)
+export function storeImportDecl(
+    ...exports: Array<Nullable<StoreExport> | StoreExport[]>
+): ts.ImportDeclaration {
+    const specs = flatten(exports.filter(isNonNullable))
         .sort()
         .map(importSpec);
 

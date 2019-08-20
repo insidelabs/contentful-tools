@@ -24,6 +24,6 @@ export function generateAsset(config: Config): ts.SourceFile | null {
 
     return tsFile(config.generate.assetType, [
         storeImportDecl(StoreExport.Content),
-        ...collapse(typeAliases),
+        collapse(typeAliases),
     ]);
 }
