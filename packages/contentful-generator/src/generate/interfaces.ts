@@ -1,11 +1,11 @@
 import * as c from 'contentful-management';
 import * as ts from 'typescript';
 import { flatMap } from 'lodash';
-import { Field, FieldType, FileName, LinkType, Namespace, Type } from '../types';
+import { Field, FieldType, LinkType, Namespace, Type } from '../types';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
 import { tsFile } from '../common/files';
-import { importDecl, importSpec } from '../common/imports';
+import { importDecl, importSpec, storeImportDecl } from '../common/imports';
 import { qualifiedTypeRef, ref } from '../common/refs';
 import { boolean, number, string } from '../common/scalars';
 import { extendsExpression, interfaceDecl, propertySignature, union } from '../common/types';
@@ -32,17 +32,16 @@ export function generateInterface(
     ]);
 }
 
-function storeImportDecl(...namespaces: Namespace[]): ts.ImportDeclaration {
-    return importDecl(namespaces.sort().map(importSpec), FileName.store, '', false);
-}
-
 function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
     return imports.map(interfaceName =>
         importDecl([importSpec(interfaceName)], `./${interfaceName}`),
     );
 }
 
-function contentTypeInterfaceDecl(interfaceName: string, fields: ts.TypeNode) {
+function contentTypeInterfaceDecl(
+    interfaceName: string,
+    fields: ts.TypeNode,
+): ts.InterfaceDeclaration {
     return interfaceDecl(interfaceName, { fields }, undefined, [
         extendsExpression(Namespace.Content, Type.Entry, ref(Type.ContentTypeId, interfaceName)),
     ]);

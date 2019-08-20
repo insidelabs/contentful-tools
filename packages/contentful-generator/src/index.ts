@@ -10,8 +10,9 @@ import * as ts from 'typescript';
 import { Config } from './config';
 import { resolveTypeNames } from './typeNames';
 
-import { generateInterface } from './generate/interfaces';
+import { generateCommonEntry } from './generate/CommonEntry';
 import { generateContentTypeId } from './generate/ContentTypeId';
+import { generateInterface } from './generate/interfaces';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);
@@ -28,6 +29,7 @@ export async function generate(
     const resolvedNameMap = resolveTypeNames(contentTypes, config);
     const allFiles = [
         generateContentTypeId(resolvedNameMap),
+        generateCommonEntry(contentTypes, config),
         ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap)),
     ];
 
@@ -36,6 +38,7 @@ export async function generate(
     });
 
     for (const sourceFile of allFiles) {
+        if (!sourceFile) continue;
         let result = printer.printFile(sourceFile);
 
         result = format(result, { parser: 'typescript', ...config.prettier });

@@ -5,29 +5,35 @@ import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isRight } from 'fp-ts/lib/Either';
 
 export type Config = Required<t.TypeOf<typeof config>>;
-type Optionals = t.TypeOf<typeof optionals>;
+type Options = t.TypeOf<typeof options>;
 
 const required = t.interface({
     outDir: t.string,
 });
 
-const optionals = t.partial({
+const options = t.partial({
     clean: t.boolean,
     interfaceNamePrefix: t.string,
     interfaceNameSuffix: t.string,
     contentTypeNameMap: t.record(t.string, t.string),
     prettier: t.record(t.string, t.unknown),
+    generate: t.partial({
+        commonEntry: t.string,
+    }),
 });
 
-const defaults: Required<Optionals> = {
+const defaults: Required<Options> = {
     clean: false,
     interfaceNamePrefix: '',
     interfaceNameSuffix: '',
     contentTypeNameMap: {},
     prettier: {},
+    generate: {
+        commonEntry: '',
+    },
 };
 
-const config = t.intersection([required, optionals]);
+const config = t.intersection([required, options]);
 
 const debug = createDebugger('contentful-generator:config');
 
@@ -48,7 +54,16 @@ export function getConfig(configFilePath: string): Config {
 
     debug('Configuration validated');
 
-    return { ...defaults, ...parsed };
+    const generate = {
+        ...defaults.generate,
+        ...parsed.generate,
+    };
+
+    return {
+        ...defaults,
+        ...parsed,
+        generate,
+    };
 
     function isConfig(config: unknown): config is Config {
         return isRight(result);

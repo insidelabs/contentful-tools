@@ -1,5 +1,6 @@
 import { join } from 'path';
 import * as ts from 'typescript';
+import { FileName, Namespace } from '../types';
 
 export function importSpec(name: string) {
     return ts.createImportSpecifier(undefined, ts.createIdentifier(name));
@@ -24,4 +25,8 @@ export function importDecl(
 
 export function exportModifiers(): ts.Modifier[] {
     return [ts.createModifier(ts.SyntaxKind.ExportKeyword)];
+}
+
+export function storeImportDecl(...namespaces: Namespace[]): ts.ImportDeclaration {
+    return importDecl(namespaces.sort().map(importSpec), FileName.store, '', false);
 }
