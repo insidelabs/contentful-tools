@@ -61,7 +61,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         this.client = client;
         this.locales = locales;
 
-        this.debug = createDebugger(`contentful-store:${spaceId}`);
+        this.debug = createDebugger(`@contentful-tools/store:${spaceId}`);
 
         this.handleError =
             handleError ||

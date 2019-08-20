@@ -8,7 +8,7 @@ import { getContentfulEnvironment } from './contentful';
 import { Config, getConfig } from './config';
 import { generateWithObserver } from './index';
 
-const debug = createDebugger('contentful-generator:cli');
+const debug = createDebugger('@contentful-tools/generator:cli');
 
 const description = `Generates a type-safe Contentful content delivery client.
 

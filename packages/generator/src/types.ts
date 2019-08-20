@@ -18,7 +18,7 @@ export enum LinkType {
 }
 
 export enum FileName {
-    store = '@insidelabs/contentful-store',
+    store = '@contentful-tools/store',
 }
 
 export enum StoreExport {

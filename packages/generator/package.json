@@ -1,6 +1,6 @@
 {
-    "name": "@insidelabs/contentful-generator",
-    "version": "2.5.0",
+    "name": "@contentful-tools/generator",
+    "version": "0.0.0",
     "description": "A generator for type declarations based on Contentful content types",
     "keywords": [
         "contentful",
@@ -8,7 +8,7 @@
         "codegen"
     ],
     "author": "Inside Labs",
-    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/contentful-generator#readme",
+    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/generator#readme",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -27,7 +27,7 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/insidelabs/contentful-tools.git",
-        "directory": "packages/contentful-generator"
+        "directory": "packages/generator"
     },
     "bugs": {
         "url": "https://github.com/insidelabs/contentful-tools/issues"
@@ -36,7 +36,7 @@
         "node": ">=8.0.0"
     },
     "peerDependencies": {
-        "@insidelabs/contentful-store": "*"
+        "@contentful-tools/store": "*"
     },
     "dependencies": {
         "@oclif/command": "^1.5.18",
@@ -58,7 +58,7 @@
         "typescript": "^3.5.3"
     },
     "devDependencies": {
-        "@insidelabs/contentful-store": "^2.0.0",
+        "@contentful-tools/store": "^1.0.0",
         "@types/camelcase": "^5.2.0",
         "@types/debug": "^4.1.5",
         "@types/dotenv": "^6.1.1",

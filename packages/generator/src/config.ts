@@ -35,7 +35,7 @@ const options = t.partial({
 
 const config = t.intersection([required, options]);
 
-const debug = createDebugger('contentful-generator:config');
+const debug = createDebugger('@contentful-tools/generator:config');
 
 export function getConfig(configFilePath: string) {
     if (!existsSync(configFilePath)) {

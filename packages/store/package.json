@@ -1,12 +1,12 @@
 {
-    "name": "@insidelabs/contentful-store",
-    "version": "2.0.0",
+    "name": "@contentful-tools/store",
+    "version": "3.0.0",
     "description": "An auto-synchronizing in-memory store for Contentful content",
     "keywords": [
         "contentful"
     ],
     "author": "Inside Labs",
-    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/contentful-store#readme",
+    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/store#readme",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/insidelabs/contentful-tools.git",
-        "directory": "packages/contentful-store"
+        "directory": "packages/store"
     },
     "bugs": {
         "url": "https://github.com/insidelabs/contentful-tools/issues"
