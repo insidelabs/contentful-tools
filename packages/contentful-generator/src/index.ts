@@ -63,5 +63,8 @@ export function generateWithObserver(
     const logger = (s: string) => observer.next(s);
     generate(env, config, logger)
         .then(() => observer.complete())
-        .catch(error => observer.error(error));
+        .catch(error => {
+            console.error(error);
+            observer.error(error)
+        });
 }

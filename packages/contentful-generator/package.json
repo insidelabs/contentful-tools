@@ -1,6 +1,6 @@
 {
     "name": "@insidelabs/contentful-generator",
-    "version": "1.3.0",
+    "version": "2.0.0",
     "description": "A generator for type declarations based on Contentful content types",
     "keywords": [
         "contentful",
@@ -58,7 +58,7 @@
         "typescript": "^3.5.3"
     },
     "devDependencies": {
-        "@insidelabs/contentful-store": "^1.3.0",
+        "@insidelabs/contentful-store": "^2.0.0",
         "@types/camelcase": "^5.2.0",
         "@types/debug": "^4.1.5",
         "@types/dotenv": "^6.1.1",

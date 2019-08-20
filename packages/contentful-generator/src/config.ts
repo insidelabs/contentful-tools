@@ -8,6 +8,10 @@ export type Config = ReturnType<typeof getConfig>;
 
 const required = t.interface({
     outDir: t.string,
+    locales: t.interface({
+        base: t.string,
+        extra: t.array(t.string),
+    }),
 });
 
 const options = t.partial({
@@ -64,6 +68,7 @@ export function getConfig(configFilePath: string) {
             suffix: '',
             ...parsed.interfaceName,
         },
+        locales: parsed.locales,
         outDir: parsed.outDir,
         prettier: parsed.prettier || {},
         resolvedType: parsed.resolvedType && {

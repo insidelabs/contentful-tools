@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { exportModifiers } from './exports';
+import { exportModifiers } from './modifiers';
 import { extendsClause } from './heritage';
 
 export function interfaceDecl(

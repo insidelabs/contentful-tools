@@ -3,16 +3,19 @@ import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
 import { StoreExport, Type } from '../types';
+import { typeAlias } from '../common/aliases';
 import { arrayOf } from '../common/arrays';
 import { block, classDecl, constructor, method, parameter } from '../common/classes';
 import { tsFile } from '../common/files';
 import { interfaceImportDecls, storeImportDecl } from '../common/imports';
+import { arrayLiteral, stringLiteral } from '../common/literals';
 import { priv, readonly } from '../common/modifiers';
 import { prop } from '../common/props';
-import { qualifiedTypeRef, ref, typeParameter } from '../common/refs';
-import { nullType, string } from '../common/scalars';
+import { qualifiedTypeRef, ref } from '../common/refs';
+import { nullType, string, stringLiteralType } from '../common/scalars';
 import { union } from '../common/types';
-import { newLineAbove } from '../common/whitespace';
+import { assignConst } from '../common/vars';
+import { newLineAbove, collapse } from '../common/whitespace';
 import { isNonNullable, Nullable } from '../util/Nullable';
 
 export function generateContentStore(
@@ -30,18 +33,53 @@ export function generateContentStore(
     return tsFile(className, [
         storeImportDecl(StoreExport.ContentfulStore, StoreExport.Content, StoreExport.Resolved),
         ...interfaceImportDecls(interfaceImports),
+        ...collapse(localeTypeDecls(config)),
+        ...collapse(localeConstDecls(config)),
         storeClass(className, typeNames, config),
     ]);
 }
 
-function storeClass(className: string, typeNames: string[], config: Config) {
-    const typeParam = typeParameter('L', string());
-    const L = ref('L');
+enum TypeAlias {
+    BaseLocale = 'BaseLocale',
+    ExtraLocales = 'ExtraLocales',
+    Locales = 'Locales',
+}
 
+enum Const {
+    baseLocale = 'baseLocale',
+    extraLocales = 'extraLocales',
+    locales = 'locales',
+}
+
+const BaseLocale = ref(TypeAlias.BaseLocale);
+const ExtraLocales = ref(TypeAlias.ExtraLocales);
+const Locales = ref(TypeAlias.Locales);
+
+function localeTypeDecls(config: Config): ts.DeclarationStatement[] {
+    const { base, extra } = config.locales;
+    return [
+        typeAlias(TypeAlias.BaseLocale, stringLiteralType(base)),
+        typeAlias(TypeAlias.ExtraLocales, union(extra.map(stringLiteralType))),
+        typeAlias(TypeAlias.Locales, union(ref(TypeAlias.BaseLocale), ref(TypeAlias.ExtraLocales))),
+    ];
+}
+
+function localeConstDecls(config: Config): ts.VariableStatement[] {
+    const { base, extra } = config.locales;
+    const baseLiteral = stringLiteral(base);
+    const extraLiterals = extra.map(stringLiteral);
+    return [
+        assignConst(Const.baseLocale, BaseLocale, baseLiteral),
+        assignConst(Const.extraLocales, arrayOf(ExtraLocales), arrayLiteral(extraLiterals)),
+        assignConst(Const.locales, arrayOf(Locales), arrayLiteral([baseLiteral, ...extraLiterals])),
+    ];
+}
+
+function storeClass(className: string, typeNames: string[], config: Config) {
     const classConstructor = constructor([
         parameter(
             'store',
-            ref(StoreExport.ContentfulStore, L, L),
+            ref(StoreExport.ContentfulStore, BaseLocale, ExtraLocales),
             false,
             priv(),
             readonly(),
@@ -60,7 +98,7 @@ function storeClass(className: string, typeNames: string[], config: Config) {
         }),
     );
 
-    return classDecl(className, [typeParam], undefined, [
+    return classDecl(className, undefined, undefined, [
         classConstructor,
         ...methods.map(newLineAbove),
     ]);
@@ -68,7 +106,7 @@ function storeClass(className: string, typeNames: string[], config: Config) {
 
 const params = {
     id: parameter('id', string()),
-    locale: parameter('locale', ref('L'), true),
+    locale: parameter('locale', Locales, true),
 };
 
 const args = {

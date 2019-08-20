@@ -1,7 +1,7 @@
 import { Config } from '../config';
 import * as ts from 'typescript';
 import { StoreExport, Type } from '../types';
-import { exportModifiers } from './exports';
+import { exportModifiers } from './modifiers';
 import { qualifiedTypeRef, ref } from './refs';
 
 export function typeAlias(
