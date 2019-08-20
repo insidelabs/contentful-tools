@@ -14,8 +14,9 @@ const options = t.partial({
     clean: t.boolean,
     contentTypeNameMap: t.record(t.string, t.string),
     generate: t.partial({
-        commonEntry: t.string,
-        contentStore: t.string,
+        assetType: t.string,
+        commonEntryType: t.string,
+        contentStoreClass: t.string,
     }),
     interfaceName: t.partial({
         prefix: t.string,
@@ -53,8 +54,9 @@ export function getConfig(configFilePath: string) {
         clean: parsed.clean || false,
         contentTypeNameMap: parsed.contentTypeNameMap || {},
         generate: {
-            commonEntry: '',
-            contentStore: '',
+            assetType: '',
+            commonEntryType: '',
+            contentStoreClass: '',
             ...parsed.generate,
         },
         interfaceName: {

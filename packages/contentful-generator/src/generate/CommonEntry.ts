@@ -16,8 +16,9 @@ export function generateCommonEntry(
     contentTypes: c.ContentType[],
     config: Config,
 ): ts.SourceFile | null {
-    const interfaceName = config.generate.commonEntry;
+    const interfaceName = config.generate.commonEntryType;
     if (!interfaceName) return null;
+
     return tsFile(interfaceName, [
         storeImportDecl(StoreExport.Content, config.resolvedType && StoreExport.Resolved),
         contentTypeIdImportDecl(),

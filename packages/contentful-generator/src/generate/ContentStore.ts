@@ -13,18 +13,18 @@ import { qualifiedTypeRef, ref, typeParameter } from '../common/refs';
 import { nullType, string } from '../common/scalars';
 import { union } from '../common/types';
 import { newLineAbove } from '../common/whitespace';
-import { isNonNullable } from '../util/Nullable';
+import { isNonNullable, Nullable } from '../util/Nullable';
 
 export function generateContentStore(
     contentTypeNameMap: Map<string, string>,
     config: Config,
 ): ts.SourceFile | null {
-    const className = config.generate.contentStore;
+    const { commonEntryType, contentStoreClass: className } = config.generate;
     if (!className) return null;
 
     const typeNames = Array.from(contentTypeNameMap.values()).sort();
-    const interfaceImports = config.generate.commonEntry
-        ? [Type.ContentTypeId, config.generate.commonEntry, ...typeNames]
+    const interfaceImports = commonEntryType
+        ? [Type.ContentTypeId, commonEntryType, ...typeNames]
         : [Type.ContentTypeId, ...typeNames];
 
     return tsFile(className, [
@@ -35,70 +35,99 @@ export function generateContentStore(
 }
 
 function storeClass(className: string, typeNames: string[], config: Config) {
-    const LParam = typeParameter('L', string());
+    const typeParam = typeParameter('L', string());
     const L = ref('L');
 
-    const commonEntryGetters = config.generate.commonEntry
-        ? getEntryAndEntries(config.generate.commonEntry, undefined)
-        : [];
+    const classConstructor = constructor([
+        parameter(
+            'store',
+            ref(StoreExport.ContentfulStore, L, L),
+            false,
+            priv(),
+            readonly(),
+        ),
+    ]);
 
-    return classDecl(className, [LParam], undefined, [
-        constructor([
-            parameter('store', ref(StoreExport.ContentfulStore, L, L), false, priv(), readonly()),
-        ]),
-        ...commonEntryGetters,
-        ...flatMap(typeNames, typeName => {
-            return getEntryAndEntries(typeName, prop(Type.ContentTypeId, typeName));
+    let methods: ts.MethodDeclaration[] = [];
+
+    const { assetType, commonEntryType } = config.generate;
+    if (assetType) methods = methods.concat(assetGetters(assetType));
+    if (commonEntryType) methods = methods.concat(entryGetters(commonEntryType));
+
+    methods = methods.concat(
+        flatMap(typeNames, typeName => {
+            return entryGetters(typeName, prop(Type.ContentTypeId, typeName));
         }),
+    );
+
+    return classDecl(className, [typeParam], undefined, [
+        classConstructor,
+        ...methods.map(newLineAbove),
     ]);
 }
 
-function getEntryAndEntries(
+const params = {
+    id: parameter('id', string()),
+    locale: parameter('locale', ref('L'), true),
+};
+
+const args = {
+    id: prop('id'),
+    locale: prop('locale'),
+};
+
+function assetGetters(typeName: string): [ts.MethodDeclaration, ts.MethodDeclaration] {
+    const returnType = ref(StoreExport.Content, Type.Asset);
+
+    const getAsset = method(
+        'get' + typeName,
+        [params.id, params.locale],
+        union(returnType, nullType()),
+        getterBlock('getAsset', undefined, [args.id, args.locale]),
+    );
+
+    const getAssets = method(
+        'get' + pluralize.plural(typeName),
+        [params.locale],
+        arrayOf(returnType),
+        getterBlock('getAssets', undefined, [args.locale]),
+    );
+
+    return [getAsset, getAssets];
+}
+
+function entryGetters(
     typeName: string,
     contentTypeId?: ts.Expression,
-): [ts.ClassElement, ts.ClassElement] {
-    const params = {
-        id: parameter('id', string()),
-        locale: parameter('locale', ref('L'), true),
-    };
-
-    const props = {
-        id: prop('id'),
-        locale: prop('locale'),
-    };
-
-    const typeRef = ref(typeName);
-    const resolvedType = qualifiedTypeRef(StoreExport.Resolved, Type.Entry, typeRef);
+): [ts.MethodDeclaration, ts.MethodDeclaration] {
+    const typeArg = ref(typeName);
+    const returnType = qualifiedTypeRef(StoreExport.Resolved, Type.Entry, typeArg);
 
     const getEntry = method(
         'get' + typeName,
         [params.id, params.locale],
-        union(resolvedType, nullType()),
-        block(
-            ts.createReturn(
-                ts.createCall(
-                    prop('this', 'store', 'getEntry'),
-                    [typeRef],
-                    [props.id, props.locale, contentTypeId].filter(isNonNullable),
-                ),
-            ),
-        ),
+        union(returnType, nullType()),
+        getterBlock('getEntry', [typeArg], [args.id, args.locale, contentTypeId]),
     );
 
     const getEntries = method(
         'getAll' + pluralize.plural(typeName),
         [params.locale],
-        arrayOf(resolvedType),
-        block(
-            ts.createReturn(
-                ts.createCall(
-                    prop('this', 'store', 'getEntries'),
-                    [typeRef],
-                    [props.locale, contentTypeId].filter(isNonNullable),
-                ),
-            ),
-        ),
+        arrayOf(returnType),
+        getterBlock('getEntries', [typeArg], [args.locale, contentTypeId]),
     );
 
-    return [newLineAbove(getEntry), newLineAbove(getEntries)];
+    return [getEntry, getEntries];
+}
+
+function getterBlock(
+    methodName: string,
+    typeArgs: ts.TypeNode[] | undefined,
+    args: Nullable<ts.Expression>[],
+): ts.Block {
+    return block(
+        ts.createReturn(
+            ts.createCall(prop('this', 'store', methodName), typeArgs, args.filter(isNonNullable)),
+        ),
+    );
 }
