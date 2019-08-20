@@ -12,10 +12,13 @@ export function typeAlias(
     return ts.createTypeAliasDeclaration(undefined, exportModifiers(), name, typeParameters, type);
 }
 
-export function resolvedContentType(interfaceName: string, config: Config): ts.Statement {
-    if (!config.resolvedType) return ts.createEmptyStatement();
+export function resolvedType(
+    interfaceName: string,
+    prefix: string,
+    suffix: string,
+): ts.TypeAliasDeclaration {
     return typeAlias(
-        config.resolvedType.prefix + interfaceName + config.resolvedType.suffix,
+        prefix + interfaceName + suffix,
         qualifiedTypeRef(StoreExport.Resolved, Type.Entry, ref(interfaceName)),
     );
 }

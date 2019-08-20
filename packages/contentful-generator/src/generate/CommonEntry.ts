@@ -3,7 +3,7 @@ import { every, find } from 'lodash';
 import * as ts from 'typescript';
 import { Config } from '../config';
 import { StoreExport, Type } from '../types';
-import { resolvedContentType } from '../common/aliases';
+import { resolvedType } from '../common/aliases';
 import { tsFile } from '../common/files';
 import { extendsExpression } from '../common/heritage';
 import { storeImportDecl } from '../common/imports';
@@ -16,13 +16,15 @@ export function generateCommonEntry(
     contentTypes: c.ContentType[],
     config: Config,
 ): ts.SourceFile | null {
-    const interfaceName = config.generate.commonEntryType;
+    const { generate, resolvedType: resolved } = config;
+
+    const interfaceName = generate.commonEntryType;
     if (!interfaceName) return null;
 
     return tsFile(interfaceName, [
-        storeImportDecl(StoreExport.Content, config.resolvedType && StoreExport.Resolved),
+        storeImportDecl(StoreExport.Content, resolved && StoreExport.Resolved),
         contentTypeIdImportDecl(),
-        resolvedContentType(interfaceName, config),
+        resolved && resolvedType(interfaceName, resolved.prefix, resolved.suffix),
         commonEntryInterfaceDecl(interfaceName, contentTypes),
     ]);
 }
