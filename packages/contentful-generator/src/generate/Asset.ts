@@ -5,6 +5,7 @@ import { typeAlias } from '../common/aliases';
 import { tsFile } from '../common/files';
 import { storeImportDecl } from '../common/imports';
 import { ref } from '../common/refs';
+import { collapse } from '../common/whitespace';
 
 export function generateAsset(config: Config): ts.SourceFile | null {
     const typeName = config.generate.assetType;
@@ -22,7 +23,7 @@ export function generateAsset(config: Config): ts.SourceFile | null {
     }
 
     return tsFile(config.generate.assetType, [
-        storeImportDecl(StoreExport.Content, config.resolvedType && StoreExport.Resolved),
-        ...typeAliases,
+        storeImportDecl(StoreExport.Content),
+        ...collapse(typeAliases),
     ]);
 }
