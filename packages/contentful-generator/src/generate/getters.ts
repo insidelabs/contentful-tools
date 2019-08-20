@@ -83,7 +83,11 @@ function localeConstDecls(config: Config): ts.VariableStatement[] {
     return [
         assign(Const.baseLocale, BaseLocale, baseLiteral),
         assign(Const.extraLocales, arrayOf(ExtraLocales), arrayLiteral(extraLiterals)),
-        assign(Const.locales, localesType, arrayLiteral([baseLiteral, ...extraLiterals])),
+        assign(
+            Const.locales,
+            localesType,
+            arrayLiteral([prop(Const.baseLocale), ts.createSpread(prop(Const.extraLocales))]),
+        ),
     ];
 }
 
