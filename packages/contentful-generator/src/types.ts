@@ -25,6 +25,7 @@ export enum Namespace {
     Content = 'Content',
     Field = 'Field',
     Link = 'Link',
+    Resolved = 'Resolved',
 }
 
 export enum Type {

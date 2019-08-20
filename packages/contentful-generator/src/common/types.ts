@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { exportModifiers } from './imports';
+import { exportModifiers } from './exports';
 
 export function interfaceDecl(
     interfaceName: string,

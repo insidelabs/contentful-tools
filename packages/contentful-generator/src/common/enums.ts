@@ -1,7 +1,7 @@
 import camelCase from 'camelcase';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
-import { exportModifiers } from './imports';
+import { exportModifiers } from './exports';
 
 export function enumFromValidation(
     interfaceName: string,

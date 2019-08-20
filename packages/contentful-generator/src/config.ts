@@ -4,8 +4,7 @@ import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isRight } from 'fp-ts/lib/Either';
 
-export type Config = Required<t.TypeOf<typeof config>>;
-type Options = t.TypeOf<typeof options>;
+export type Config = ReturnType<typeof getConfig>;
 
 const required = t.interface({
     outDir: t.string,
@@ -13,59 +12,64 @@ const required = t.interface({
 
 const options = t.partial({
     clean: t.boolean,
-    interfaceNamePrefix: t.string,
-    interfaceNameSuffix: t.string,
     contentTypeNameMap: t.record(t.string, t.string),
-    prettier: t.record(t.string, t.unknown),
     generate: t.partial({
         commonEntry: t.string,
     }),
+    interfaceName: t.partial({
+        prefix: t.string,
+        suffix: t.string,
+    }),
+    prettier: t.record(t.string, t.unknown),
+    resolvedType: t.partial({
+        prefix: t.string,
+        suffix: t.string,
+    }),
 });
-
-const defaults: Required<Options> = {
-    clean: false,
-    interfaceNamePrefix: '',
-    interfaceNameSuffix: '',
-    contentTypeNameMap: {},
-    prettier: {},
-    generate: {
-        commonEntry: '',
-    },
-};
 
 const config = t.intersection([required, options]);
 
 const debug = createDebugger('contentful-generator:config');
 
-export function getConfig(configFilePath: string): Config {
+export function getConfig(configFilePath: string) {
     if (!existsSync(configFilePath)) {
         throw Error(`Config file not found (${configFilePath})`);
     }
 
     const json: string = readFileSync(configFilePath, 'utf-8');
     const parsed: unknown = JSON.parse(json);
-    const result = config.decode(parsed);
+    const validation = config.decode(parsed);
 
     debug('Configuration loaded');
 
-    if (!isConfig(parsed)) {
-        throw Error(JSON.stringify(PathReporter.report(result), null, 4));
+    if (!isValidConfig(parsed)) {
+        throw Error(JSON.stringify(PathReporter.report(validation), null, 4));
     }
 
     debug('Configuration validated');
 
-    const generate = {
-        ...defaults.generate,
-        ...parsed.generate,
-    };
-
     return {
-        ...defaults,
-        ...parsed,
-        generate,
+        clean: parsed.clean || false,
+        contentTypeNameMap: parsed.contentTypeNameMap || {},
+        generate: {
+            commonEntry: '',
+            ...parsed.generate,
+        },
+        interfaceName: {
+            prefix: '',
+            suffix: '',
+            ...parsed.interfaceName,
+        },
+        outDir: parsed.outDir,
+        prettier: parsed.prettier || {},
+        resolvedType: parsed.resolvedType && {
+            prefix: '',
+            suffix: '',
+            ...parsed.resolvedType,
+        },
     };
 
-    function isConfig(config: unknown): config is Config {
-        return isRight(result);
+    function isValidConfig(value: unknown): value is t.TypeOf<typeof config> {
+        return isRight(validation);
     }
 }

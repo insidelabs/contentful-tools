@@ -3,12 +3,13 @@ import { every, find } from 'lodash';
 import * as ts from 'typescript';
 import { Config } from '../config';
 import { Namespace, Type } from '../types';
+import { resolvedContentType } from '../common/aliases';
 import { tsFile } from '../common/files';
+import { storeImportDecl } from '../common/imports';
 import { ref } from '../common/refs';
 import { string } from '../common/scalars';
 import { extendsExpression, interfaceDecl, propertySignature } from '../common/types';
 import { contentTypeIdImportDecl } from './ContentTypeId';
-import { storeImportDecl } from '../common/imports';
 
 export function generateCommonEntry(
     contentTypes: c.ContentType[],
@@ -17,8 +18,9 @@ export function generateCommonEntry(
     const interfaceName = config.generate.commonEntry;
     if (!interfaceName) return null;
     return tsFile(interfaceName, [
-        storeImportDecl(Namespace.Content),
+        storeImportDecl(Namespace.Content, config.resolvedType && Namespace.Resolved),
         contentTypeIdImportDecl(),
+        resolvedContentType(interfaceName, config),
         commonEntryInterfaceDecl(interfaceName, contentTypes),
     ]);
 }

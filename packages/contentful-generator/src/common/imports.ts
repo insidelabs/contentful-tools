@@ -23,10 +23,17 @@ export function importDecl(
     );
 }
 
-export function exportModifiers(): ts.Modifier[] {
-    return [ts.createModifier(ts.SyntaxKind.ExportKeyword)];
+export function storeImportDecl(...namespaces: Nullable<Namespace>[]): ts.ImportDeclaration {
+    const specs = namespaces
+        .filter(isNonNullable)
+        .sort()
+        .map(importSpec);
+
+    return importDecl(specs, FileName.store, '', false);
 }
 
-export function storeImportDecl(...namespaces: Namespace[]): ts.ImportDeclaration {
-    return importDecl(namespaces.sort().map(importSpec), FileName.store, '', false);
+type Nullable<T> = T | null | undefined;
+
+function isNonNullable<T>(value: Nullable<T>): value is T {
+    return value != null;
 }

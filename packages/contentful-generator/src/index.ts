@@ -30,7 +30,7 @@ export async function generate(
     const allFiles = [
         generateContentTypeId(resolvedNameMap),
         generateCommonEntry(contentTypes, config),
-        ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap)),
+        ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap, config)),
     ];
 
     const printer = ts.createPrinter({

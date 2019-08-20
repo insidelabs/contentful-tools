@@ -1,6 +1,7 @@
 import * as c from 'contentful-management';
 import * as ts from 'typescript';
 import { flatMap } from 'lodash';
+import { Config } from '../config';
 import { Field, FieldType, LinkType, Namespace, Type } from '../types';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
@@ -10,10 +11,12 @@ import { qualifiedTypeRef, ref } from '../common/refs';
 import { boolean, number, string } from '../common/scalars';
 import { extendsExpression, interfaceDecl, propertySignature, union } from '../common/types';
 import { contentTypeIdImportDecl } from './ContentTypeId';
+import { resolvedContentType } from '../common/aliases';
 
 export function generateInterface(
     contentType: c.ContentType,
     contentTypeNameMap: Map<string, string>,
+    config: Config,
 ): ts.SourceFile {
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
@@ -24,9 +27,14 @@ export function generateInterface(
     );
 
     return tsFile(interfaceName, [
-        storeImportDecl(Namespace.Content, ...storeImports),
+        storeImportDecl(
+            Namespace.Content,
+            config.resolvedType && Namespace.Resolved,
+            ...storeImports,
+        ),
         contentTypeIdImportDecl(),
         ...interfaceImportDecls(interfaceImports),
+        resolvedContentType(interfaceName, config),
         contentTypeInterfaceDecl(interfaceName, fields),
         ...(declarations as ts.DeclarationStatement[]),
     ]);

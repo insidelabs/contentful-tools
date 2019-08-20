@@ -12,9 +12,9 @@ export function resolveTypeNames(contentTypes: ContentType[], config: Config): M
 
     function formatInterfaceName(sysId: string): string {
         return (
-            config.interfaceNamePrefix +
+            config.interfaceName.prefix +
             camelCase(config.contentTypeNameMap[sysId] || sysId, { pascalCase: true }) +
-            config.interfaceNameSuffix
+            config.interfaceName.suffix
         );
     }
 }
