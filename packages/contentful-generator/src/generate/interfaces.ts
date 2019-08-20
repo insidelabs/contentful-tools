@@ -2,14 +2,15 @@ import * as c from 'contentful-management';
 import * as ts from 'typescript';
 import { flatMap } from 'lodash';
 import { Config } from '../config';
-import { Field, FieldType, LinkType, Namespace, Type } from '../types';
+import { Field, FieldType, LinkType, StoreExport, Type } from '../types';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
 import { tsFile } from '../common/files';
-import { importDecl, importSpec, storeImportDecl } from '../common/imports';
+import { interfaceImportDecls, storeImportDecl } from '../common/imports';
+import { extendsExpression } from '../common/heritage';
 import { qualifiedTypeRef, ref } from '../common/refs';
 import { boolean, number, string } from '../common/scalars';
-import { extendsExpression, interfaceDecl, propertySignature, union } from '../common/types';
+import { interfaceDecl, propertySignature, union } from '../common/types';
 import { contentTypeIdImportDecl } from './ContentTypeId';
 import { resolvedContentType } from '../common/aliases';
 
@@ -28,8 +29,8 @@ export function generateInterface(
 
     return tsFile(interfaceName, [
         storeImportDecl(
-            Namespace.Content,
-            config.resolvedType && Namespace.Resolved,
+            StoreExport.Content,
+            config.resolvedType && StoreExport.Resolved,
             ...storeImports,
         ),
         contentTypeIdImportDecl(),
@@ -40,19 +41,22 @@ export function generateInterface(
     ]);
 }
 
-function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
-    return imports.map(interfaceName =>
-        importDecl([importSpec(interfaceName)], `./${interfaceName}`),
-    );
-}
-
 function contentTypeInterfaceDecl(
     interfaceName: string,
     fields: ts.TypeNode,
 ): ts.InterfaceDeclaration {
-    return interfaceDecl(interfaceName, { fields }, undefined, [
-        extendsExpression(Namespace.Content, Type.Entry, ref(Type.ContentTypeId, interfaceName)),
-    ]);
+    return interfaceDecl(
+        interfaceName,
+        undefined,
+        [
+            extendsExpression(
+                StoreExport.Content,
+                Type.Entry,
+                ref(Type.ContentTypeId, interfaceName),
+            ),
+        ],
+        { fields },
+    );
 }
 
 function fieldsFromContentType(
@@ -61,12 +65,12 @@ function fieldsFromContentType(
     contentTypeNameMap: Map<string, string>,
 ): {
     declarations: ts.Declaration[];
-    storeImports: Namespace[];
+    storeImports: StoreExport[];
     interfaceImports: string[];
     fields: ts.TypeNode;
 } {
     const allDeclarations: ts.Declaration[] = [];
-    const allNamespaceImports: Set<Namespace> = new Set();
+    const allStoreImports: Set<StoreExport> = new Set();
     const allInterfaceImports: Set<string> = new Set();
 
     const members = contentType.fields.map(field => {
@@ -77,7 +81,7 @@ function fieldsFromContentType(
         );
 
         for (const d of declarations) allDeclarations.push(d);
-        for (const i of storeImports) allNamespaceImports.add(i);
+        for (const i of storeImports) allStoreImports.add(i);
         for (const i of interfaceImports) allInterfaceImports.add(i);
 
         return signature;
@@ -85,7 +89,7 @@ function fieldsFromContentType(
 
     return {
         declarations: allDeclarations,
-        storeImports: Array.from(allNamespaceImports).sort(),
+        storeImports: Array.from(allStoreImports).sort(),
         interfaceImports: Array.from(allInterfaceImports).sort(),
         fields: ts.createTypeLiteralNode(members),
     };
@@ -97,12 +101,12 @@ function contentTypeField(
     contentTypeNameMap: Map<string, string>,
 ): {
     declarations: ts.Declaration[];
-    storeImports: Set<Namespace>;
+    storeImports: Set<StoreExport>;
     interfaceImports: Set<string>;
     signature: ts.PropertySignature;
 } {
     const declarations: ts.Declaration[] = [];
-    const storeImports: Set<Namespace> = new Set();
+    const storeImports: Set<StoreExport> = new Set();
     const interfaceImports: Set<string> = new Set();
 
     const typeNode = createFieldTypeNode();
@@ -132,15 +136,15 @@ function contentTypeField(
                 return textWithEnums(field.validations);
 
             case FieldType.Location:
-                storeImports.add(Namespace.Field);
-                return ref(Namespace.Field, Field.Location);
+                storeImports.add(StoreExport.Field);
+                return ref(StoreExport.Field, Field.Location);
 
             case FieldType.Object:
-                storeImports.add(Namespace.Field);
-                return ref(Namespace.Field, Field.JSON);
+                storeImports.add(StoreExport.Field);
+                return ref(StoreExport.Field, Field.JSON);
 
             case FieldType.RichText:
-                return ref(Namespace.Field, Field.RichText);
+                return ref(StoreExport.Field, Field.RichText);
 
             case FieldType.Link:
                 return linkWithImports(field.linkType, field.validations);
@@ -203,12 +207,12 @@ function contentTypeField(
     }
 
     function assetLink(validations: c.LinkedAssetValidation[]): ts.TypeNode {
-        storeImports.add(Namespace.Link);
-        return ref(Namespace.Link, Type.Asset);
+        storeImports.add(StoreExport.Link);
+        return ref(StoreExport.Link, Type.Asset);
     }
 
     function entryLink(validations: c.LinkedEntryValidation[]): ts.TypeNode {
-        storeImports.add(Namespace.Link);
+        storeImports.add(StoreExport.Link);
         if (validations.length > 0) {
             const linkedContentTypes = flatMap(
                 validations,
@@ -217,7 +221,7 @@ function contentTypeField(
 
             if (linkedContentTypes.length > 0) {
                 return qualifiedTypeRef(
-                    Namespace.Link,
+                    StoreExport.Link,
                     Type.Entry,
                     union(
                         linkedContentTypes.map(contentTypeId => {
@@ -230,6 +234,6 @@ function contentTypeField(
             }
         }
 
-        return ref(Namespace.Link, Type.Entry);
+        return ref(StoreExport.Link, Type.Entry);
     }
 }

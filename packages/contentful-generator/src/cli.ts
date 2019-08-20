@@ -97,7 +97,7 @@ class ContentfulClientGenerator extends Command {
                 },
             },
             {
-                title: 'Generating type declarations',
+                title: 'Generating',
                 task: context => {
                     return new Observable<string>(observer => {
                         generateWithObserver(context.env, context.config, observer);

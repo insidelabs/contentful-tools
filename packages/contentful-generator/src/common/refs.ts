@@ -31,3 +31,11 @@ export function qualifiedTypeRef(
 function typeRef(name: string, typeArguments?: ts.TypeNode[]): ts.TypeReferenceNode {
     return ts.createTypeReferenceNode(ts.createIdentifier(name), typeArguments);
 }
+
+export function typeParameter(
+    name: string,
+    constraint?: ts.TypeNode,
+    defaultType?: ts.TypeNode,
+): ts.TypeParameterDeclaration {
+    return ts.createTypeParameterDeclaration(ts.createIdentifier(name), constraint, defaultType);
+}

@@ -2,13 +2,14 @@ import * as c from 'contentful-management';
 import { every, find } from 'lodash';
 import * as ts from 'typescript';
 import { Config } from '../config';
-import { Namespace, Type } from '../types';
+import { StoreExport, Type } from '../types';
 import { resolvedContentType } from '../common/aliases';
 import { tsFile } from '../common/files';
+import { extendsExpression } from '../common/heritage';
 import { storeImportDecl } from '../common/imports';
 import { ref } from '../common/refs';
 import { string } from '../common/scalars';
-import { extendsExpression, interfaceDecl, propertySignature } from '../common/types';
+import { interfaceDecl, propertySignature } from '../common/types';
 import { contentTypeIdImportDecl } from './ContentTypeId';
 
 export function generateCommonEntry(
@@ -18,7 +19,7 @@ export function generateCommonEntry(
     const interfaceName = config.generate.commonEntry;
     if (!interfaceName) return null;
     return tsFile(interfaceName, [
-        storeImportDecl(Namespace.Content, config.resolvedType && Namespace.Resolved),
+        storeImportDecl(StoreExport.Content, config.resolvedType && StoreExport.Resolved),
         contentTypeIdImportDecl(),
         resolvedContentType(interfaceName, config),
         commonEntryInterfaceDecl(interfaceName, contentTypes),
@@ -30,9 +31,12 @@ function commonEntryInterfaceDecl(
     contentTypes: c.ContentType[],
 ): ts.InterfaceDeclaration {
     const fields = commonFieldsFromContentTypes(contentTypes);
-    return interfaceDecl(interfaceName, { fields }, undefined, [
-        extendsExpression(Namespace.Content, Type.Entry, ref(Type.ContentTypeId)),
-    ]);
+    return interfaceDecl(
+        interfaceName,
+        undefined,
+        [extendsExpression(StoreExport.Content, Type.Entry, ref(Type.ContentTypeId))],
+        { fields },
+    );
 }
 
 function commonFieldsFromContentTypes(contentTypes: c.ContentType[]): ts.TypeNode {

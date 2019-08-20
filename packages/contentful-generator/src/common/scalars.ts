@@ -11,3 +11,7 @@ export function number(): ts.KeywordTypeNode {
 export function string(): ts.KeywordTypeNode {
     return ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
 }
+
+export function nullType(): ts.KeywordTypeNode {
+    return ts.createNull();
+}

@@ -1,6 +1,7 @@
 import { join } from 'path';
 import * as ts from 'typescript';
-import { FileName, Namespace } from '../types';
+import { FileName, StoreExport } from '../types';
+import { isNonNullable, Nullable } from '../util/Nullable';
 
 export function importSpec(name: string) {
     return ts.createImportSpecifier(undefined, ts.createIdentifier(name));
@@ -23,8 +24,8 @@ export function importDecl(
     );
 }
 
-export function storeImportDecl(...namespaces: Nullable<Namespace>[]): ts.ImportDeclaration {
-    const specs = namespaces
+export function storeImportDecl(...exports: Nullable<StoreExport>[]): ts.ImportDeclaration {
+    const specs = exports
         .filter(isNonNullable)
         .sort()
         .map(importSpec);
@@ -32,8 +33,8 @@ export function storeImportDecl(...namespaces: Nullable<Namespace>[]): ts.Import
     return importDecl(specs, FileName.store, '', false);
 }
 
-type Nullable<T> = T | null | undefined;
-
-function isNonNullable<T>(value: Nullable<T>): value is T {
-    return value != null;
+export function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
+    return imports.map(interfaceName =>
+        importDecl([importSpec(interfaceName)], `./${interfaceName}`),
+    );
 }

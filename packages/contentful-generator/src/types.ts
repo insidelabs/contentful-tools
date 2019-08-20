@@ -21,6 +21,14 @@ export enum FileName {
     store = '@insidelabs/contentful-store',
 }
 
+export enum StoreExport {
+    ContentfulStore = 'ContentfulStore',
+    Content = 'Content',
+    Field = 'Field',
+    Link = 'Link',
+    Resolved = 'Resolved',
+}
+
 export enum Namespace {
     Content = 'Content',
     Field = 'Field',

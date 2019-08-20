@@ -1,36 +1,20 @@
 import * as ts from 'typescript';
 import { exportModifiers } from './exports';
+import { extendsClause } from './heritage';
 
 export function interfaceDecl(
     interfaceName: string,
-    members: TypeMembers,
     typeParameters?: ts.TypeParameterDeclaration[],
     extendsExpressions?: ts.ExpressionWithTypeArguments[],
+    members?: TypeMembers,
 ) {
     return ts.createInterfaceDeclaration(
         undefined,
         exportModifiers(),
         interfaceName,
         typeParameters,
-        extendsExpressions ? extendsClause(extendsExpressions) : undefined,
+        extendsClause(extendsExpressions),
         typeMembers(members),
-    );
-}
-
-export function extendsClause(
-    extendsExpressions: ts.ExpressionWithTypeArguments[],
-): ts.HeritageClause[] {
-    return [ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, extendsExpressions)];
-}
-
-export function extendsExpression(
-    name: string,
-    qualifier: string,
-    ...typeArguments: ts.TypeNode[]
-): ts.ExpressionWithTypeArguments {
-    return ts.createExpressionWithTypeArguments(
-        typeArguments,
-        ts.createPropertyAccess(ts.createIdentifier(name), qualifier),
     );
 }
 
@@ -38,7 +22,9 @@ export function typeLiteral(members: TypeMembers): ts.TypeLiteralNode {
     return ts.createTypeLiteralNode(typeMembers(members));
 }
 
-export function typeMembers(members: TypeMembers): ts.PropertySignature[] {
+export function typeMembers(members?: TypeMembers): ts.PropertySignature[] {
+    if (!members) return [];
+
     return Object.keys(members).map(key => {
         const value = members[key];
 
