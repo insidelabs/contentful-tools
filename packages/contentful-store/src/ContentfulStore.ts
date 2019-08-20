@@ -101,8 +101,8 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
 
     public getEntry<E extends Content.Entry = Content.Entry>(
         id: string,
-        contentTypeId?: Util.GetContentTypeId<E>,
         locale: BaseLocale | ExtraLocales = this.baseLocale,
+        contentTypeId?: Util.GetContentTypeId<E>,
     ): Resolved.Entry<E> | null {
         this.onContentAccess();
         const entry = this.entries[locale].get(id);
@@ -112,8 +112,8 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     }
 
     public getEntries<E extends Content.Entry = Content.Entry>(
-        contentTypeId?: Util.GetContentTypeId<E>,
         locale: BaseLocale | ExtraLocales = this.baseLocale,
+        contentTypeId?: Util.GetContentTypeId<E>,
     ): Resolved.Entry<E>[] {
         this.onContentAccess();
         const entries = Array.from(this.entries[locale].values());
