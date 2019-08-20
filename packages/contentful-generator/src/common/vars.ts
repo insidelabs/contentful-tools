@@ -1,16 +1,18 @@
 import * as ts from 'typescript';
 import { exportModifiers } from './modifiers';
 
-export function assignConst(
+export function assign(
     name: string,
-    type: ts.TypeNode,
-    value: ts.Expression,
+    type: ts.TypeNode | undefined,
+    value: ts.Expression | undefined,
+    nodeFlags: ts.NodeFlags = ts.NodeFlags.Const,
+    exported: boolean = true,
 ): ts.VariableStatement {
     return ts.createVariableStatement(
-        exportModifiers(),
+        exported ? exportModifiers() : undefined,
         ts.createVariableDeclarationList(
             [ts.createVariableDeclaration(name, type, value)],
-            ts.NodeFlags.Const,
+            nodeFlags,
         ),
     );
 }

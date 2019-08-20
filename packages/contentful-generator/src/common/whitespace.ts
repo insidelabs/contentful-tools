@@ -7,7 +7,7 @@ export function processNewLines(sourceText: string): string {
     return sourceText;
 }
 
-export function newLineAbove<T extends ts.Node>(node: T): T {
+export function spaceAbove<T extends ts.Node>(node: T): T {
     return ts.addSyntheticLeadingComment(
         node,
         ts.SyntaxKind.SingleLineCommentTrivia,

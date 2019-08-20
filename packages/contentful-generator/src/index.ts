@@ -15,8 +15,8 @@ import { processNewLines } from './common/whitespace';
 import { generateAsset } from './generate/Asset';
 import { generateCommonEntry } from './generate/CommonEntry';
 import { generateContentTypeId } from './generate/ContentTypeId';
+import { generateGetters } from './generate/getters';
 import { generateInterface } from './generate/interfaces';
-import { generateContentStore } from './generate/ContentStore';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);
@@ -35,7 +35,7 @@ export async function generate(
         generateContentTypeId(resolvedNameMap),
         generateAsset(config),
         generateCommonEntry(contentTypes, config),
-        generateContentStore(resolvedNameMap, config),
+        generateGetters(resolvedNameMap, config),
         ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap, config)),
     ];
 

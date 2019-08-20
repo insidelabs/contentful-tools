@@ -20,3 +20,7 @@ export function stringLiteralType(value: string): ts.LiteralTypeNode {
 export function nullType(): ts.KeywordTypeNode {
     return ts.createNull();
 }
+
+export function voidType(): ts.KeywordTypeNode {
+    return ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword);
+}

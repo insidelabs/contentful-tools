@@ -3,39 +3,45 @@ import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
 import { StoreExport, Type } from '../types';
-import { typeAlias } from '../common/aliases';
+import { localTypeAlias, typeAlias } from '../common/aliases';
 import { arrayOf } from '../common/arrays';
-import { block, classDecl, constructor, method, parameter } from '../common/classes';
 import { tsFile } from '../common/files';
+import { block, fn, parameter } from '../common/functions';
 import { interfaceImportDecls, storeImportDecl } from '../common/imports';
 import { arrayLiteral, stringLiteral } from '../common/literals';
-import { priv, readonly } from '../common/modifiers';
 import { prop } from '../common/props';
-import { qualifiedTypeRef, ref } from '../common/refs';
-import { nullType, string, stringLiteralType } from '../common/scalars';
+import { ref, qualifiedTypeRef } from '../common/refs';
+import { stringLiteralType, voidType, string, nullType } from '../common/scalars';
 import { union } from '../common/types';
-import { assignConst } from '../common/vars';
-import { newLineAbove, collapse } from '../common/whitespace';
-import { isNonNullable, Nullable } from '../util/Nullable';
+import { assign } from '../common/vars';
+import { collapse, spaceAbove } from '../common/whitespace';
+import { Nullable, isNonNullable } from '../util/Nullable';
 
-export function generateContentStore(
+export function generateGetters(
     contentTypeNameMap: Map<string, string>,
     config: Config,
 ): ts.SourceFile | null {
-    const { commonEntryType, contentStoreClass: className } = config.generate;
-    if (!className) return null;
+    const { assetType, commonEntryType, getters: fileName } = config.generate;
+    if (!fileName) return null;
 
     const typeNames = Array.from(contentTypeNameMap.values()).sort();
+
     const interfaceImports = commonEntryType
         ? [Type.ContentTypeId, commonEntryType, ...typeNames]
         : [Type.ContentTypeId, ...typeNames];
 
-    return tsFile(className, [
+    return tsFile(fileName, [
         storeImportDecl(StoreExport.ContentfulStore, StoreExport.Content, StoreExport.Resolved),
         interfaceImportDecls(interfaceImports),
         collapse(localeTypeDecls(config)),
         collapse(localeConstDecls(config)),
-        storeClass(className, typeNames, config),
+        store(),
+        storeSetter(),
+        assetGetters(assetType),
+        commonEntryType ? entryGetters(commonEntryType) : null,
+        flatMap(typeNames, typeName => {
+            return entryGetters(typeName, prop(Type.ContentTypeId, typeName));
+        }),
     ]);
 }
 
@@ -68,40 +74,39 @@ function localeConstDecls(config: Config): ts.VariableStatement[] {
     const { base, extra } = config.locales;
     const baseLiteral = stringLiteral(base);
     const extraLiterals = extra.map(stringLiteral);
+
+    const localesType = ts.createTupleTypeNode([
+        BaseLocale,
+        ts.createRestTypeNode(arrayOf(ExtraLocales)),
+    ]);
+
     return [
-        assignConst(Const.baseLocale, BaseLocale, baseLiteral),
-        assignConst(Const.extraLocales, arrayOf(ExtraLocales), arrayLiteral(extraLiterals)),
-        assignConst(Const.locales, arrayOf(Locales), arrayLiteral([baseLiteral, ...extraLiterals])),
+        assign(Const.baseLocale, BaseLocale, baseLiteral),
+        assign(Const.extraLocales, arrayOf(ExtraLocales), arrayLiteral(extraLiterals)),
+        assign(Const.locales, localesType, arrayLiteral([baseLiteral, ...extraLiterals])),
     ];
 }
 
-function storeClass(className: string, typeNames: string[], config: Config) {
-    const classConstructor = constructor([
-        parameter(
-            'store',
-            ref(StoreExport.ContentfulStore, BaseLocale, ExtraLocales),
-            false,
-            priv(),
-            readonly(),
+const Store = ref('Store');
+
+function store(): ts.Statement[] {
+    return [
+        localTypeAlias('Store', ref(StoreExport.ContentfulStore, BaseLocale, ExtraLocales)),
+        assign('store', Store, undefined, ts.NodeFlags.Let, false),
+    ].map(spaceAbove);
+}
+
+function storeSetter(): ts.FunctionDeclaration {
+    return fn(
+        'setStore',
+        [parameter('contentfulStore', Store)],
+        voidType(),
+        block(
+            ts.createExpressionStatement(
+                ts.createBinary(prop('store'), ts.SyntaxKind.EqualsToken, prop('contentfulStore')),
+            ),
         ),
-    ]);
-
-    let methods: ts.MethodDeclaration[] = [];
-
-    const { assetType, commonEntryType } = config.generate;
-    if (assetType) methods = methods.concat(assetGetters(assetType));
-    if (commonEntryType) methods = methods.concat(entryGetters(commonEntryType));
-
-    methods = methods.concat(
-        flatMap(typeNames, typeName => {
-            return entryGetters(typeName, prop(Type.ContentTypeId, typeName));
-        }),
     );
-
-    return classDecl(className, undefined, undefined, [
-        classConstructor,
-        ...methods.map(newLineAbove),
-    ]);
 }
 
 const params = {
@@ -114,17 +119,17 @@ const args = {
     locale: prop('locale'),
 };
 
-function assetGetters(typeName: string): [ts.MethodDeclaration, ts.MethodDeclaration] {
+function assetGetters(typeName: string): ts.FunctionDeclaration[] {
     const returnType = ref(StoreExport.Content, Type.Asset);
 
-    const getAsset = method(
+    const getAsset = fn(
         'get' + typeName,
         [params.id, params.locale],
         union(returnType, nullType()),
         getterBlock('getAsset', undefined, [args.id, args.locale]),
     );
 
-    const getAssets = method(
+    const getAssets = fn(
         'get' + pluralize.plural(typeName),
         [params.locale],
         arrayOf(returnType),
@@ -134,21 +139,18 @@ function assetGetters(typeName: string): [ts.MethodDeclaration, ts.MethodDeclara
     return [getAsset, getAssets];
 }
 
-function entryGetters(
-    typeName: string,
-    contentTypeId?: ts.Expression,
-): [ts.MethodDeclaration, ts.MethodDeclaration] {
+function entryGetters(typeName: string, contentTypeId?: ts.Expression): ts.FunctionDeclaration[] {
     const typeArg = ref(typeName);
     const returnType = qualifiedTypeRef(StoreExport.Resolved, Type.Entry, typeArg);
 
-    const getEntry = method(
+    const getEntry = fn(
         'get' + typeName,
         [params.id, params.locale],
         union(returnType, nullType()),
         getterBlock('getEntry', [typeArg], [args.id, args.locale, contentTypeId]),
     );
 
-    const getEntries = method(
+    const getEntries = fn(
         'getAll' + pluralize.plural(typeName),
         [params.locale],
         arrayOf(returnType),
@@ -165,7 +167,7 @@ function getterBlock(
 ): ts.Block {
     return block(
         ts.createReturn(
-            ts.createCall(prop('this', 'store', methodName), typeArgs, args.filter(isNonNullable)),
+            ts.createCall(prop('store', methodName), typeArgs, args.filter(isNonNullable)),
         ),
     );
 }

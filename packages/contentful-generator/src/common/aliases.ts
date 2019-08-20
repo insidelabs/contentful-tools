@@ -1,4 +1,3 @@
-import { Config } from '../config';
 import * as ts from 'typescript';
 import { StoreExport, Type } from '../types';
 import { exportModifiers } from './modifiers';
@@ -10,6 +9,14 @@ export function typeAlias(
     ...typeParameters: ts.TypeParameterDeclaration[]
 ): ts.TypeAliasDeclaration {
     return ts.createTypeAliasDeclaration(undefined, exportModifiers(), name, typeParameters, type);
+}
+
+export function localTypeAlias(
+    name: string,
+    type: ts.TypeNode,
+    ...typeParameters: ts.TypeParameterDeclaration[]
+): ts.TypeAliasDeclaration {
+    return ts.createTypeAliasDeclaration(undefined, undefined, name, typeParameters, type);
 }
 
 export function resolvedType(
