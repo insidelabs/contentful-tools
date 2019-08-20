@@ -20,7 +20,7 @@ const options = t.partial({
     generate: t.partial({
         assetType: t.string,
         commonEntryType: t.string,
-        contentStoreClass: t.string,
+        getters: t.union([t.string, t.boolean]),
     }),
     interfaceName: t.partial({
         prefix: t.string,
@@ -54,27 +54,35 @@ export function getConfig(configFilePath: string) {
 
     debug('Configuration validated');
 
+    const {
+        clean,
+        contentTypeNameMap = {},
+        generate = {},
+        interfaceName = {},
+        locales,
+        outDir,
+        prettier,
+        resolvedType,
+    } = parsed;
+
     return {
-        clean: parsed.clean || false,
-        contentTypeNameMap: parsed.contentTypeNameMap || {},
+        clean: clean || false,
+        contentTypeNameMap,
         generate: {
-            assetType: '',
-            commonEntryType: '',
-            contentStoreClass: '',
-            ...parsed.generate,
+            assetType: generate.assetType || '',
+            commonEntryType: generate.commonEntryType || '',
+            getters: (generate.getters === true ? 'index' : generate.getters) || '',
         },
         interfaceName: {
-            prefix: '',
-            suffix: '',
-            ...parsed.interfaceName,
+            prefix: interfaceName.prefix || '',
+            suffix: interfaceName.suffix || '',
         },
-        locales: parsed.locales,
-        outDir: parsed.outDir,
-        prettier: parsed.prettier || {},
-        resolvedType: parsed.resolvedType && {
-            prefix: '',
-            suffix: '',
-            ...parsed.resolvedType,
+        locales,
+        outDir,
+        prettier: prettier || {},
+        resolvedType: resolvedType && {
+            prefix: resolvedType.prefix || resolvedType.suffix ? '' : 'Resolved',
+            suffix: resolvedType.suffix || '',
         },
     };
 
