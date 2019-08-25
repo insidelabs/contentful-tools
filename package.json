@@ -4,5 +4,8 @@
     "license": "ISC",
     "devDependencies": {
         "lerna": "^3.16.4"
+    },
+    "scripts": {
+	"version": "lerna exec --scope @contentful-tools/store -- npm pack --dry-run --json | node scripts/bump && git add ."
     }
 }
