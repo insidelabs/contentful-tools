@@ -4,7 +4,7 @@ Using the two packages in this repo, you can generate type declarations and gett
 entries and assets of a Contentful space — just set up an instance of `ContentfulStore` in your own
 project, and get fast, type-safe, auto-synchronizing access to your content.
 
-### [Contentful Store](https://github.com/insidelabs/contentful-tools/packages/store#readme)
+### [Contentful Store](https://github.com/insidelabs/contentful-tools/tree/master/packages/store#readme)
 
 [![Version](https://badgen.net/npm/v/@contentful-tools/store)](https://npmjs.org/package/@contentful-tools/store)
 [![License](https://badgen.net/github/license/insidelabs/contentful-tools)](https://github.com/insidelabs/contentful-tools/blob/master/packages/store/LICENSE)
