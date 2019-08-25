@@ -49,7 +49,7 @@ An enum of all content type IDs for your space is also generated, allowing you t
 between content types for mixed reference fields with a switch statement on
 `entry.sys.contentType.sys.id`.
 
-#### Example generated type:
+#### Example generated interface:
 
 ```ts
 export interface Post extends Content.Entry<ContentTypeId.Post> {
@@ -131,49 +131,75 @@ Example `contentful.json` config file (a different name can be specified via the
 
 ```json5
 {
-    // (required) Where to put the generated files
+    // (required)
+    // Where to put the generated TypeScript files;
+    // created for you using the equivalent of mkdir -p
     "outDir": "./store",
 
-    // (required) Specify at least a base locale; extra may be an empty array
+    // (required)
+    // Specify at least a base locale; extra may be an empty array
     "locales": {
         "base": "en",
         "extra": ["de"]
     },
 
-    // (default = false) Whether to remove everything in the output directory before generation
+    // (default = false)
+    // Whether to remove everything in the output directory before generation;
+    // use at your own risk!
     "clean": true,
 
-    // (default = '') File extension to add before `.ts` for entry / asset files
+    // (default = '')
+    // File extension to add before '.ts' for entry / asset interface files
+    // (does not apply to getters file, which by default will be 'index.ts' if enabled);
+    // for example, BlogPost ⟹ 'BlogPost.data.ts'
     "fileExtension": ".data",
 
-    // (default = { assetType: 'Asset', entryType: 'Entry', getters: false })
+    // Options to control generated code
     "generate": {
-        "assetType": "ImageAsset", // (optional) name for generated asset type
-        "entryType": "Entry", // (optional) name for generated generic entry type
-        "getters": true // (optional) whether to generate getters or a filename; if true, filename = 'index.ts'
-    },
+        // (default = 'Asset')
+        // Name for generated asset type
+        "assetType": "ImageAsset",
 
-    // (default = { prefix: '', suffix: '' })
-    // Specify one or both of the following to control the generated interface names; e.g. MyPostEntry
-    "baseType": {
-        "prefix": "My",
-        "suffix": "Entry"
-    },
+        // (default = 'Entry')
+        // Name for generated generic entry type
+        "entryType": "GenericEntry",
 
-    // (optional)
-    // Specify one or both of the following to generate a type alias for each content type
-    // interface, such as: type ResolvedPostData = Resolved.Entry<Post>
-    "resolvedType": {
-        "prefix": "Resolved",
-        "suffix": "Data"
+        // (default = false)
+        // Whether to generate getters; if true, generates index.ts
+        // May also be a string specifying the getters filename (leave off '.ts')
+        "getters": true
     },
 
     // (optional)
     // Mapping from your content type IDs to desired interface names; the generated ContentTypeId
-    // enum uses the actual IDs as its string values
+    // enum uses the actual IDs as its string values. If omitted, interfaces will be generated with
+    // your content type IDs capitalized (e.g. blogPost ⟹ BlogPost).
     "contentTypeNameMap": {
         "blogPost": "Post",
         // ...
+    },
+
+    // (optional)
+    // Specify one or both of the following to control the generated interface names;
+    // for example: Post ⟹ MyPostData
+    "baseType": {
+        // (default = '')
+        "prefix": "My",
+
+        // (default = '')
+        "suffix": "Data"
+    },
+
+    // (optional)
+    // Specify one or both of the following to generate a type alias for resolved types;
+    // applies to the 'base' content type name;
+    // for example: Post ⟹ MyPostData ⟹ type ResolvedPostData = Resolved.Entry<MyPostData>
+    "resolvedType": {
+        // (default = 'Resolved')
+        "prefix": "Resolved",
+
+        // (default = '')
+        "suffix": "Data"
     }
 }
 ```
@@ -184,7 +210,7 @@ The generator uses the TypeScript compiler API and Prettier internally. If you h
 somewhere that Prettier can find, the generator will use it to format the resulting code.
 
 
-### CLI Usage
+### CLI usage
 
 ```
 Generates a type-safe Contentful content delivery client.
@@ -211,11 +237,11 @@ DESCRIPTION
   These may also be sourced from a .env file, located in the working directory.
 ```
 
-### Improvements
+## Possible improvements
 
-The generator CLI could be improved by the following:
-
+* Add tests!
 * Produce a useful error message if you try to use the getters without first setting up the store properly
 * Fetch locales, instead of requiring them in the config
 * Use [cosmiconfig](https://github.com/davidtheclark/cosmiconfig), to allow JS or YAML config files
+* Document the config with a JSON schema and upload to [JSON Schema Store](http://schemastore.org/json/)
 * Add a flag to prefer values from .env over ones set in the environment (makes it easier to use for multiple spaces)
