@@ -1,6 +1,6 @@
 {
     "name": "@contentful-tools/generator",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "A generator for type declarations based on Contentful content types",
     "keywords": [
         "contentful",
@@ -58,7 +58,7 @@
         "typescript": "^3.5.3"
     },
     "devDependencies": {
-        "@contentful-tools/store": "^0.1.1",
+        "@contentful-tools/store": "^0.2.0",
         "@types/camelcase": "^5.2.0",
         "@types/debug": "^4.1.5",
         "@types/dotenv": "^6.1.1",
