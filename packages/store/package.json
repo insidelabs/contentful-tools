@@ -7,7 +7,7 @@
     ],
     "author": "Inside Labs",
     "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/store#readme",
-    "license": "MIT",
+    "license": "ISC",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "directories": {
