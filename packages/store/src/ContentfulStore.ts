@@ -111,6 +111,22 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
             : null;
     }
 
+    public getEntryByFieldValue<
+        E extends Content.Entry,
+        F extends keyof E['fields'] = keyof E['fields'],
+        V extends E['fields'][F] = E['fields'][F],
+    >(
+        field: F,
+        value: V,
+        locale: BaseLocale | ExtraLocales = this.baseLocale,
+        contentTypeId?: Util.GetContentTypeId<E>,
+    ): Resolved.Entry<E> | null {
+        this.onContentAccess();
+        const entries = this.getEntries<E>(locale, contentTypeId);
+        const entry = entries.find(e => (e.fields as any)[field] === value);
+        return entry || null;
+    }
+
     public getEntries<E extends Content.Entry = Content.Entry>(
         locale: BaseLocale | ExtraLocales = this.baseLocale,
         contentTypeId?: Util.GetContentTypeId<E>,

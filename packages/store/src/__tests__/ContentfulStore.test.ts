@@ -88,6 +88,10 @@ describe('ContentfulStore', () => {
             expect(spy).toHaveBeenCalledTimes(1);
         });
 
+        it('should auto-sync on getting an entry by field value', () => {
+            store.getEntryByFieldValue('name', 'Foo');
+        });
+
         it('should auto-sync on getting entries', () => {
             store.getEntries();
             expect(spy).toHaveBeenCalledTimes(1);
@@ -144,6 +148,11 @@ describe('ContentfulStore', () => {
 
         it('should return an entry', () => {
             const entry = store.getEntry<Widget>('foo');
+            expect(entry!.sys.id).toMatchInlineSnapshot(`"foo"`);
+        });
+
+        it('should return an entry by field value', () => {
+            const entry = store.getEntryByFieldValue<Widget, 'name'>('name', 'Foo');
             expect(entry!.sys.id).toMatchInlineSnapshot(`"foo"`);
         });
 
