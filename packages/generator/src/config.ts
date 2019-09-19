@@ -22,6 +22,7 @@ const options = t.partial({
         assetType: t.string,
         entryType: t.string,
         getters: t.union([t.string, t.boolean]),
+        fieldGetters: t.array(t.string),
     }),
     baseType: t.partial({
         prefix: t.string,
@@ -75,6 +76,7 @@ export function getConfig(configFilePath: string) {
             assetType: generate.assetType || 'Asset',
             entryType: generate.entryType || 'Entry',
             getters: (generate.getters === true ? 'index' : generate.getters) || '',
+            fieldGetters: generate.fieldGetters || [],
         },
         baseType: {
             prefix: baseType.prefix || '',

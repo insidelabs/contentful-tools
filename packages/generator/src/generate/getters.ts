@@ -1,4 +1,4 @@
-import { flatMap } from 'lodash';
+import { flatMap, upperFirst } from 'lodash';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
@@ -22,7 +22,7 @@ export function generateGetters(
     config: Config,
 ): ts.SourceFile | null {
     const { fileExtension, generate } = config;
-    const { assetType, entryType, getters: fileName } = generate;
+    const { assetType, entryType, getters: fileName, fieldGetters } = generate;
 
     if (!fileName) return null;
 
@@ -40,7 +40,7 @@ export function generateGetters(
         assetGetters(assetType),
         entryType ? entryGetters(entryType) : null,
         flatMap(typeNames, typeName => {
-            return entryGetters(typeName, prop(Type.ContentTypeId, typeName));
+            return entryGetters(typeName, prop(Type.ContentTypeId, typeName), fieldGetters);
         }),
     ]);
 }
@@ -143,7 +143,11 @@ function assetGetters(typeName: string): ts.FunctionDeclaration[] {
     return [getAsset, getAssets];
 }
 
-function entryGetters(typeName: string, contentTypeId?: ts.Expression): ts.FunctionDeclaration[] {
+function entryGetters(
+    typeName: string,
+    contentTypeId?: ts.Expression,
+    fieldGetters: string[] = [],
+): ts.FunctionDeclaration[] {
     const typeArg = ref(typeName);
     const returnType = qualifiedTypeRef(StoreExport.Resolved, Type.Entry, typeArg);
 
@@ -154,6 +158,19 @@ function entryGetters(typeName: string, contentTypeId?: ts.Expression): ts.Funct
         getterBlock('getEntry', [typeArg], [args.id, args.locale, contentTypeId]),
     );
 
+    const getEntryByFieldValues = fieldGetters.map(fieldName =>
+        fn(
+            'get' + typeName + 'By' + upperFirst(fieldName),
+            [parameter(fieldName, string()), params.locale],
+            union(returnType, nullType()),
+            getterBlock(
+                'getEntryByFieldValue',
+                [typeArg],
+                [stringLiteral(fieldName), prop(fieldName), args.locale, contentTypeId],
+            ),
+        ),
+    );
+
     const getEntries = fn(
         'getAll' + pluralize.plural(typeName),
         [params.locale],
@@ -161,7 +178,7 @@ function entryGetters(typeName: string, contentTypeId?: ts.Expression): ts.Funct
         getterBlock('getEntries', [typeArg], [args.locale, contentTypeId]),
     );
 
-    return [getEntry, getEntries];
+    return [getEntry, ...getEntryByFieldValues, getEntries];
 }
 
 function getterBlock(
