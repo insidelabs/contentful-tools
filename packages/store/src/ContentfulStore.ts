@@ -114,7 +114,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     public getEntryByFieldValue<
         E extends Content.Entry,
         F extends keyof E['fields'] = keyof E['fields'],
-        V extends E['fields'][F] = E['fields'][F],
+        V extends E['fields'][F] = E['fields'][F]
     >(
         field: F,
         value: V,
