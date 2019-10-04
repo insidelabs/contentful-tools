@@ -46,7 +46,7 @@
         "contentful-management": "^5.9.0",
         "debug": "^4.1.1",
         "dotenv": "^8.0.0",
-        "fp-ts": "^2.0.5",
+        "fp-ts": "^2.1.0",
         "io-ts": "^2.0.1",
         "listr": "^0.14.3",
         "lodash": "^4.17.15",
