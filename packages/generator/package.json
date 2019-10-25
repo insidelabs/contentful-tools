@@ -65,7 +65,7 @@
         "@types/listr": "^0.14.2",
         "@types/lodash": "^4.14.136",
         "@types/mkdirp": "^0.5.2",
-        "@types/node": "^12.7.2",
+        "@types/node": "^12.11.7",
         "@types/pluralize": "0.0.29",
         "@types/prettier": "^1.18.2",
         "@types/rimraf": "^2.0.2",
