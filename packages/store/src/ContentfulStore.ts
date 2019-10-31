@@ -31,7 +31,7 @@ namespace Internals {
     export type Assets = LocaleMapped<AssetMap>;
     export type Entries = LocaleMapped<EntryMap>;
 
-    type AssetMap = Map<string, Content.Asset>;
+    type AssetMap = Map<string, Resolved.Asset>;
     type EntryMap = Map<string, Resolved.Entry>;
 
     type LocaleMapped<T> = { [locale in string]: T };
@@ -89,12 +89,12 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     public getAsset(
         id: string,
         locale: BaseLocale | ExtraLocales = this.baseLocale,
-    ): Content.Asset | null {
+    ): Resolved.Asset | null {
         this.onContentAccess();
         return this.assets[locale].get(id) || null;
     }
 
-    public getAssets(locale: BaseLocale | ExtraLocales = this.baseLocale): Content.Asset[] {
+    public getAssets(locale: BaseLocale | ExtraLocales = this.baseLocale): Resolved.Asset[] {
         this.onContentAccess();
         return Array.from(this.assets[locale].values());
     }
@@ -106,7 +106,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     ): Resolved.Entry<E> | null {
         this.onContentAccess();
         const entry = this.entries[locale].get(id);
-        return entry && (entry.sys.contentType.sys.id === contentTypeId || !contentTypeId)
+        return entry && (entry.__typename === contentTypeId || !contentTypeId)
             ? (entry as Resolved.Entry<E>)
             : null;
     }
@@ -123,7 +123,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     ): Resolved.Entry<E> | null {
         this.onContentAccess();
         const entries = this.getEntries<E>(locale, contentTypeId);
-        const entry = entries.find(e => (e.fields as any)[field] === value);
+        const entry = entries.find(e => (e as any)[field] === value);
         return entry || null;
     }
 
@@ -134,7 +134,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         this.onContentAccess();
         const entries = Array.from(this.entries[locale].values());
         return (contentTypeId
-            ? entries.filter(entry => entry.sys.contentType.sys.id === contentTypeId)
+            ? entries.filter(entry => entry.__typename === contentTypeId)
             : entries) as Resolved.Entry<E>[];
     }
 
@@ -178,10 +178,10 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     private processSyncAsset(
         asset: Sync.Asset<BaseLocale, ExtraLocales>,
         locale: BaseLocale | ExtraLocales,
-    ): Content.Asset {
+    ): Resolved.Asset {
         return {
-            sys: asset.sys,
-            fields: this.processFieldsForLocale(locale, asset.fields),
+            __id: asset.sys.id,
+            ...this.processFieldsForLocale(locale, asset.fields),
         };
     }
 
@@ -211,7 +211,10 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         locale: BaseLocale | ExtraLocales,
         entry: E,
     ): Resolved.Entry<E> {
-        const fields: { [key: string]: unknown } = {};
+        const resolved: { [key: string]: unknown } = {};
+
+        resolved.__typename = entry.sys.contentType.sys.id;
+        resolved.__id = entry.sys.id;
 
         for (const [key, value] of Object.entries(entry.fields)) {
             const descriptor: PropertyDescriptor = {
@@ -232,13 +235,10 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
                 descriptor.writable = false;
             }
 
-            Object.defineProperty(fields, key, descriptor);
+            Object.defineProperty(resolved, key, descriptor);
         }
 
-        return {
-            sys: entry.sys,
-            fields: fields,
-        } as Resolved.Entry<E>;
+        return resolved as Resolved.Entry<E>;
     }
 
     private onContentAccess() {

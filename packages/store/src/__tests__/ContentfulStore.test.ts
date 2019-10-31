@@ -138,7 +138,7 @@ describe('ContentfulStore', () => {
 
         it('should return an asset', () => {
             const asset = store.getAsset('bargis');
-            expect(asset!.sys.id).toMatchInlineSnapshot(`"bargis"`);
+            expect(asset!.__id).toMatchInlineSnapshot(`"bargis"`);
         });
 
         it('should return null for a missing asset', () => {
@@ -148,12 +148,12 @@ describe('ContentfulStore', () => {
 
         it('should return an entry', () => {
             const entry = store.getEntry<Widget>('foo');
-            expect(entry!.sys.id).toMatchInlineSnapshot(`"foo"`);
+            expect(entry!.__id).toMatchInlineSnapshot(`"foo"`);
         });
 
         it('should return an entry by field value', () => {
             const entry = store.getEntryByFieldValue<Widget, 'name'>('name', 'Foo');
-            expect(entry!.sys.id).toMatchInlineSnapshot(`"foo"`);
+            expect(entry!.__id).toMatchInlineSnapshot(`"foo"`);
         });
 
         it('should return null for a missing entry', () => {
@@ -164,7 +164,7 @@ describe('ContentfulStore', () => {
         it('should return entries of a specific content type', () => {
             const entries = store.getEntries('en', 'Gadget');
             expect(entries).toHaveLength(1);
-            expect(entries[0].sys.id).toMatchInlineSnapshot(`"doodah"`);
+            expect(entries[0].__id).toMatchInlineSnapshot(`"doodah"`);
         });
     });
 
@@ -181,29 +181,29 @@ describe('ContentfulStore', () => {
         });
 
         it('should resolve a linked asset', () => {
-            const asset = foo.fields.image;
-            expect(asset.sys.id).toMatchInlineSnapshot(`"bargis"`);
+            const asset = foo.image;
+            expect(asset.__id).toMatchInlineSnapshot(`"bargis"`);
         });
 
         it('should resolve a linked entry', () => {
-            const child = foo.fields.child;
-            expect(child.sys.id).toMatchInlineSnapshot(`"bar"`);
+            const child = foo.child;
+            expect(child.__id).toMatchInlineSnapshot(`"bar"`);
         });
 
         it('should resolve a deeply-linked entry', () => {
-            const grandchild = foo.fields.child.fields.child;
-            expect(grandchild.sys.id).toMatchInlineSnapshot(`"baz"`);
+            const grandchild = foo.child.child;
+            expect(grandchild.__id).toMatchInlineSnapshot(`"baz"`);
         });
 
         it('should resolve a circularly-linked entry', () => {
             const qux = store.getEntry<Widget>('qux')!;
-            const self = qux.fields.child;
-            expect(self.sys.id).toMatchInlineSnapshot(`"qux"`);
+            const self = qux.child;
+            expect(self.__id).toMatchInlineSnapshot(`"qux"`);
         });
 
         it('should resolve an array of linked assets', () => {
-            const assets = foo.fields.images!;
-            expect(assets.map(asset => asset.sys.id)).toMatchInlineSnapshot(`
+            const assets = foo.images!;
+            expect(assets.map(asset => asset.__id)).toMatchInlineSnapshot(`
                 Array [
                   "bargis",
                   "padasjoki",
@@ -212,8 +212,8 @@ describe('ContentfulStore', () => {
         });
 
         it('should resolve an array of linked entries', () => {
-            const entries = foo.fields.relatives!;
-            expect(entries.map(entry => entry.sys.id)).toMatchInlineSnapshot(`
+            const entries = foo.relatives!;
+            expect(entries.map(entry => entry.__id)).toMatchInlineSnapshot(`
                 Array [
                   "baz",
                   "qux",
