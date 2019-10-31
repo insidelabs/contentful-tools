@@ -124,7 +124,7 @@ const args = {
 };
 
 function assetGetters(typeName: string): ts.FunctionDeclaration[] {
-    const returnType = ref(StoreExport.Content, Type.Asset);
+    const returnType = ref(StoreExport.Resolved, Type.Asset);
 
     const getAsset = fn(
         'get' + typeName,
