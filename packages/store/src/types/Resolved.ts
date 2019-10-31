@@ -4,7 +4,7 @@ import { Link } from './Link';
 export namespace Resolved {
     export type Asset<A extends Content.Asset = Content.Asset> = A['fields'] & {
         __id: A['sys']['id'];
-    }
+    };
 
     export type Entry<E extends Content.Entry = Content.Entry> = EntryFields<E['fields']> & {
         __typename: E['sys']['contentType']['sys']['id'];
