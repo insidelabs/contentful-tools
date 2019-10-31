@@ -15,19 +15,19 @@ export function generateAsset(config: Config): ts.SourceFile | null {
 
     if (!typeName) return null;
 
-    const typeAliases = [typeAlias(typeName, ref(StoreExport.Content, Type.Asset))];
+    const typeAliases = [typeAlias(typeName, ref(StoreExport.Resolved, Type.Asset))];
 
     if (config.resolvedType) {
         typeAliases.push(
             typeAlias(
                 config.resolvedType.prefix + typeName + config.resolvedType.suffix,
-                ref(StoreExport.Content, Type.Asset),
+                ref(StoreExport.Resolved, Type.Asset),
             ),
         );
     }
 
     return tsFile(typeName + fileExtension, [
-        storeImportDecl(StoreExport.Content),
+        storeImportDecl(StoreExport.Resolved),
         collapse(typeAliases),
     ]);
 }
