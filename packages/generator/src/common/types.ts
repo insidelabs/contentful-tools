@@ -1,6 +1,10 @@
 import * as ts from 'typescript';
 import { exportModifiers } from './modifiers';
 import { extendsClause } from './heritage';
+import camelCase from 'camelcase';
+import * as pluralize from 'pluralize';
+import { typeAlias } from './aliases';
+import { stringLiteralType } from './scalars';
 
 export function interfaceDecl(
     interfaceName: string,
@@ -81,4 +85,16 @@ export function mappedType(typeParameter: string, indexType: ts.TypeNode, object
         undefined,
         objectType,
     );
+}
+
+export function stringLiteralTypeUnionFromValidation(
+    interfaceName: string,
+    fieldName: string,
+    values: string[],
+): ts.TypeAliasDeclaration {
+    const name = camelCase([interfaceName, pluralize.singular(fieldName)], {
+        pascalCase: true,
+    });
+
+    return typeAlias(name, union(values.map(stringLiteralType)));
 }

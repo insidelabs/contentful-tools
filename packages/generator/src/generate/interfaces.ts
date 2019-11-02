@@ -6,13 +6,18 @@ import { Config } from '../config';
 import { LinkType } from '../types';
 import { resolvedType, typeAlias } from '../common/aliases';
 import { array } from '../common/arrays';
-import { enumFromValidation } from '../common/enums';
 import { tsFile } from '../common/files';
 import { commonEntryImportDecl, interfaceImportDecls, storeImportDecl } from '../common/imports';
 import { extendsExpression } from '../common/heritage';
 import { ref, typeRef } from '../common/refs';
 import { boolean, number, string, stringLiteralType } from '../common/scalars';
-import { interfaceDecl, propertySignature, typeMembers, union } from '../common/types';
+import {
+    interfaceDecl,
+    propertySignature,
+    stringLiteralTypeUnionFromValidation,
+    typeMembers,
+    union,
+} from '../common/types';
 import { sortedArray } from '../util/arrays';
 import { removeLineAbove } from '../common/whitespace';
 
@@ -26,7 +31,7 @@ export function generateInterface(
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
     const aliases: ts.TypeAliasDeclaration[] = [];
-    const enums: ts.EnumDeclaration[] = [];
+    const stringTypeAliases: ts.TypeAliasDeclaration[] = [];
     const storeImports: Set<string> = new Set();
     const interfaceImports: Set<string> = new Set();
 
@@ -38,7 +43,7 @@ export function generateInterface(
         interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
         aliases,
         interfaceDeclaration,
-        enums,
+        stringTypeAliases,
     ]);
 
     function contentTypeInterfaceDecl(): ts.InterfaceDeclaration {
@@ -126,8 +131,8 @@ export function generateInterface(
             | undefined;
 
         if (validation) {
-            const declaration = enumFromValidation(interfaceName, id, validation.in);
-            enums.push(declaration);
+            const declaration = stringLiteralTypeUnionFromValidation(interfaceName, id, validation.in);
+            stringTypeAliases.push(declaration);
             return ref(ts.idText(declaration.name));
         } else {
             return string();
