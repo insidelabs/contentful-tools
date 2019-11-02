@@ -3,7 +3,7 @@ import * as c from 'contentful-management';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
-import { Field, FieldType, LinkType, StoreExport, Type } from '../types';
+import { LinkType } from '../types';
 import { resolvedType, typeAlias } from '../common/aliases';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
@@ -28,15 +28,15 @@ export function generateInterface(
 
     const aliases: ts.TypeAliasDeclaration[] = [];
     const enums: ts.EnumDeclaration[] = [];
-    const storeImports: Set<StoreExport> = new Set();
+    const storeImports: Set<string> = new Set();
     const interfaceImports: Set<string> = new Set();
 
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
     return tsFile(interfaceName + fileExtension, [
         storeImportDecl(
-            StoreExport.Content,
-            resolved && StoreExport.Resolved,
+            'Content',
+            resolved && 'Resolved',
             sortedArray(storeImports),
         ),
         contentTypeIdImportDecl(),
@@ -53,9 +53,9 @@ export function generateInterface(
             undefined,
             [
                 extendsExpression(
-                    StoreExport.Content,
-                    Type.Entry,
-                    ref(Type.ContentTypeId, interfaceName),
+                    'Content',
+                    'Entry',
+                    ref('ContentTypeId', interfaceName),
                 ),
             ],
             {
@@ -79,37 +79,37 @@ export function generateInterface(
 
     function createFieldTypeNode(field: c.ContentTypeField): ts.TypeNode {
         switch (field.type) {
-            case FieldType.Boolean:
+            case 'Boolean':
                 return boolean();
 
-            case FieldType.Date:
+            case 'Date':
                 return string();
 
-            case FieldType.Integer:
-            case FieldType.Number:
+            case 'Integer':
+            case 'Number':
                 return number();
 
-            case FieldType.Symbol:
-            case FieldType.Text:
+            case 'Symbol':
+            case 'Text':
                 return textWithEnums(field.id, field.validations);
 
-            case FieldType.Location:
-                storeImports.add(StoreExport.Field);
-                return ref(StoreExport.Field, Field.Location);
+            case 'Location':
+                storeImports.add('Location');
+                return ref('Location');
 
-            case FieldType.Object:
-                storeImports.add(StoreExport.Field);
-                return ref(StoreExport.Field, Field.JSON);
+            case 'Object':
+                storeImports.add('JSON');
+                return ref('JSON');
 
-            case FieldType.RichText:
-                return ref(StoreExport.Field, Field.RichText);
+            case 'RichText':
+                return ref('RichText');
 
-            case FieldType.Link:
+            case 'Link':
                 return linkWithImports(field.id, field.linkType, field.validations);
 
-            case FieldType.Array:
+            case 'Array':
                 switch (field.items.type) {
-                    case FieldType.Link:
+                    case 'Link':
                         return array(
                             linkWithImports(
                                 field.id,
@@ -118,7 +118,7 @@ export function generateInterface(
                             ),
                         );
 
-                    case FieldType.Symbol:
+                    case 'Symbol':
                         return array(textWithEnums(field.id, field.items.validations));
 
                     default:
@@ -150,20 +150,20 @@ export function generateInterface(
         validations: c.LinkedEntryValidation[] | c.LinkedAssetValidation[],
     ): ts.TypeNode {
         switch (linkType) {
-            case LinkType.Asset:
+            case 'Asset':
                 return assetLink(/* validations as c.LinkedAssetValidation[] */);
-            case LinkType.Entry:
+            case 'Entry':
                 return entryLink(id, validations as c.LinkedEntryValidation[]);
         }
     }
 
     function assetLink(/* validations: c.LinkedAssetValidation[] */): ts.TypeNode {
-        storeImports.add(StoreExport.Link);
-        return ref(StoreExport.Link, Type.Asset);
+        storeImports.add('Link');
+        return ref('Link', 'Asset');
     }
 
     function entryLink(id: string, validations: c.LinkedEntryValidation[]): ts.TypeNode {
-        storeImports.add(StoreExport.Link);
+        storeImports.add('Link');
 
         if (validations.length > 0) {
             const linkedContentTypes = flatMap(
@@ -189,13 +189,13 @@ export function generateInterface(
                         aliases.push(removeLineAbove(resolvedAlias));
                     }
 
-                    return qualifiedTypeRef(StoreExport.Link, Type.Entry, ref(alias));
+                    return qualifiedTypeRef('Link', 'Entry', ref(alias));
                 } else {
-                    return qualifiedTypeRef(StoreExport.Link, Type.Entry, unionType);
+                    return qualifiedTypeRef('Link', 'Entry', unionType);
                 }
             }
         }
 
-        return ref(StoreExport.Link, Type.Entry);
+        return ref('Link', 'Entry');
     }
 }

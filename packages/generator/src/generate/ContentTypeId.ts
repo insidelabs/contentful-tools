@@ -1,15 +1,14 @@
 import * as ts from 'typescript';
-import { Type } from '../types';
 import { enumDecl } from '../common/enums';
 import { tsFile } from '../common/files';
 import { importDecl, importSpec } from '../common/imports';
 
 export function generateContentTypeId(contentTypeNameMap: Map<string, string>): ts.SourceFile {
-    return tsFile(Type.ContentTypeId, [contentTypeIdEnum(contentTypeNameMap)]);
+    return tsFile('ContentTypeId', [contentTypeIdEnum(contentTypeNameMap)]);
 }
 
 export function contentTypeIdImportDecl(): ts.ImportDeclaration {
-    return importDecl([importSpec(Type.ContentTypeId)], Type.ContentTypeId);
+    return importDecl([importSpec('ContentTypeId')], 'ContentTypeId');
 }
 
 function contentTypeIdEnum(contentTypeNameMap: Map<string, string>): ts.EnumDeclaration {
@@ -21,5 +20,5 @@ function contentTypeIdEnum(contentTypeNameMap: Map<string, string>): ts.EnumDecl
                 return [interfaceName, contentTypeId];
             }),
     );
-    return enumDecl(Type.ContentTypeId, valuesMap);
+    return enumDecl('ContentTypeId', valuesMap);
 }

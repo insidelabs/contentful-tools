@@ -2,7 +2,6 @@ import { flatMap, upperFirst } from 'lodash';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
-import { StoreExport, Type } from '../types';
 import { localTypeAlias, typeAlias } from '../common/aliases';
 import { arrayOf } from '../common/arrays';
 import { tsFile } from '../common/files';
@@ -82,7 +81,7 @@ function store(): ts.Statement[] {
     return [
         localTypeAlias(
             'Store',
-            ref(StoreExport.ContentfulStore, ref('BaseLocale'), ref('ExtraLocale')),
+            ref('ContentfulStore', ref('BaseLocale'), ref('ExtraLocale')),
         ),
         assign('store', Store, undefined, ts.NodeFlags.Let, false),
     ].map(spaceAbove);
@@ -114,7 +113,7 @@ const args = {
 };
 
 function assetGetters(config: Config): ts.FunctionDeclaration[] {
-    const returnType = ref(Type.Asset);
+    const returnType = ref('Asset');
 
     const { id, locale } = params(config);
 

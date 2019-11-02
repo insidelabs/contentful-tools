@@ -1,7 +1,6 @@
 import { flatten } from 'lodash';
 import { join } from 'path';
 import * as ts from 'typescript';
-import { FileName } from '../types';
 import { isNonNullable, Nullable } from '../util/Nullable';
 
 export function importSpec(name: string) {
@@ -32,7 +31,7 @@ export function storeImportDecl(
         .sort()
         .map(importSpec);
 
-    return importDecl(specs, FileName.store, '', false);
+    return importDecl(specs, '@contentful-tools/store', '', false);
 }
 
 export function interfaceImportDecls(

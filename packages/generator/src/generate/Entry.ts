@@ -2,7 +2,6 @@ import * as c from 'contentful-management';
 import { every, find } from 'lodash';
 import * as ts from 'typescript';
 import { Config } from '../config';
-import { StoreExport, Type } from '../types';
 import { resolvedType } from '../common/aliases';
 import { tsFile } from '../common/files';
 import { extendsExpression } from '../common/heritage';
@@ -19,7 +18,7 @@ export function generateEntry(contentTypes: c.ContentType[], config: Config): ts
     if (!interfaceName) return null;
 
     return tsFile(interfaceName + fileExtension, [
-        storeImportDecl(StoreExport.Content, resolved && StoreExport.Resolved),
+        storeImportDecl('Content', resolved && 'Resolved'),
         contentTypeIdImportDecl(),
         resolved && resolvedType(interfaceName, resolved.prefix, resolved.suffix),
         commonEntryInterfaceDecl(interfaceName, contentTypes),
@@ -34,7 +33,7 @@ function commonEntryInterfaceDecl(
     return interfaceDecl(
         interfaceName,
         undefined,
-        [extendsExpression(StoreExport.Content, Type.Entry, ref(Type.ContentTypeId))],
+        [extendsExpression('Content', 'Entry', ref('ContentTypeId'))],
         { fields },
     );
 }

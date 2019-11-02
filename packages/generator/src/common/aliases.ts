@@ -1,5 +1,4 @@
 import * as ts from 'typescript';
-import { StoreExport, Type } from '../types';
 import { exportModifiers } from './modifiers';
 import { qualifiedTypeRef, ref } from './refs';
 
@@ -26,6 +25,6 @@ export function resolvedType(
 ): ts.TypeAliasDeclaration {
     return typeAlias(
         prefix + interfaceName + suffix,
-        qualifiedTypeRef(StoreExport.Resolved, Type.Entry, ref(interfaceName)),
+        qualifiedTypeRef('Resolved', 'Entry', ref(interfaceName)),
     );
 }
