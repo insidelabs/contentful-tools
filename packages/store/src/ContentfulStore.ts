@@ -9,6 +9,7 @@ export interface ContentfulStoreConfig<BaseLocale extends string, ExtraLocales e
     client: ContentfulClientApi;
     spaceId: string;
     locales: [BaseLocale, ...ExtraLocales[]];
+    typenameMap: { [K in string]: string };
     handleError?: (error: Error) => void;
     autoSync?: {
         minInterval: number;
@@ -18,6 +19,7 @@ export interface ContentfulStoreConfig<BaseLocale extends string, ExtraLocales e
 export class ContentfulStore<BaseLocale extends string, ExtraLocales extends string> {
     private readonly client: ContentfulClientApi;
     private readonly locales: [BaseLocale, ...ExtraLocales[]];
+    private readonly typenameMap: { [K in string]: string };
 
     private readonly debug: Debugger;
     private readonly handleError: (error: Error) => void;
@@ -38,11 +40,13 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         client,
         spaceId,
         locales,
+        typenameMap,
         handleError,
         autoSync,
     }: ContentfulStoreConfig<BaseLocale, ExtraLocales>) {
         this.client = client;
         this.locales = locales;
+        this.typenameMap = typenameMap;
 
         this.debug = createDebugger(`@contentful-tools/store:${spaceId}`);
 
@@ -82,13 +86,11 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     public getEntry<E extends Entry>(
         id: string,
         locale: BaseLocale | ExtraLocales = this.baseLocale,
-        contentTypeId?: E['__typename'],
+        typename?: E['__typename'],
     ): E | null {
         this.onContentAccess();
         const entry = this.entries[locale].get(id);
-        return entry && (entry.__typename === contentTypeId || !contentTypeId)
-            ? (entry as E)
-            : null;
+        return entry && (entry.__typename === typename || !typename) ? (entry as E) : null;
     }
 
     public getEntryByFieldValue<
@@ -99,23 +101,21 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         field: F,
         value: V,
         locale: BaseLocale | ExtraLocales = this.baseLocale,
-        contentTypeId?: E['__typename'],
+        typename?: E['__typename'],
     ): E | null {
         this.onContentAccess();
-        const entries = this.getEntries<E>(locale, contentTypeId);
+        const entries = this.getEntries<E>(locale, typename);
         const entry = entries.find(entry => entry[field] === value);
         return entry || null;
     }
 
     public getEntries<E extends Entry>(
         locale: BaseLocale | ExtraLocales = this.baseLocale,
-        contentTypeId?: E['__typename'],
+        typename?: E['__typename'],
     ): E[] {
         this.onContentAccess();
         const entries = Array.from(this.entries[locale].values());
-        return (contentTypeId
-            ? entries.filter(entry => entry.__typename === contentTypeId)
-            : entries) as E[];
+        return (typename ? entries.filter(entry => entry.__typename === typename) : entries) as E[];
     }
 
     public async sync(): Promise<void> {
@@ -170,8 +170,10 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         entry: SyncEntry<BaseLocale, ExtraLocales>,
         locale: BaseLocale | ExtraLocales,
     ): Entry {
+        const contentTypeId = entry.sys.contentType.sys.id;
+
         const resolved: Entry = {
-            __typename: entry.sys.contentType.sys.id,
+            __typename: this.typenameMap[contentTypeId] || contentTypeId,
             __id: entry.sys.id,
         };
 
