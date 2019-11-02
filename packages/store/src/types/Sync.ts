@@ -1,64 +1,81 @@
-import { Content } from './Content';
-import { Link } from './Link';
-import { SysType } from './SysType';
+import { ContentTypeLink, EnvironmentLink, SpaceLink } from './Link';
+import { Asset } from './Asset';
+import { Entry } from './Entry';
 
-export namespace Sync {
-    export type Query = {
-        initial?: boolean;
-        locale?: string;
-        resolveLinks?: boolean;
-        nextSyncToken?: string;
+export interface SyncQuery {
+    initial?: boolean;
+    locale?: string;
+    resolveLinks?: boolean;
+    nextSyncToken?: string;
+}
+
+export interface SyncResult<BaseLocale extends string, ExtraLocales extends string> {
+    assets: SyncAsset<BaseLocale, ExtraLocales>[];
+    entries: SyncEntry<BaseLocale, ExtraLocales>[];
+    deletedAssets: DeletedAsset[];
+    deletedEntries: DeletedEntry[];
+    nextSyncToken: string;
+}
+
+export interface SyncAsset<BaseLocale extends string, ExtraLocales extends string> {
+    sys: {
+        id: string;
+        type: 'Asset';
+        space: SpaceLink;
+        environment: EnvironmentLink;
+        createdAt: string;
+        updatedAt: string;
+        revision: number;
     };
+    fields: LocalizedFieldsOf<Asset, BaseLocale, ExtraLocales>;
+}
 
-    export interface Result<BaseLocale extends string, ExtraLocales extends string> {
-        assets: Asset<BaseLocale, ExtraLocales>[];
-        entries: Entry<BaseLocale, ExtraLocales>[];
-        deletedAssets: DeletedAsset[];
-        deletedEntries: DeletedEntry[];
-        nextSyncToken: string;
-    }
+export interface SyncEntry<BaseLocale extends string, ExtraLocales extends string> {
+    sys: {
+        id: string;
+        type: 'Entry';
+        space: SpaceLink;
+        environment: EnvironmentLink;
+        contentType: ContentTypeLink;
+        createdAt: string;
+        updatedAt: string;
+        revision: number;
+    };
+    fields: LocalizedFieldsOf<Entry, BaseLocale, ExtraLocales>;
+}
 
-    export interface Asset<BaseLocale extends string, ExtraLocales extends string> {
-        sys: Content.Asset['sys'];
-        fields: Fields<Content.Asset['fields'], BaseLocale, ExtraLocales>;
-    }
-
-    export interface Entry<BaseLocale extends string, ExtraLocales extends string> {
-        sys: Content.Entry['sys'];
-        fields: Fields<Content.Entry['fields'], BaseLocale, ExtraLocales>;
-    }
-
-    export interface DeletedAsset {
-        sys: {
-            id: string;
-            type: SysType.DeletedAsset;
-            space: Link.Space;
-            environment: Link.Environment;
-            createdAt: string;
-            updatedAt: string;
-            deletedAt: string;
-            revision: number;
-        };
-    }
-
-    export interface DeletedEntry {
-        sys: {
-            id: string;
-            type: SysType.DeletedEntry;
-            space: Link.Space;
-            environment: Link.Environment;
-            createdAt: string;
-            updatedAt: string;
-            deletedAt: string;
-            revision: number;
-        };
-    }
-
-    export type Fields<
-        F extends { [key: string]: any },
-        BaseLocale extends string,
-        ExtraLocales extends string
-    > = {
-        [K in keyof F]: { [B in BaseLocale]: F[K] } & { [L in ExtraLocales]?: F[K] };
+export interface DeletedAsset {
+    sys: {
+        id: string;
+        type: 'DeletedAsset';
+        space: SpaceLink;
+        environment: EnvironmentLink;
+        createdAt: string;
+        updatedAt: string;
+        deletedAt: string;
+        revision: number;
     };
 }
+
+export interface DeletedEntry {
+    sys: {
+        id: string;
+        type: 'DeletedEntry';
+        space: SpaceLink;
+        environment: EnvironmentLink;
+        createdAt: string;
+        updatedAt: string;
+        deletedAt: string;
+        revision: number;
+    };
+}
+
+export type LocalizedFieldsOf<
+    T extends { [key: string]: any },
+    BaseLocale extends string,
+    ExtraLocales extends string
+> = {
+    [K in keyof Omit<T, SysField>]: { [B in BaseLocale]: T[K] } & { [L in ExtraLocales]?: T[K] };
+};
+
+export type SysField = '__typename' | '__id';

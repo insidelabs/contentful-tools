@@ -1,29 +1,27 @@
-import { ContentfulStore } from '../ContentfulStore';
-import { Content } from '../types/Content';
-import { Link } from '../types/Link';
-import { Resolved } from '../types/Resolved';
+import { ContentfulStore, ContentfulStoreConfig } from '../ContentfulStore';
 import { client } from './__stubs__/contentful.stub';
+import { Asset } from '../types/Asset';
 import SpyInstance = jest.SpyInstance;
 
 type BaseLocale = 'en';
 type ExtraLocales = 'de';
 
-interface Widget extends Content.Entry<'Widget'> {
-    fields: {
-        name: string;
-        description?: string;
-        child: Link.Entry<Widget>;
-        relatives?: Link.Entry<Widget>[];
-        image: Link.Asset;
-        images?: Link.Asset[];
-    };
+interface Widget {
+    __typename: 'Widget';
+    __id: string;
+    name: string;
+    description?: string;
+    child: Widget;
+    relatives?: Widget[];
+    image: Asset;
+    images?: Asset[];
 }
 
 describe('ContentfulStore', () => {
     const autoSync = { minInterval: 10000 };
     let store: ContentfulStore<BaseLocale, ExtraLocales>;
 
-    function createStore(config: Partial<ContentfulStore.Config<BaseLocale, ExtraLocales>> = {}) {
+    function createStore(config: Partial<ContentfulStoreConfig<BaseLocale, ExtraLocales>> = {}) {
         return new ContentfulStore({
             ...config,
             client,
@@ -89,7 +87,7 @@ describe('ContentfulStore', () => {
         });
 
         it('should auto-sync on getting an entry by field value', () => {
-            store.getEntryByFieldValue('name', 'Foo');
+            store.getEntryByFieldValue<Widget>('name', 'Foo');
         });
 
         it('should auto-sync on getting entries', () => {
@@ -169,7 +167,7 @@ describe('ContentfulStore', () => {
     });
 
     describe('links', () => {
-        let foo: Resolved.Entry<Widget>;
+        let foo: Widget;
 
         beforeAll(async () => {
             store = await createStore();

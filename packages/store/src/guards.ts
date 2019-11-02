@@ -1,28 +1,27 @@
-import { Link } from './types/Link';
-import { SysType } from './types/SysType';
+import { AssetLink, EntryLink, Link } from './types/Link';
 
-export function isAssetLink(value: unknown): value is Link.Asset {
-    return isLink(value) && value.sys.linkType === SysType.Asset;
+export function isAssetLink(value: unknown): value is AssetLink {
+    return isLink(value) && value.sys.linkType === 'Asset';
 }
 
-export function isAssetLinkArray(value: unknown): value is Link.Asset[] {
+export function isAssetLinkArray(value: unknown): value is AssetLink[] {
     return Array.isArray(value) && value.length > 0 && isAssetLink(value[0]);
 }
 
-export function isEntryLink(value: unknown): value is Link.Entry {
-    return isLink(value) && value.sys.linkType === SysType.Entry;
+export function isEntryLink(value: unknown): value is EntryLink {
+    return isLink(value) && value.sys.linkType === 'Entry';
 }
 
-export function isEntryLinkArray(value: unknown): value is Link.Entry[] {
+export function isEntryLinkArray(value: unknown): value is EntryLink[] {
     return Array.isArray(value) && value.length > 0 && isEntryLink(value[0]);
 }
 
-function isLink(value: unknown): value is Link.Link {
+function isLink(value: unknown): value is Link {
     return (
         isRecord(value) &&
         isRecord(value.sys) &&
         typeof value.sys.type === 'string' &&
-        value.sys.type === SysType.Link &&
+        value.sys.type === 'Link' &&
         typeof value.sys.linkType === 'string'
     );
 }

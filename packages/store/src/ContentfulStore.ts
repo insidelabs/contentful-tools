@@ -1,40 +1,18 @@
 import createDebugger, { Debugger } from 'debug';
 import { ContentfulClientApi } from 'contentful';
-import { Content } from './types/Content';
-import { Resolved } from './types/Resolved';
-import { Sync } from './types/Sync';
-import { Util } from './types/Util';
+import { LocalizedFieldsOf, SyncAsset, SyncEntry, SyncQuery, SyncResult } from './types/Sync';
 import { isAssetLink, isAssetLinkArray, isEntryLink, isEntryLinkArray } from './guards';
+import { Asset } from './types/Asset';
+import { Entry } from './types/Entry';
 
-export namespace ContentfulStore {
-    export interface Config<BaseLocale extends string, ExtraLocales extends string> {
-        client: ContentfulClientApi;
-        spaceId: string;
-        locales: [BaseLocale, ...ExtraLocales[]];
-        handleError?: ErrorHandler;
-        autoSync?: {
-            minInterval: number;
-        };
-    }
-
-    export type ErrorHandler = (error: Error) => void;
-}
-
-namespace Internals {
-    export interface AutoSync {
-        readonly enabled: boolean;
-        readonly minInterval: number;
-        requestCount: number;
-        timeout: NodeJS.Timeout | null;
-    }
-
-    export type Assets = LocaleMapped<AssetMap>;
-    export type Entries = LocaleMapped<EntryMap>;
-
-    type AssetMap = Map<string, Resolved.Asset>;
-    type EntryMap = Map<string, Resolved.Entry>;
-
-    type LocaleMapped<T> = { [locale in string]: T };
+export interface ContentfulStoreConfig<BaseLocale extends string, ExtraLocales extends string> {
+    client: ContentfulClientApi;
+    spaceId: string;
+    locales: [BaseLocale, ...ExtraLocales[]];
+    handleError?: (error: Error) => void;
+    autoSync?: {
+        minInterval: number;
+    };
 }
 
 export class ContentfulStore<BaseLocale extends string, ExtraLocales extends string> {
@@ -42,12 +20,17 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     private readonly locales: [BaseLocale, ...ExtraLocales[]];
 
     private readonly debug: Debugger;
-    private readonly handleError: ContentfulStore.ErrorHandler;
+    private readonly handleError: (error: Error) => void;
 
-    private readonly autoSync: Internals.AutoSync;
+    private readonly autoSync: {
+        readonly enabled: boolean;
+        readonly minInterval: number;
+        requestCount: number;
+        timeout: NodeJS.Timeout | null;
+    };
 
-    private readonly assets: Internals.Assets = {};
-    private readonly entries: Internals.Entries = {};
+    private readonly assets: { [locale in string]: Map<string, Asset> } = {};
+    private readonly entries: { [locale in string]: Map<string, Entry> } = {};
 
     private syncToken?: string;
 
@@ -57,7 +40,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         locales,
         handleError,
         autoSync,
-    }: ContentfulStore.Config<BaseLocale, ExtraLocales>) {
+    }: ContentfulStoreConfig<BaseLocale, ExtraLocales>) {
         this.client = client;
         this.locales = locales;
 
@@ -86,60 +69,57 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         return this.locales[0];
     }
 
-    public getAsset(
-        id: string,
-        locale: BaseLocale | ExtraLocales = this.baseLocale,
-    ): Resolved.Asset | null {
+    public getAsset(id: string, locale: BaseLocale | ExtraLocales = this.baseLocale): Asset | null {
         this.onContentAccess();
         return this.assets[locale].get(id) || null;
     }
 
-    public getAssets(locale: BaseLocale | ExtraLocales = this.baseLocale): Resolved.Asset[] {
+    public getAssets(locale: BaseLocale | ExtraLocales = this.baseLocale): Asset[] {
         this.onContentAccess();
         return Array.from(this.assets[locale].values());
     }
 
-    public getEntry<E extends Content.Entry = Content.Entry>(
+    public getEntry<E extends Entry>(
         id: string,
         locale: BaseLocale | ExtraLocales = this.baseLocale,
-        contentTypeId?: Util.GetContentTypeId<E>,
-    ): Resolved.Entry<E> | null {
+        contentTypeId?: E['__typename'],
+    ): E | null {
         this.onContentAccess();
         const entry = this.entries[locale].get(id);
         return entry && (entry.__typename === contentTypeId || !contentTypeId)
-            ? (entry as Resolved.Entry<E>)
+            ? (entry as E)
             : null;
     }
 
     public getEntryByFieldValue<
-        E extends Content.Entry,
-        F extends keyof E['fields'] = keyof E['fields'],
-        V extends E['fields'][F] = E['fields'][F]
+        E extends Entry,
+        F extends keyof E = keyof E,
+        V extends E[F] = E[F]
     >(
         field: F,
         value: V,
         locale: BaseLocale | ExtraLocales = this.baseLocale,
-        contentTypeId?: Util.GetContentTypeId<E>,
-    ): Resolved.Entry<E> | null {
+        contentTypeId?: E['__typename'],
+    ): E | null {
         this.onContentAccess();
         const entries = this.getEntries<E>(locale, contentTypeId);
-        const entry = entries.find(e => (e as any)[field] === value);
+        const entry = entries.find(entry => entry[field] === value);
         return entry || null;
     }
 
-    public getEntries<E extends Content.Entry = Content.Entry>(
+    public getEntries<E extends Entry>(
         locale: BaseLocale | ExtraLocales = this.baseLocale,
-        contentTypeId?: Util.GetContentTypeId<E>,
-    ): Resolved.Entry<E>[] {
+        contentTypeId?: E['__typename'],
+    ): E[] {
         this.onContentAccess();
         const entries = Array.from(this.entries[locale].values());
         return (contentTypeId
             ? entries.filter(entry => entry.__typename === contentTypeId)
-            : entries) as Resolved.Entry<E>[];
+            : entries) as E[];
     }
 
     public async sync(): Promise<void> {
-        const query: Sync.Query = { resolveLinks: false };
+        const query: SyncQuery = { resolveLinks: false };
 
         if (this.syncToken) query.nextSyncToken = this.syncToken;
         else query.initial = true;
@@ -152,7 +132,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
             deletedAssets,
             deletedEntries,
             nextSyncToken,
-        } = result.toPlainObject() as Sync.Result<BaseLocale, ExtraLocales>;
+        } = result.toPlainObject() as SyncResult<BaseLocale, ExtraLocales>;
 
         this.debug(`Synced ${assets.length} assets`);
         this.debug(`Synced ${entries.length} entries`);
@@ -176,47 +156,28 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     }
 
     private processSyncAsset(
-        asset: Sync.Asset<BaseLocale, ExtraLocales>,
+        asset: SyncAsset<BaseLocale, ExtraLocales>,
         locale: BaseLocale | ExtraLocales,
-    ): Resolved.Asset {
+    ): Asset {
         return {
+            __typename: 'Asset',
             __id: asset.sys.id,
             ...this.processFieldsForLocale(locale, asset.fields),
         };
     }
 
     private processSyncEntry(
-        entry: Sync.Entry<BaseLocale, ExtraLocales>,
+        entry: SyncEntry<BaseLocale, ExtraLocales>,
         locale: BaseLocale | ExtraLocales,
-    ): Resolved.Entry {
-        return this.createResolvedEntry(locale, {
-            sys: entry.sys,
-            fields: this.processFieldsForLocale(locale, entry.fields),
-        });
-    }
+    ): Entry {
+        const resolved: Entry = {
+            __typename: entry.sys.contentType.sys.id,
+            __id: entry.sys.id,
+        };
 
-    private processFieldsForLocale<F extends { [key: string]: any }>(
-        locale: BaseLocale | ExtraLocales,
-        fields: Sync.Fields<F, BaseLocale, ExtraLocales>,
-    ): F {
-        return Object.assign(
-            {},
-            ...Object.keys(fields).map(key => ({
-                [key]: fields[key][locale] || fields[key][this.baseLocale],
-            })),
-        );
-    }
+        const fields = this.processFieldsForLocale(locale, entry.fields);
 
-    private createResolvedEntry<E extends Content.Entry>(
-        locale: BaseLocale | ExtraLocales,
-        entry: E,
-    ): Resolved.Entry<E> {
-        const resolved: { [key: string]: unknown } = {};
-
-        resolved.__typename = entry.sys.contentType.sys.id;
-        resolved.__id = entry.sys.id;
-
-        for (const [key, value] of Object.entries(entry.fields)) {
+        for (const [key, value] of Object.entries(fields)) {
             const descriptor: PropertyDescriptor = {
                 enumerable: true,
                 configurable: false,
@@ -238,7 +199,19 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
             Object.defineProperty(resolved, key, descriptor);
         }
 
-        return resolved as Resolved.Entry<E>;
+        return resolved as Entry;
+    }
+
+    private processFieldsForLocale<F extends { [key: string]: any }>(
+        locale: BaseLocale | ExtraLocales,
+        fields: LocalizedFieldsOf<F, BaseLocale, ExtraLocales>,
+    ): F {
+        return Object.assign(
+            {},
+            ...Object.keys(fields).map(key => ({
+                [key]: fields[key][locale] || fields[key][this.baseLocale],
+            })),
+        );
     }
 
     private onContentAccess() {

@@ -1,8 +1,8 @@
 import { ContentfulClientApi } from 'contentful';
-import { Sync } from '../../types/Sync';
+import { SyncQuery, SyncResult } from '../../types/Sync';
 
 class ClientStub {
-    sync({ initial }: Sync.Query): Sync.Result<'en', 'de'> {
+    sync({ initial }: SyncQuery): SyncResult<'en', 'de'> {
         return initial ? load : sync;
     }
 }
@@ -400,7 +400,7 @@ const load = {
     toPlainObject() {
         return this;
     },
-} as Sync.Result<'en', 'de'>;
+} as SyncResult<'en', 'de'>;
 
 const sync = {
     entries: [
@@ -582,6 +582,6 @@ const sync = {
     toPlainObject() {
         return this;
     },
-} as Sync.Result<'en', 'de'>;
+} as SyncResult<'en', 'de'>;
 
 export const client = (new ClientStub() as unknown) as ContentfulClientApi;

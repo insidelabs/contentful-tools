@@ -1,10 +1,9 @@
-export const enum SysType {
-    Asset = 'Asset',
-    ContentType = 'ContentType',
-    DeletedAsset = 'DeletedAsset',
-    DeletedEntry = 'DeletedEntry',
-    Entry = 'Entry',
-    Environment = 'Environment',
-    Link = 'Link',
-    Space = 'Space',
-}
+export type SysType =
+    | 'Asset'
+    | 'ContentType'
+    | 'DeletedAsset'
+    | 'DeletedEntry'
+    | 'Entry'
+    | 'Environment'
+    | 'Link'
+    | 'Space';
