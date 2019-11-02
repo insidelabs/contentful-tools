@@ -9,7 +9,7 @@ export interface ContentfulStoreConfig<BaseLocale extends string, ExtraLocales e
     client: ContentfulClientApi;
     spaceId: string;
     locales: [BaseLocale, ...ExtraLocales[]];
-    typenameMap: { [K in string]: string };
+    typenameMap?: { [K in string]: string };
     handleError?: (error: Error) => void;
     autoSync?: {
         minInterval: number;
@@ -46,7 +46,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     }: ContentfulStoreConfig<BaseLocale, ExtraLocales>) {
         this.client = client;
         this.locales = locales;
-        this.typenameMap = typenameMap;
+        this.typenameMap = typenameMap || {};
 
         this.debug = createDebugger(`@contentful-tools/store:${spaceId}`);
 
