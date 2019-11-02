@@ -28,7 +28,7 @@ export function qualifiedTypeRef(
     );
 }
 
-function typeRef(name: string, typeArguments?: ts.TypeNode[]): ts.TypeReferenceNode {
+export function typeRef(name: string, typeArguments?: ts.TypeNode[]): ts.TypeReferenceNode {
     return ts.createTypeReferenceNode(ts.createIdentifier(name), typeArguments);
 }
 

@@ -10,12 +10,12 @@ import { block, fn, parameter } from '../common/functions';
 import { interfaceImportDecls, storeImportDecl } from '../common/imports';
 import { arrayLiteral, stringLiteral } from '../common/literals';
 import { prop } from '../common/props';
-import { ref, qualifiedTypeRef } from '../common/refs';
-import { stringLiteralType, voidType, string, nullType } from '../common/scalars';
+import { ref, typeRef } from '../common/refs';
+import { nullType, string, stringLiteralType, voidType } from '../common/scalars';
 import { union } from '../common/types';
 import { assign } from '../common/vars';
 import { collapse, spaceAbove } from '../common/whitespace';
-import { Nullable, isNonNullable } from '../util/Nullable';
+import { isNonNullable, Nullable } from '../util/Nullable';
 
 export function generateGetters(
     contentTypeNameMap: Map<string, string>,
@@ -30,7 +30,7 @@ export function generateGetters(
     const interfaceImports = entryType ? [entryType, ...typeNames] : typeNames;
 
     return tsFile(fileName, [
-        storeImportDecl(StoreExport.ContentfulStore, StoreExport.Content, StoreExport.Resolved),
+        storeImportDecl('Asset', 'ContentfulStore'),
         interfaceImportDecls(interfaceImports, fileExtension),
         collapse(localeTypeDecls(config)),
         collapse(localeConstDecls(config)),
@@ -44,48 +44,34 @@ export function generateGetters(
     ]);
 }
 
-enum TypeAlias {
-    BaseLocale = 'BaseLocale',
-    ExtraLocales = 'ExtraLocales',
-    Locales = 'Locales',
-}
-
-enum Const {
-    baseLocale = 'baseLocale',
-    extraLocales = 'extraLocales',
-    locales = 'locales',
-}
-
-const BaseLocale = ref(TypeAlias.BaseLocale);
-const ExtraLocales = ref(TypeAlias.ExtraLocales);
-const Locales = ref(TypeAlias.Locales);
-
 function localeTypeDecls(config: Config): ts.DeclarationStatement[] {
     const { base, extra } = config.locales;
     return [
-        typeAlias(TypeAlias.BaseLocale, stringLiteralType(base)),
-        typeAlias(TypeAlias.ExtraLocales, union(extra.map(stringLiteralType))),
-        typeAlias(TypeAlias.Locales, union(ref(TypeAlias.BaseLocale), ref(TypeAlias.ExtraLocales))),
+        typeAlias('BaseLocale', stringLiteralType(base)),
+        typeAlias('ExtraLocale', union(extra.map(stringLiteralType))),
+        typeAlias('Locale', union(ref('BaseLocale'), ref('ExtraLocale'))),
     ];
 }
 
 function localeConstDecls(config: Config): ts.VariableStatement[] {
     const { base, extra } = config.locales;
-    const baseLiteral = stringLiteral(base);
-    const extraLiterals = extra.map(stringLiteral);
 
     const localesType = ts.createTupleTypeNode([
-        BaseLocale,
-        ts.createRestTypeNode(arrayOf(ExtraLocales)),
+        ref('BaseLocale'),
+        ts.createRestTypeNode(arrayOf(ref('ExtraLocale'))),
     ]);
 
     return [
-        assign(Const.baseLocale, BaseLocale, baseLiteral),
-        assign(Const.extraLocales, arrayOf(ExtraLocales), arrayLiteral(extraLiterals)),
+        assign('baseLocale', ref('BaseLocale'), stringLiteral(base)),
         assign(
-            Const.locales,
+            'extraLocales',
+            arrayOf(ref('ExtraLocale')),
+            arrayLiteral(extra.map(stringLiteral)),
+        ),
+        assign(
+            'locales',
             localesType,
-            arrayLiteral([prop(Const.baseLocale), ts.createSpread(prop(Const.extraLocales))]),
+            arrayLiteral([prop('baseLocale'), ts.createSpread(prop('extraLocales'))]),
         ),
     ];
 }
@@ -94,7 +80,10 @@ const Store = ref('Store');
 
 function store(): ts.Statement[] {
     return [
-        localTypeAlias('Store', ref(StoreExport.ContentfulStore, BaseLocale, ExtraLocales)),
+        localTypeAlias(
+            'Store',
+            ref(StoreExport.ContentfulStore, ref('BaseLocale'), ref('ExtraLocale')),
+        ),
         assign('store', Store, undefined, ts.NodeFlags.Let, false),
     ].map(spaceAbove);
 }
@@ -115,7 +104,7 @@ function storeSetter(): ts.FunctionDeclaration {
 function params(config: Config) {
     return {
         id: parameter('id', string()),
-        locale: parameter('locale', Locales, config.generate.localeOptional),
+        locale: parameter('locale', ref('Locale'), config.generate.localeOptional),
     };
 }
 
@@ -125,7 +114,7 @@ const args = {
 };
 
 function assetGetters(config: Config): ts.FunctionDeclaration[] {
-    const returnType = ref(StoreExport.Resolved, Type.Asset);
+    const returnType = ref(Type.Asset);
 
     const { id, locale } = params(config);
 
@@ -152,8 +141,8 @@ function entryGetters(
     contentTypeId?: ts.Expression,
     fieldGetters: string[] = [],
 ): ts.FunctionDeclaration[] {
+    const returnType = typeRef(typeName);
     const typeArg = ref(typeName);
-    const returnType = qualifiedTypeRef(StoreExport.Resolved, Type.Entry, typeArg);
 
     const { id, locale } = params(config);
 
