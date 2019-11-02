@@ -37,10 +37,10 @@ export function generateGetters(
         collapse(localeConstDecls(config)),
         store(),
         storeSetter(),
-        assetGetters(assetType),
-        entryType ? entryGetters(entryType) : null,
+        assetGetters(config),
+        entryType ? entryGetters(config, entryType) : null,
         flatMap(typeNames, typeName => {
-            return entryGetters(typeName, prop(Type.ContentTypeId, typeName), fieldGetters);
+            return entryGetters(config, typeName, prop(Type.ContentTypeId, typeName), fieldGetters);
         }),
     ]);
 }
@@ -113,29 +113,33 @@ function storeSetter(): ts.FunctionDeclaration {
     );
 }
 
-const params = {
-    id: parameter('id', string()),
-    locale: parameter('locale', Locales, true),
-};
+function params(config: Config) {
+    return {
+        id: parameter('id', string()),
+        locale: parameter('locale', Locales, config.generate.localeOptional),
+    };
+}
 
 const args = {
     id: prop('id'),
     locale: prop('locale'),
 };
 
-function assetGetters(typeName: string): ts.FunctionDeclaration[] {
+function assetGetters(config: Config): ts.FunctionDeclaration[] {
     const returnType = ref(StoreExport.Resolved, Type.Asset);
 
+    const { id, locale } = params(config);
+
     const getAsset = fn(
-        'get' + typeName,
-        [params.id, params.locale],
+        'get' + config.generate.assetType,
+        [id, locale],
         union(returnType, nullType()),
         getterBlock('getAsset', undefined, [args.id, args.locale]),
     );
 
     const getAssets = fn(
-        'get' + pluralize.plural(typeName),
-        [params.locale],
+        'get' + pluralize.plural(config.generate.assetType),
+        [locale],
         arrayOf(returnType),
         getterBlock('getAssets', undefined, [args.locale]),
     );
@@ -144,6 +148,7 @@ function assetGetters(typeName: string): ts.FunctionDeclaration[] {
 }
 
 function entryGetters(
+    config: Config,
     typeName: string,
     contentTypeId?: ts.Expression,
     fieldGetters: string[] = [],
@@ -151,9 +156,11 @@ function entryGetters(
     const typeArg = ref(typeName);
     const returnType = qualifiedTypeRef(StoreExport.Resolved, Type.Entry, typeArg);
 
+    const { id, locale } = params(config);
+
     const getEntry = fn(
         'get' + typeName,
-        [params.id, params.locale],
+        [id, locale],
         union(returnType, nullType()),
         getterBlock('getEntry', [typeArg], [args.id, args.locale, contentTypeId]),
     );
@@ -161,7 +168,7 @@ function entryGetters(
     const getEntryByFieldValues = fieldGetters.map(fieldName =>
         fn(
             'get' + typeName + 'By' + upperFirst(fieldName),
-            [parameter(fieldName, string()), params.locale],
+            [parameter(fieldName, string()), locale],
             union(returnType, nullType()),
             getterBlock(
                 'getEntryByFieldValue',
@@ -173,7 +180,7 @@ function entryGetters(
 
     const getEntries = fn(
         'getAll' + pluralize.plural(typeName),
-        [params.locale],
+        [locale],
         arrayOf(returnType),
         getterBlock('getEntries', [typeArg], [args.locale, contentTypeId]),
     );
