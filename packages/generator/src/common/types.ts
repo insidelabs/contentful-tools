@@ -6,7 +6,7 @@ export function interfaceDecl(
     interfaceName: string,
     typeParameters?: ts.TypeParameterDeclaration[],
     extendsExpressions?: ts.ExpressionWithTypeArguments[],
-    members?: TypeMembers,
+    members?: TypeMembers | ts.PropertySignature[],
 ) {
     return ts.createInterfaceDeclaration(
         undefined,
@@ -14,7 +14,7 @@ export function interfaceDecl(
         interfaceName,
         typeParameters,
         extendsClause(extendsExpressions),
-        typeMembers(members),
+        Array.isArray(members) ? members : typeMembers(members),
     );
 }
 

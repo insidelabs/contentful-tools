@@ -8,13 +8,12 @@ import { resolvedType, typeAlias } from '../common/aliases';
 import { array } from '../common/arrays';
 import { enumFromValidation } from '../common/enums';
 import { tsFile } from '../common/files';
-import { interfaceImportDecls, storeImportDecl } from '../common/imports';
+import { commonEntryImportDecl, interfaceImportDecls, storeImportDecl } from '../common/imports';
 import { extendsExpression } from '../common/heritage';
-import { qualifiedTypeRef, ref } from '../common/refs';
-import { boolean, number, string } from '../common/scalars';
-import { interfaceDecl, propertySignature, union } from '../common/types';
+import { ref, typeRef } from '../common/refs';
+import { boolean, number, string, stringLiteralType } from '../common/scalars';
+import { interfaceDecl, propertySignature, typeMembers, union } from '../common/types';
 import { sortedArray } from '../util/arrays';
-import { typenameImportDecl } from './Typename';
 import { removeLineAbove } from '../common/whitespace';
 
 export function generateInterface(
@@ -34,10 +33,9 @@ export function generateInterface(
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
     return tsFile(interfaceName + fileExtension, [
-        storeImportDecl(sortedArray(storeImports)),
-        typenameImportDecl(),
+        storeImports.size > 0 ? storeImportDecl(sortedArray(storeImports)) : null,
+        commonEntryImportDecl(fileExtension),
         interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
-        resolved && resolvedType(interfaceName, resolved.prefix, resolved.suffix),
         aliases,
         interfaceDeclaration,
         enums,
@@ -47,19 +45,20 @@ export function generateInterface(
         return interfaceDecl(
             interfaceName,
             undefined,
-            [extendsExpression('Content', 'Entry', ref('ContentTypeId', interfaceName))],
-            {
-                fields: fieldsFromContentType(),
-            },
+            [extendsExpression('Entry')],
+            metaFields().concat(fieldsFromContentType()),
         );
     }
 
-    function fieldsFromContentType(): ts.TypeNode {
-        return ts.createTypeLiteralNode(
-            contentType.fields.map(field => {
-                return contentTypeField(field);
-            }),
-        );
+    function metaFields(): ts.PropertySignature[] {
+        return typeMembers({
+            __typename: stringLiteralType(interfaceName),
+            __id: string(),
+        });
+    }
+
+    function fieldsFromContentType(): ts.PropertySignature[] {
+        return contentType.fields.map(field => contentTypeField(field));
     }
 
     function contentTypeField(field: c.ContentTypeField): ts.PropertySignature {
@@ -92,6 +91,7 @@ export function generateInterface(
                 return ref('JSON');
 
             case 'RichText':
+                storeImports.add('RichText');
                 return ref('RichText');
 
             case 'Link':
@@ -148,13 +148,11 @@ export function generateInterface(
     }
 
     function assetLink(/* validations: c.LinkedAssetValidation[] */): ts.TypeNode {
-        storeImports.add('Link');
-        return ref('Link', 'Asset');
+        storeImports.add('Asset');
+        return typeRef('Asset');
     }
 
     function entryLink(id: string, validations: c.LinkedEntryValidation[]): ts.TypeNode {
-        storeImports.add('Link');
-
         if (validations.length > 0) {
             const linkedContentTypes = flatMap(
                 validations,
@@ -170,6 +168,8 @@ export function generateInterface(
                     }),
                 );
 
+                // If the field links to entries of more than one type, create a dedicated type
+                // alias for the union type
                 if (linkedContentTypes.length > 1) {
                     const alias = interfaceName + upperFirst(pluralize.singular(id));
                     aliases.push(typeAlias(alias, unionType));
@@ -179,9 +179,9 @@ export function generateInterface(
                         aliases.push(removeLineAbove(resolvedAlias));
                     }
 
-                    return qualifiedTypeRef('Link', 'Entry', ref(alias));
+                    return typeRef(alias);
                 } else {
-                    return qualifiedTypeRef('Link', 'Entry', unionType);
+                    return unionType;
                 }
             }
         }

@@ -30,7 +30,7 @@ export async function generate(
 
     const resolvedNameMap = resolveTypeNames(contentTypes, config);
     const allFiles = [
-        generateTypename(resolvedNameMap),
+        generateTypename(resolvedNameMap, config),
         generateEntry(contentTypes, config),
         generateGetters(resolvedNameMap, config),
         ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap, config)),

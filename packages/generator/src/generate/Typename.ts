@@ -1,23 +1,23 @@
 import * as ts from 'typescript';
 import { sortBy } from 'lodash';
 import { tsFile } from '../common/files';
-import { importDecl, importSpec } from '../common/imports';
 import { typeAlias } from '../common/aliases';
 import { mappedType, union } from '../common/types';
 import { string, stringLiteralType } from '../common/scalars';
 import { assign } from '../common/vars';
 import { typeRef } from '../common/refs';
 import { objectLiteral, stringLiteral } from '../common/literals';
+import { Config } from '../config';
 
-export function generateTypename(contentTypeNameMap: Map<string, string>): ts.SourceFile {
-    return tsFile('Typename', [
+export function generateTypename(
+    contentTypeNameMap: Map<string, string>,
+    config: Config,
+): ts.SourceFile {
+    const { fileExtension } = config;
+    return tsFile('Typename' + fileExtension, [
         typenameTypeAlias(contentTypeNameMap),
         typenameMap(contentTypeNameMap),
     ]);
-}
-
-export function typenameImportDecl(): ts.ImportDeclaration {
-    return importDecl([importSpec('Typename')], 'Typename');
 }
 
 function typenameTypeAlias(contentTypeNameMap: Map<string, string>): ts.TypeAliasDeclaration {

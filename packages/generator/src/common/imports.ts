@@ -2,6 +2,7 @@ import { flatten } from 'lodash';
 import { join } from 'path';
 import * as ts from 'typescript';
 import { isNonNullable, Nullable } from '../util/Nullable';
+import { Config } from '../config';
 
 export function importSpec(name: string) {
     return ts.createImportSpecifier(undefined, ts.createIdentifier(name));
@@ -41,4 +42,12 @@ export function interfaceImportDecls(
     return imports.map(interfaceName =>
         importDecl([importSpec(interfaceName)], `./${interfaceName}${fileExtension}`),
     );
+}
+
+export function typenameImportDecl(fileExtension: string): ts.ImportDeclaration {
+    return importDecl([importSpec('Typename')], 'Typename' + fileExtension);
+}
+
+export function commonEntryImportDecl(fileExtension: string): ts.ImportDeclaration {
+    return importDecl([importSpec('Entry')], 'Entry' + fileExtension);
 }

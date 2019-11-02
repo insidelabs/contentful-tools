@@ -10,11 +10,11 @@ export function extendsClause(
 
 export function extendsExpression(
     name: string,
-    qualifier: string,
+    qualifier?: string,
     ...typeArguments: ts.TypeNode[]
 ): ts.ExpressionWithTypeArguments {
     return ts.createExpressionWithTypeArguments(
         typeArguments,
-        ts.createPropertyAccess(ts.createIdentifier(name), qualifier),
+        qualifier ? ts.createPropertyAccess(ts.createIdentifier(name), qualifier) : ts.createIdentifier(name),
     );
 }

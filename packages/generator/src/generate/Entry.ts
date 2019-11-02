@@ -4,10 +4,9 @@ import * as ts from 'typescript';
 import { Config } from '../config';
 import { tsFile } from '../common/files';
 import { string } from '../common/scalars';
-import { propertySignature, typeMembers } from '../common/types';
-import { typenameImportDecl } from './Typename';
+import { interfaceDecl, propertySignature, typeMembers } from '../common/types';
 import { typeRef } from '../common/refs';
-import { exportModifiers } from '../common/modifiers';
+import { typenameImportDecl } from '../common/imports';
 
 export function generateEntry(contentTypes: c.ContentType[], config: Config): ts.SourceFile | null {
     const { generate, fileExtension } = config;
@@ -16,7 +15,7 @@ export function generateEntry(contentTypes: c.ContentType[], config: Config): ts
     if (!interfaceName) return null;
 
     return tsFile(interfaceName + fileExtension, [
-        typenameImportDecl(),
+        typenameImportDecl(fileExtension),
         commonEntryInterfaceDecl(interfaceName, contentTypes),
     ]);
 }
@@ -25,20 +24,16 @@ function commonEntryInterfaceDecl(
     interfaceName: string,
     contentTypes: c.ContentType[],
 ): ts.InterfaceDeclaration {
-    const commonFields = commonFieldsFromContentTypes(contentTypes);
-
     const metaFields = typeMembers({
         __typename: typeRef('Typename'),
         __id: string(),
     });
 
-    return ts.createInterfaceDeclaration(
-        undefined,
-        exportModifiers(),
+    return interfaceDecl(
         interfaceName,
         undefined,
         undefined,
-        [...metaFields, ...commonFields],
+        metaFields.concat(commonFieldsFromContentTypes(contentTypes)),
     );
 }
 
