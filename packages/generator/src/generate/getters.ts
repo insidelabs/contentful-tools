@@ -22,7 +22,7 @@ export function generateGetters(
     config: Config,
 ): ts.SourceFile | null {
     const { fileExtension, generate } = config;
-    const { assetType, entryType, getters: fileName, fieldGetters } = generate;
+    const { entryType, getters: fileName, fieldGetters } = generate;
 
     if (!fileName) return null;
 
@@ -31,7 +31,6 @@ export function generateGetters(
 
     return tsFile(fileName, [
         storeImportDecl(StoreExport.ContentfulStore, StoreExport.Content, StoreExport.Resolved),
-        interfaceImportDecls([Type.ContentTypeId]),
         interfaceImportDecls(interfaceImports, fileExtension),
         collapse(localeTypeDecls(config)),
         collapse(localeConstDecls(config)),
@@ -40,7 +39,7 @@ export function generateGetters(
         assetGetters(config),
         entryType ? entryGetters(config, entryType) : null,
         flatMap(typeNames, typeName => {
-            return entryGetters(config, typeName, prop(Type.ContentTypeId, typeName), fieldGetters);
+            return entryGetters(config, typeName, stringLiteral(typeName), fieldGetters);
         }),
     ]);
 }
