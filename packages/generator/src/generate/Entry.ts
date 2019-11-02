@@ -9,7 +9,7 @@ import { storeImportDecl } from '../common/imports';
 import { ref } from '../common/refs';
 import { string } from '../common/scalars';
 import { interfaceDecl, propertySignature } from '../common/types';
-import { contentTypeIdImportDecl } from './ContentTypeId';
+import { contentTypeIdImportDecl } from './Typename';
 
 export function generateEntry(contentTypes: c.ContentType[], config: Config): ts.SourceFile | null {
     const { generate, fileExtension, resolvedType: resolved } = config;

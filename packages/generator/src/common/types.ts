@@ -73,3 +73,12 @@ export function union(
         ? ts.createUnionTypeNode(typeOrTypes)
         : ts.createUnionTypeNode([typeOrTypes, ...restTypes]);
 }
+
+export function mappedType(typeParameter: string, indexType: ts.TypeNode, objectType: ts.TypeNode) {
+    return ts.createMappedTypeNode(
+        undefined,
+        ts.createTypeParameterDeclaration(typeParameter, indexType),
+        undefined,
+        objectType,
+    );
+}

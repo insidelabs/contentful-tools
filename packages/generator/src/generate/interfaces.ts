@@ -14,7 +14,7 @@ import { qualifiedTypeRef, ref } from '../common/refs';
 import { boolean, number, string } from '../common/scalars';
 import { interfaceDecl, propertySignature, union } from '../common/types';
 import { sortedArray } from '../util/arrays';
-import { contentTypeIdImportDecl } from './ContentTypeId';
+import { contentTypeIdImportDecl } from './Typename';
 import { removeLineAbove } from '../common/whitespace';
 
 export function generateInterface(
