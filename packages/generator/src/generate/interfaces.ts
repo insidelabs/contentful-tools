@@ -14,7 +14,7 @@ import { qualifiedTypeRef, ref } from '../common/refs';
 import { boolean, number, string } from '../common/scalars';
 import { interfaceDecl, propertySignature, union } from '../common/types';
 import { sortedArray } from '../util/arrays';
-import { contentTypeIdImportDecl } from './Typename';
+import { typenameImportDecl } from './Typename';
 import { removeLineAbove } from '../common/whitespace';
 
 export function generateInterface(
@@ -34,12 +34,8 @@ export function generateInterface(
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
     return tsFile(interfaceName + fileExtension, [
-        storeImportDecl(
-            'Content',
-            resolved && 'Resolved',
-            sortedArray(storeImports),
-        ),
-        contentTypeIdImportDecl(),
+        storeImportDecl(sortedArray(storeImports)),
+        typenameImportDecl(),
         interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
         resolved && resolvedType(interfaceName, resolved.prefix, resolved.suffix),
         aliases,
@@ -51,13 +47,7 @@ export function generateInterface(
         return interfaceDecl(
             interfaceName,
             undefined,
-            [
-                extendsExpression(
-                    'Content',
-                    'Entry',
-                    ref('ContentTypeId', interfaceName),
-                ),
-            ],
+            [extendsExpression('Content', 'Entry', ref('ContentTypeId', interfaceName))],
             {
                 fields: fieldsFromContentType(),
             },

@@ -2,25 +2,21 @@ import * as c from 'contentful-management';
 import { every, find } from 'lodash';
 import * as ts from 'typescript';
 import { Config } from '../config';
-import { resolvedType } from '../common/aliases';
 import { tsFile } from '../common/files';
-import { extendsExpression } from '../common/heritage';
-import { storeImportDecl } from '../common/imports';
-import { ref } from '../common/refs';
 import { string } from '../common/scalars';
-import { interfaceDecl, propertySignature } from '../common/types';
-import { contentTypeIdImportDecl } from './Typename';
+import { propertySignature, typeMembers } from '../common/types';
+import { typenameImportDecl } from './Typename';
+import { typeRef } from '../common/refs';
+import { exportModifiers } from '../common/modifiers';
 
 export function generateEntry(contentTypes: c.ContentType[], config: Config): ts.SourceFile | null {
-    const { generate, fileExtension, resolvedType: resolved } = config;
+    const { generate, fileExtension } = config;
 
     const interfaceName = generate.entryType;
     if (!interfaceName) return null;
 
     return tsFile(interfaceName + fileExtension, [
-        storeImportDecl('Content', resolved && 'Resolved'),
-        contentTypeIdImportDecl(),
-        resolved && resolvedType(interfaceName, resolved.prefix, resolved.suffix),
+        typenameImportDecl(),
         commonEntryInterfaceDecl(interfaceName, contentTypes),
     ]);
 }
@@ -29,18 +25,26 @@ function commonEntryInterfaceDecl(
     interfaceName: string,
     contentTypes: c.ContentType[],
 ): ts.InterfaceDeclaration {
-    const fields = commonFieldsFromContentTypes(contentTypes);
-    return interfaceDecl(
+    const commonFields = commonFieldsFromContentTypes(contentTypes);
+
+    const metaFields = typeMembers({
+        __typename: typeRef('Typename'),
+        __id: string(),
+    });
+
+    return ts.createInterfaceDeclaration(
+        undefined,
+        exportModifiers(),
         interfaceName,
         undefined,
-        [extendsExpression('Content', 'Entry', ref('ContentTypeId'))],
-        { fields },
+        undefined,
+        [...metaFields, ...commonFields],
     );
 }
 
-function commonFieldsFromContentTypes(contentTypes: c.ContentType[]): ts.TypeNode {
+function commonFieldsFromContentTypes(contentTypes: c.ContentType[]): ts.PropertySignature[] {
     if (contentTypes.length === 0) {
-        return ts.createTypeLiteralNode([]);
+        return [];
     }
 
     const baseType = contentTypes[0];
@@ -61,11 +65,7 @@ function commonFieldsFromContentTypes(contentTypes: c.ContentType[]): ts.TypeNod
         });
     });
 
-    const signatures = commonFields.map(field => {
-        return propertySignature(field.id, field.required, string());
-    });
-
-    return ts.createTypeLiteralNode(signatures);
+    return commonFields.map(field => propertySignature(field.id, field.required, string()));
 }
 
 function isSymbolField(field: c.ContentTypeField): field is c.SymbolField {

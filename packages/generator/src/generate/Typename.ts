@@ -16,8 +16,8 @@ export function generateTypename(contentTypeNameMap: Map<string, string>): ts.So
     ]);
 }
 
-export function contentTypeIdImportDecl(): ts.ImportDeclaration {
-    return importDecl([importSpec('ContentTypeId')], 'ContentTypeId');
+export function typenameImportDecl(): ts.ImportDeclaration {
+    return importDecl([importSpec('Typename')], 'Typename');
 }
 
 function typenameTypeAlias(contentTypeNameMap: Map<string, string>): ts.TypeAliasDeclaration {
