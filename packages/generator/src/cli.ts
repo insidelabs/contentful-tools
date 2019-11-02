@@ -69,6 +69,12 @@ class ContentfulClientGenerator extends Command {
             config: Config;
         }>([
             {
+                title: 'Loading configuration',
+                task: async context => {
+                    context.config = await getConfig(flags.config, flags);
+                },
+            },
+            {
                 title: 'Getting Contentful environment',
                 task: async context => {
                     if (!flags.token) {
@@ -77,23 +83,17 @@ class ContentfulClientGenerator extends Command {
                         );
                     }
 
-                    if (!flags.space) {
+                    if (!context.config.space) {
                         throw Error(
-                            'Must provide a space ID (with -s | --space | CONTENTFUL_SPACE_ID)',
+                            'Must provide a space ID (with -s | --space | CONTENTFUL_SPACE_ID) or in the configuration',
                         );
                     }
 
                     context.env = await getContentfulEnvironment(
                         flags.token,
-                        flags.space,
-                        flags.environment,
+                        context.config.space,
+                        context.config.environment,
                     );
-                },
-            },
-            {
-                title: 'Loading configuration',
-                task: async context => {
-                    context.config = await getConfig(flags.config);
                 },
             },
             {

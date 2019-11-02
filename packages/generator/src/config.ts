@@ -16,6 +16,8 @@ const required = t.interface({
 
 const options = t.partial({
     clean: t.boolean,
+    space: t.string,
+    environment: t.string,
     contentTypeNameMap: t.record(t.string, t.string),
     fileExtension: t.string,
     generate: t.partial({
@@ -38,7 +40,7 @@ const config = t.intersection([required, options]);
 
 const debug = createDebugger('@contentful-tools/generator:config');
 
-export function getConfig(configFilePath: string) {
+export function getConfig(configFilePath: string, flags: { space?: string; environment: string }) {
     if (!existsSync(configFilePath)) {
         throw Error(`Config file not found (${configFilePath})`);
     }
@@ -57,6 +59,8 @@ export function getConfig(configFilePath: string) {
 
     const {
         clean = false,
+        space,
+        environment,
         contentTypeNameMap = {},
         fileExtension = '',
         locales,
@@ -68,6 +72,8 @@ export function getConfig(configFilePath: string) {
 
     return {
         clean,
+        space: space || flags.space,
+        environment: environment || flags.environment,
         contentTypeNameMap,
         fileExtension,
         locales,
