@@ -62,11 +62,7 @@ function localeConstDecls(config: Config): ts.VariableStatement[] {
 
     return [
         assign('baseLocale', ref('BaseLocale'), stringLiteral(base)),
-        assign(
-            'extraLocales',
-            arrayOf(ref('ExtraLocale')),
-            arrayLiteral(extra.map(stringLiteral)),
-        ),
+        assign('extraLocales', arrayOf(ref('ExtraLocale')), arrayLiteral(extra.map(stringLiteral))),
         assign(
             'locales',
             localesType,
@@ -79,10 +75,7 @@ const Store = ref('Store');
 
 function store(): ts.Statement[] {
     return [
-        localTypeAlias(
-            'Store',
-            ref('ContentfulStore', ref('BaseLocale'), ref('ExtraLocale')),
-        ),
+        localTypeAlias('Store', ref('ContentfulStore', ref('BaseLocale'), ref('ExtraLocale'))),
         assign('store', Store, undefined, ts.NodeFlags.Let, false),
     ].map(spaceAbove);
 }

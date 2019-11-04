@@ -15,6 +15,8 @@ export function extendsExpression(
 ): ts.ExpressionWithTypeArguments {
     return ts.createExpressionWithTypeArguments(
         typeArguments,
-        qualifier ? ts.createPropertyAccess(ts.createIdentifier(name), qualifier) : ts.createIdentifier(name),
+        qualifier
+            ? ts.createPropertyAccess(ts.createIdentifier(name), qualifier)
+            : ts.createIdentifier(name),
     );
 }

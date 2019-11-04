@@ -84,7 +84,7 @@ export function generateInterface(
 
             case 'Symbol':
             case 'Text':
-                return textWithEnums(field.id, field.validations);
+                return textWithValidations(field.id, field.validations);
 
             case 'Location':
                 storeImports.add('Location');
@@ -113,7 +113,7 @@ export function generateInterface(
                         );
 
                     case 'Symbol':
-                        return array(textWithEnums(field.id, field.items.validations));
+                        return array(textWithValidations(field.id, field.items.validations));
 
                     default:
                         throw Error(`${interfaceName}.${field.name}: unknown array type`);
@@ -124,13 +124,17 @@ export function generateInterface(
         }
     }
 
-    function textWithEnums(id: string, validations: c.TextValidation[]): ts.TypeNode {
+    function textWithValidations(id: string, validations: c.TextValidation[]): ts.TypeNode {
         const validation = validations.find(v => v.hasOwnProperty('in')) as
             | c.EnumStringValidation
             | undefined;
 
         if (validation) {
-            const declaration = stringLiteralTypeUnionFromValidation(interfaceName, id, validation.in);
+            const declaration = stringLiteralTypeUnionFromValidation(
+                interfaceName,
+                id,
+                validation.in,
+            );
             stringTypeAliases.push(declaration);
             return ref(ts.idText(declaration.name));
         } else {
