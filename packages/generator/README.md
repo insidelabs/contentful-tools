@@ -165,11 +165,6 @@ Example `contentful.json` config file (a different name can be specified via the
         "entryType": "GenericEntry",
 
         // (default = false)
-        // Whether to generate getters; if true, generates index.ts
-        // May also be a string specifying the getters filename (don’t include the extension '.ts')
-        "getters": true,
-
-        // (default = false)
         // Whether the locale parameter to the generated getters is optional
         "localeOptional": true
     },

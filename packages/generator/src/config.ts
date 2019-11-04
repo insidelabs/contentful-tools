@@ -12,6 +12,7 @@ const required = t.interface({
         base: t.string,
         extra: t.array(t.string),
     }),
+    storeClass: t.string,
 });
 
 const options = t.partial({
@@ -23,10 +24,9 @@ const options = t.partial({
     generate: t.partial({
         assetType: t.string,
         entryType: t.string,
-        getters: t.union([t.string, t.boolean]),
         fieldGetters: t.array(t.string),
-        storeClass: t.string,
         localeOptional: t.boolean,
+        moduleName: t.string,
     }),
     baseType: t.partial({
         prefix: t.string,
@@ -67,6 +67,7 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
         fileExtension = '',
         locales,
         outDir,
+        storeClass,
         generate = {},
         baseType = {},
     } = parsed;
@@ -79,13 +80,13 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
         fileExtension,
         locales,
         outDir,
+        storeClass,
         generate: {
             assetType: generate.assetType || 'Asset',
             entryType: generate.entryType || 'Entry',
-            getters: (generate.getters === true ? 'index' : generate.getters) || '',
             fieldGetters: generate.fieldGetters || [],
-            storeClass: generate.storeClass,
             localeOptional: generate.localeOptional || false,
+            moduleName: generate.moduleName,
         },
         baseType: {
             prefix: baseType.prefix || '',

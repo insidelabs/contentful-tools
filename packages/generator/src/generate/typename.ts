@@ -10,33 +10,33 @@ import { objectLiteral, stringLiteral } from '../common/literals';
 import { Config } from '../config';
 
 export function generateTypename(
-    contentTypeNameMap: Map<string, string>,
     config: Config,
+    typenameMap: Map<string, string>,
 ): ts.SourceFile {
     const { fileExtension } = config;
     return tsFile('Typename' + fileExtension, [
-        typenameTypeAlias(contentTypeNameMap),
-        typenameMap(contentTypeNameMap),
+        typenameTypeAlias(typenameMap),
+        typenameMapStatement(typenameMap),
     ]);
 }
 
-function typenameTypeAlias(contentTypeNameMap: Map<string, string>): ts.TypeAliasDeclaration {
+export function typenameTypeAlias(typenameMap: Map<string, string>): ts.TypeAliasDeclaration {
     return typeAlias(
         'Typename',
         union(
-            Array.from(contentTypeNameMap.values())
+            Array.from(typenameMap.values())
                 .sort()
                 .map(stringLiteralType),
         ),
     );
 }
 
-function typenameMap(contentTypeNameMap: Map<string, string>): ts.VariableStatement {
+export function typenameMapStatement(typenameMap: Map<string, string>): ts.VariableStatement {
     return assign(
         'typenameMap',
         mappedType('K', string(), typeRef('Typename')),
         objectLiteral(
-            sortBy(Array.from(contentTypeNameMap.entries()), '1').map(([key, value]) =>
+            sortBy(Array.from(typenameMap.entries()), '1').map(([key, value]) =>
                 ts.createPropertyAssignment(key, stringLiteral(value)),
             ),
         ),

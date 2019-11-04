@@ -7,14 +7,14 @@ import { typeAlias } from './aliases';
 import { stringLiteralType } from './scalars';
 
 export function interfaceDecl(
+    exported: boolean,
     interfaceName: string,
     typeParameters?: ts.TypeParameterDeclaration[],
     extendsExpressions?: ts.ExpressionWithTypeArguments[],
-    members?: TypeMembers | ts.PropertySignature[],
-) {
+    members?: TypeMembers | ts.PropertySignature[]) {
     return ts.createInterfaceDeclaration(
         undefined,
-        exportModifiers(),
+        exported ? exportModifiers() : undefined,
         interfaceName,
         typeParameters,
         extendsClause(extendsExpressions),

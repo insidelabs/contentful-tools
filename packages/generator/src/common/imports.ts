@@ -43,6 +43,10 @@ export function interfaceImportDecls(
     );
 }
 
+export function moduleImportDecl(moduleName: string): ts.ImportDeclaration {
+    return importDecl([importSpec(moduleName)], moduleName);
+}
+
 export function typenameImportDecl(fileExtension: string): ts.ImportDeclaration {
     return importDecl([importSpec('Typename')], 'Typename' + fileExtension);
 }

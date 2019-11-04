@@ -11,11 +11,11 @@ import { Config } from './config';
 import { resolveTypeNames } from './util/typeNames';
 
 import { processNewLines } from './common/whitespace';
-import { generateTypename } from './generate/Typename';
-import { generateEntry } from './generate/Entry';
-import { generateGetters } from './generate/getters';
+import { generateTypename } from './generate/typename';
+import { generateEntry } from './generate/entry';
 import { generateInterface } from './generate/interfaces';
 import { generateStoreClass } from './generate/storeClass';
+import { generateModule } from './generate/module';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);
@@ -26,17 +26,27 @@ export async function generate(
     log: Logger = defaultLogger,
 ): Promise<void> {
     const contentTypes = (await env.getContentTypes()).items;
+
     if (config.clean) rimraf.sync(config.outDir);
     mkdirSync(config.outDir);
 
     const resolvedNameMap = resolveTypeNames(contentTypes, config);
-    const allFiles = [
-        generateTypename(resolvedNameMap, config),
-        generateEntry(contentTypes, config),
-        generateGetters(resolvedNameMap, config),
-        generateStoreClass(resolvedNameMap, config),
-        ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap, config)),
-    ];
+
+    let allFiles = [generateStoreClass(config, resolvedNameMap)];
+
+    if (config.generate.moduleName) {
+        allFiles.push(
+            generateModule(config, config.generate.moduleName, contentTypes, resolvedNameMap),
+        );
+    } else {
+        allFiles.push(generateTypename(config, resolvedNameMap));
+        allFiles.push(generateEntry(config, contentTypes));
+        allFiles = allFiles.concat(
+            contentTypes.map(contentType =>
+                generateInterface(config, resolvedNameMap, contentType, 'FILE'),
+            ),
+        );
+    }
 
     const printer = ts.createPrinter({
         newLine: ts.NewLineKind.LineFeed,

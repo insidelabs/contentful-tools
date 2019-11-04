@@ -20,10 +20,31 @@ import {
 import { sortedArray } from '../util/arrays';
 
 export function generateInterface(
-    contentType: c.ContentType,
-    contentTypeNameMap: Map<string, string>,
     config: Config,
-): ts.SourceFile {
+    contentTypeNameMap: Map<string, string>,
+    contentType: c.ContentType,
+    type: 'FILE',
+): ts.SourceFile;
+
+export function generateInterface(
+    config: Config,
+    contentTypeNameMap: Map<string, string>,
+    contentType: c.ContentType,
+    type: 'DECLARATIONS',
+): {
+    storeImports: Set<string>;
+    declarations: ts.DeclarationStatement[];
+};
+
+export function generateInterface(
+    config: Config,
+    contentTypeNameMap: Map<string, string>,
+    contentType: c.ContentType,
+    type: 'FILE' | 'DECLARATIONS',
+):
+    | ts.SourceFile
+    | { storeImports: Set<string>; declarations: ts.DeclarationStatement[] }
+    | undefined {
     const { fileExtension } = config;
 
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
@@ -35,17 +56,27 @@ export function generateInterface(
 
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
-    return tsFile(interfaceName + fileExtension, [
-        storeImports.size > 0 ? storeImportDecl(sortedArray(storeImports)) : null,
-        commonEntryImportDecl(fileExtension),
-        interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
-        interfaceDeclaration,
-        aliases,
-        stringTypeAliases,
-    ]);
+    if (type === 'FILE') {
+        return tsFile(interfaceName + fileExtension, [
+            storeImports.size > 0 ? storeImportDecl(sortedArray(storeImports)) : null,
+            commonEntryImportDecl(fileExtension),
+            interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
+            interfaceDeclaration,
+            aliases,
+            stringTypeAliases,
+        ]);
+    }
+
+    if (type === 'DECLARATIONS') {
+        return {
+            storeImports,
+            declarations: [interfaceDeclaration, ...aliases, ...stringTypeAliases],
+        };
+    }
 
     function contentTypeInterfaceDecl(): ts.InterfaceDeclaration {
         return interfaceDecl(
+            true,
             interfaceName,
             undefined,
             [extendsExpression('Entry')],
@@ -187,6 +218,6 @@ export function generateInterface(
             }
         }
 
-        return ref('Link', 'Entry');
+        return ref('Entry');
     }
 }

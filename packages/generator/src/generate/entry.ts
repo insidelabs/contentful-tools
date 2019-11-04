@@ -8,7 +8,7 @@ import { interfaceDecl, propertySignature, typeMembers } from '../common/types';
 import { typeRef } from '../common/refs';
 import { typenameImportDecl } from '../common/imports';
 
-export function generateEntry(contentTypes: c.ContentType[], config: Config): ts.SourceFile | null {
+export function generateEntry(config: Config, contentTypes: c.ContentType[]): ts.SourceFile | null {
     const { generate, fileExtension } = config;
 
     const interfaceName = generate.entryType;
@@ -16,13 +16,14 @@ export function generateEntry(contentTypes: c.ContentType[], config: Config): ts
 
     return tsFile(interfaceName + fileExtension, [
         typenameImportDecl(fileExtension),
-        commonEntryInterfaceDecl(interfaceName, contentTypes),
+        commonEntryInterfaceDecl(interfaceName, contentTypes, true),
     ]);
 }
 
-function commonEntryInterfaceDecl(
+export function commonEntryInterfaceDecl(
     interfaceName: string,
     contentTypes: c.ContentType[],
+    exported: boolean,
 ): ts.InterfaceDeclaration {
     const metaFields = typeMembers({
         __typename: typeRef('Typename'),
@@ -30,6 +31,7 @@ function commonEntryInterfaceDecl(
     });
 
     return interfaceDecl(
+        exported,
         interfaceName,
         undefined,
         undefined,
