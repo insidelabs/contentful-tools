@@ -56,7 +56,7 @@ export async function getConfigs(flags: { environment: string; config?: string }
             `${moduleName}.yaml`,
             `.${moduleName}.json`,
             `.${moduleName}.yaml`,
-        ]
+        ],
     });
 
     const result = await (flags.config ? explorer.load(flags.config) : explorer.search());
