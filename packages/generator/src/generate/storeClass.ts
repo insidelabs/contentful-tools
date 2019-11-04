@@ -1,4 +1,4 @@
-import { flatMap } from 'lodash';
+import { flatMap, upperFirst } from 'lodash';
 import { Config } from '../config';
 import * as ts from 'typescript';
 import { tsFile } from '../common/files';
@@ -65,35 +65,25 @@ function storeClassDecl(config: Config, className: string, typenames: string[]) 
     ]);
 }
 
-function params(config: Config) {
-    return {
-        id: parameter('id', string()),
-        locale: parameter('locale', ref('Locale'), config.generate.localeOptional),
-    };
+function localeParam(config: Config): ts.ParameterDeclaration {
+    return parameter('locale', ref('Locale'), config.generate.localeOptional);
 }
-
-const args = {
-    id: prop('id'),
-    locale: prop('locale'),
-};
 
 function assetMethods(config: Config): ts.MethodDeclaration[] {
     const returnType = ref('Asset');
 
-    const { id, locale } = params(config);
-
     const getAsset = method(
         'get' + config.generate.assetType,
-        [id, locale],
+        [parameter('__id', string()), localeParam(config)],
         union(returnType, nullType()),
-        storeGetterBlock('getAsset', undefined, [args.id, args.locale]),
+        storeGetterBlock('getAsset', undefined, [prop('__id'), prop('locale')]),
     );
 
     const getAssets = method(
         'get' + pluralize.plural(config.generate.assetType),
-        [locale],
+        [localeParam(config)],
         arrayOf(returnType),
-        storeGetterBlock('getAssets', undefined, [args.locale]),
+        storeGetterBlock('getAssets', undefined, [prop('locale')]),
     );
 
     return [getAsset, getAssets];
@@ -103,36 +93,43 @@ function entryMethods(config: Config, typename: string): ts.MethodDeclaration[] 
     const returnType = typeRef(typename);
     const typeArg = ref(typename);
 
-    const { id, locale } = params(config);
-
     const getEntry = method(
         'get' + typename,
-        [id, locale],
+        [parameter('__id', string()), localeParam(config)],
         union(returnType, nullType()),
-        storeGetterBlock('getEntry', [typeArg], [args.id, args.locale, stringLiteral(typename)]),
+        storeGetterBlock(
+            'getEntry',
+            [typeArg],
+            [prop('__id'), prop('locale'), stringLiteral(typename)],
+        ),
     );
 
-    // const getEntryByFieldValues = fieldGetters.map(fieldName =>
-    //     fn(
-    //         'get' + typename + 'By' + upperFirst(fieldName),
-    //         [parameter(fieldName, string()), locale],
-    //         union(returnType, nullType()),
-    //         storeGetterBlock(
-    //             'getEntryByFieldValue',
-    //             [typeArg],
-    //             [stringLiteral(fieldName), prop(fieldName), args.locale, contentTypeId],
-    //         ),
-    //     ),
-    // );
+    const getEntryByFieldValues = config.generate.fieldGetters.map(fieldName =>
+        method(
+            'get' + typename + 'By' + upperFirst(fieldName),
+            [parameter(fieldName, string()), localeParam(config)],
+            union(returnType, nullType()),
+            storeGetterBlock(
+                'getEntryByFieldValue',
+                [typeArg],
+                [
+                    stringLiteral(fieldName),
+                    prop(fieldName),
+                    prop('locale'),
+                    stringLiteral(typename),
+                ],
+            ),
+        ),
+    );
 
     const getEntries = method(
         'getAll' + pluralize.plural(typename),
-        [locale],
+        [localeParam(config)],
         arrayOf(returnType),
-        storeGetterBlock('getEntries', [typeArg], [args.locale, stringLiteral(typename)]),
+        storeGetterBlock('getEntries', [typeArg], [prop('locale'), stringLiteral(typename)]),
     );
 
-    return [getEntry, /*...getEntryByFieldValues,*/ getEntries];
+    return [getEntry, ...getEntryByFieldValues, getEntries];
 }
 
 function storeGetterBlock(
