@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
 import { exportModifiers } from './modifiers';
-import { qualifiedTypeRef, ref } from './refs';
 
 export function typeAlias(
     name: string,
@@ -16,15 +15,4 @@ export function localTypeAlias(
     ...typeParameters: ts.TypeParameterDeclaration[]
 ): ts.TypeAliasDeclaration {
     return ts.createTypeAliasDeclaration(undefined, undefined, name, typeParameters, type);
-}
-
-export function resolvedType(
-    interfaceName: string,
-    prefix: string,
-    suffix: string,
-): ts.TypeAliasDeclaration {
-    return typeAlias(
-        prefix + interfaceName + suffix,
-        qualifiedTypeRef('Resolved', 'Entry', ref(interfaceName)),
-    );
 }

@@ -193,18 +193,6 @@ Example `contentful.json` config file (a different name can be specified via the
         // (default = '')
         "suffix": "Data"
     },
-
-    // (optional)
-    // Specify one or both of the following to generate a type alias for resolved types;
-    // applies to the 'base' content type name;
-    // for example: Post ⟹ MyPostData ⟹ type ResolvedPostData = Resolved.Entry<MyPostData>
-    "resolvedType": {
-        // (default = 'Resolved')
-        "prefix": "Resolved",
-
-        // (default = '')
-        "suffix": "Data"
-    }
 }
 ```
 

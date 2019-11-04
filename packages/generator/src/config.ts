@@ -90,10 +90,6 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
             prefix: baseType.prefix || '',
             suffix: baseType.suffix || '',
         },
-        resolvedType: resolvedType && {
-            prefix: resolvedType.prefix || resolvedType.suffix ? '' : 'Resolved',
-            suffix: resolvedType.suffix || '',
-        },
     };
 
     function isValidConfig(value: unknown): value is t.TypeOf<typeof config> {

@@ -4,7 +4,7 @@ import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
 import { LinkType } from '../types';
-import { resolvedType, typeAlias } from '../common/aliases';
+import { typeAlias } from '../common/aliases';
 import { array } from '../common/arrays';
 import { tsFile } from '../common/files';
 import { commonEntryImportDecl, interfaceImportDecls, storeImportDecl } from '../common/imports';
@@ -19,14 +19,13 @@ import {
     union,
 } from '../common/types';
 import { sortedArray } from '../util/arrays';
-import { removeLineAbove } from '../common/whitespace';
 
 export function generateInterface(
     contentType: c.ContentType,
     contentTypeNameMap: Map<string, string>,
     config: Config,
 ): ts.SourceFile {
-    const { fileExtension, resolvedType: resolved } = config;
+    const { fileExtension } = config;
 
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
@@ -41,8 +40,8 @@ export function generateInterface(
         storeImports.size > 0 ? storeImportDecl(sortedArray(storeImports)) : null,
         commonEntryImportDecl(fileExtension),
         interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
-        aliases,
         interfaceDeclaration,
+        aliases,
         stringTypeAliases,
     ]);
 
@@ -178,12 +177,6 @@ export function generateInterface(
                 if (linkedContentTypes.length > 1) {
                     const alias = interfaceName + upperFirst(pluralize.singular(id));
                     aliases.push(typeAlias(alias, unionType));
-
-                    if (resolved) {
-                        const resolvedAlias = resolvedType(alias, resolved.prefix, resolved.suffix);
-                        aliases.push(removeLineAbove(resolvedAlias));
-                    }
-
                     return typeRef(alias);
                 } else {
                     return unionType;
