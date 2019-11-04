@@ -9,6 +9,7 @@ type Promised<T> = T extends Promise<infer R> ? R : never;
 export type Config = Promised<ReturnType<typeof getConfigs>>[0];
 
 const required = t.interface({
+    space: t.string,
     outDir: t.string,
     locales: t.interface({
         base: t.string,
@@ -19,8 +20,6 @@ const required = t.interface({
 
 const options = t.partial({
     clean: t.boolean,
-    space: t.string,
-    environment: t.string,
     namespace: t.string,
     localeOptional: t.boolean,
     fieldGetters: t.array(t.string),
@@ -47,7 +46,7 @@ t.intersection([required, options]);
 
 const debug = createDebugger('@contentful-tools/generator:config');
 
-export async function getConfigs(flags: { space?: string; environment: string; config?: string }) {
+export async function getConfigs(flags: { environment: string; config?: string }) {
     const moduleName = 'contentful-generator';
 
     const explorer = cosmiconfig(moduleName, {
@@ -74,8 +73,8 @@ export async function getConfigs(flags: { space?: string; environment: string; c
         job,
         clean: config.clean ?? false,
         outDir: config.outDir,
-        space: config.space || flags.space,
-        environment: config.environment || flags.environment,
+        space: config.space,
+        environment: flags.environment,
         locales: config.locales,
         namespace: config.namespace,
         storeClass: config.storeClass,

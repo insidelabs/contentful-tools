@@ -1,4 +1,4 @@
-import { sortBy } from 'lodash';
+import { flatten, sortBy } from 'lodash';
 import * as ts from 'typescript';
 import { tsFile } from '../common/files';
 import { Config } from '../config';
@@ -11,6 +11,9 @@ import { typenameMapStatement, typenameTypeAlias } from './typename';
 import { storeImportDecl } from '../common/imports';
 import { exportModifiers } from '../common/modifiers';
 import { localeConstDecls, localeTypeDecls } from './locale';
+import { assign } from '../common/vars';
+import { ref } from '../common/refs';
+import { stringLiteral } from '../common/literals';
 
 export function generateNamespace(
     config: Config,
@@ -41,6 +44,7 @@ export function generateNamespace(
     }
 
     const statements = [
+        assign('space', undefined, stringLiteral(config.space)),
         ...collapse(localeTypeDecls(config)),
         ...collapse(localeConstDecls(config)),
         commonEntryInterfaceDecl(contentTypes, true),

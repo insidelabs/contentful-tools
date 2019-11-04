@@ -110,14 +110,10 @@ Example `contentful.json` config file (a different name can be specified via the
     // created for you using the equivalent of mkdir -p
     "outDir": "./store",
     
-    // (optional)
-    // Contentful space ID. Must be specified via environment if not here.
-    "space": "abcd1234",
+    // (required)
+    // Contentful space ID.
+    "space": "a1b2c3d4",
     
-    // (default = "master")
-    // Contentful environment. Can be specified via environment if not here.
-    "environment": "master",
-
     // (required)
     // Specify at least a base locale; extra may be an empty array.
     "locales": {
