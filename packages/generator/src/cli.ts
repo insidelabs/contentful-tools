@@ -87,7 +87,7 @@ class ContentfulClientGenerator extends Command {
                 },
             },
             {
-                title: 'Running generator',
+                title: 'Running',
                 task: async context => {
                     const tasks = flatMap(context.configs, config => {
                         let env: Environment<string>;

@@ -32,9 +32,7 @@ export function generateStoreClass(
 
     return tsFile(config.storeClass, [
         storeImportDecl('Asset', 'ContentfulStore'),
-        config.namespace
-            ? moduleImportDecl(config.namespace)
-            : interfaceImportDecls(typenames),
+        config.namespace ? moduleImportDecl(config.namespace) : interfaceImportDecls(typenames),
         ...(!config.namespace
             ? [collapse(localeTypeDecls(config)), collapse(localeConstDecls(config))]
             : [spaceAbove(storeTypeAlias(config))]),
@@ -104,6 +102,28 @@ function entryMethods(config: Config, typename: string): ts.MethodDeclaration[] 
 
     const returnType = moduleName ? qualifiedTypeRef(moduleName, typename) : typeRef(typename);
     const typeArg = moduleName ? ref(moduleName, typename) : ref(typename);
+
+    if (config.singletons.includes(typename)) {
+        const getSingletonEntry = method(
+            'get' + typename,
+            [localeParam(config)],
+            returnType,
+            block(
+                ts.createReturn(
+                    ts.createElementAccess(
+                        ts.createCall(
+                            prop('this', 'store', 'getEntries'),
+                            [typeArg],
+                            [prop('locale'), stringLiteral(typename)]
+                        ),
+                        0
+                    )
+                ),
+            ),
+        );
+
+        return [getSingletonEntry];
+    }
 
     const getEntry = method(
         'get' + typename,

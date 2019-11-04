@@ -154,6 +154,12 @@ Example `contentful.json` config file (a different name can be specified via the
     },
     
     // (optional)
+    // Generates a convenient getter method for content types that only have one entry.
+    "singletons": [
+        "Config"
+    ],
+    
+    // (optional)
     // Useful to override the very generic JSON type for object fields. Path is relative to the generated output;
     // type should be the name of an exported interface or type alias.
     "typeOverrides": {
