@@ -39,14 +39,14 @@
         "@contentful-tools/store": "*"
     },
     "dependencies": {
-        "@oclif/command": "^1.5.18",
+        "@oclif/command": "^1.5.19",
         "@oclif/config": "^1.13.2",
         "@oclif/plugin-help": "^2.2.0",
         "camelcase": "^5.3.1",
         "contentful-management": "^5.9.0",
         "debug": "^4.1.1",
-        "dotenv": "^8.0.0",
-        "fp-ts": "^2.0.5",
+        "dotenv": "^8.2.0",
+        "fp-ts": "^2.1.1",
         "io-ts": "^2.0.1",
         "listr": "^0.14.3",
         "lodash": "^4.17.15",
@@ -54,24 +54,25 @@
         "pluralize": "^8.0.0",
         "prettier": "^1.18.2",
         "rimraf": "^3.0.0",
-        "rxjs": "^6.5.2",
-        "typescript": "^3.5.3"
+        "rxjs": "^6.5.3",
+        "typescript": "^3.6.4"
     },
     "devDependencies": {
         "@contentful-tools/store": "^0.4.0",
         "@types/camelcase": "^5.2.0",
         "@types/debug": "^4.1.5",
-        "@types/dotenv": "^6.1.1",
+        "@types/dotenv": "^8.2.0",
         "@types/listr": "^0.14.2",
-        "@types/lodash": "^4.14.136",
+        "@types/lodash": "^4.14.144",
         "@types/mkdirp": "^0.5.2",
-        "@types/node": "^12.7.2",
+        "@types/node": "^12.12.5",
         "@types/pluralize": "0.0.29",
-        "@types/prettier": "^1.18.2",
-        "@types/rimraf": "^2.0.2",
+        "@types/prettier": "^1.18.3",
+        "@types/rimraf": "^2.0.3",
         "jest": "^24.8.0",
-        "ts-jest": "^24.0.2",
-        "ts-node": "^8.3.0"
+        "npm-check": "^5.9.0",
+        "ts-jest": "^24.1.0",
+        "ts-node": "^8.4.1"
     },
     "oclif": {
         "bin": "contentful-generate"
@@ -80,6 +81,7 @@
         "test": "echo NO TESTS",
         "format": "prettier --write 'src/**/*.ts'",
         "prepack": "rm -rf lib && tsc",
-        "version": "npm run format && git add -A src"
+        "version": "npm run format && git add -A src",
+        "upgrade": "npm-check -u"
     }
 }
