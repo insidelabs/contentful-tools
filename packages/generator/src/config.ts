@@ -46,30 +46,17 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
 
     debug('Configuration validated');
 
-    const {
-        clean = false,
-        outDir,
-        space,
-        environment,
-        locales,
-        namespace,
-        storeClass,
-        localeOptional,
-        fieldGetters,
-        contentTypeNameMap = {},
-    } = parsed;
-
     return {
-        clean,
-        outDir,
-        space: space || flags.space,
-        environment: environment || flags.environment,
-        locales,
-        namespace,
-        storeClass,
-        localeOptional: localeOptional || false,
-        fieldGetters: fieldGetters || [],
-        contentTypeNameMap,
+        clean: parsed.clean ?? false,
+        outDir: parsed.outDir,
+        space: parsed.space || flags.space,
+        environment: parsed.environment || flags.environment,
+        locales: parsed.locales,
+        namespace: parsed.namespace,
+        storeClass: parsed.storeClass,
+        localeOptional: parsed.localeOptional ?? false,
+        fieldGetters: parsed.fieldGetters || [],
+        contentTypeNameMap: parsed.contentTypeNameMap || {},
     };
 
     function isValidConfig(value: unknown): value is t.TypeOf<typeof config> {
