@@ -1,10 +1,11 @@
+import { map } from 'lodash';
 import createDebugger from 'debug';
 import { existsSync, readFileSync } from 'fs';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isRight } from 'fp-ts/lib/Either';
 
-export type Config = ReturnType<typeof getConfig>;
+export type Config = ReturnType<typeof getConfigs>[0];
 
 const required = t.interface({
     outDir: t.string,
@@ -35,11 +36,15 @@ const options = t.partial({
     ),
 });
 
-const config = t.intersection([required, options]);
+const config = t.interface({
+    jobs: t.record(t.string, t.intersection([required, options])),
+});
+
+t.intersection([required, options]);
 
 const debug = createDebugger('@contentful-tools/generator:config');
 
-export function getConfig(configFilePath: string, flags: { space?: string; environment: string }) {
+export function getConfigs(configFilePath: string, flags: { space?: string; environment: string }) {
     if (!existsSync(configFilePath)) {
         throw Error(`Config file not found (${configFilePath})`);
     }
@@ -56,19 +61,20 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
 
     debug('Configuration validated');
 
-    return {
-        clean: parsed.clean ?? false,
-        outDir: parsed.outDir,
-        space: parsed.space || flags.space,
-        environment: parsed.environment || flags.environment,
-        locales: parsed.locales,
-        namespace: parsed.namespace,
-        storeClass: parsed.storeClass,
-        localeOptional: parsed.localeOptional ?? false,
-        fieldGetters: parsed.fieldGetters || [],
-        contentTypeNameMap: parsed.contentTypeNameMap || {},
-        typeOverrides: parsed.typeOverrides || {},
-    };
+    return map(parsed.jobs, (config, job) => ({
+        job,
+        clean: config.clean ?? false,
+        outDir: config.outDir,
+        space: config.space || flags.space,
+        environment: config.environment || flags.environment,
+        locales: config.locales,
+        namespace: config.namespace,
+        storeClass: config.storeClass,
+        localeOptional: config.localeOptional ?? false,
+        fieldGetters: config.fieldGetters || [],
+        contentTypeNameMap: config.contentTypeNameMap || {},
+        typeOverrides: config.typeOverrides || {},
+    }));
 
     function isValidConfig(value: unknown): value is t.TypeOf<typeof config> {
         return isRight(validation);

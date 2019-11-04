@@ -1,11 +1,12 @@
 import { Command, flags } from '@oclif/command';
-import { config as loadDotEnv } from 'dotenv';
-import createDebugger from 'debug';
-import Listr from 'listr';
 import { Environment } from 'contentful-management';
+import createDebugger from 'debug';
+import { config as loadDotEnv } from 'dotenv';
+import Listr from 'listr';
+import { flatMap } from 'lodash';
 import { Observable } from 'rxjs';
 import { getContentfulEnvironment } from './contentful';
-import { Config, getConfig } from './config';
+import { Config, getConfigs } from './config';
 import { generateWithObserver } from './index';
 
 const debug = createDebugger('@contentful-tools/generator:cli');
@@ -65,17 +66,17 @@ class ContentfulClientGenerator extends Command {
         debug('Environment: %s', flags.environment);
 
         const tasks = new Listr<{
-            env: Environment<string>;
-            config: Config;
+            configs: Config[];
+            token: string;
         }>([
             {
                 title: 'Loading configuration',
                 task: async context => {
-                    context.config = await getConfig(flags.config, flags);
+                    context.configs = await getConfigs(flags.config, flags);
                 },
             },
             {
-                title: 'Getting Contentful environment',
+                title: 'Verifying',
                 task: async context => {
                     if (!flags.token) {
                         throw Error(
@@ -83,25 +84,43 @@ class ContentfulClientGenerator extends Command {
                         );
                     }
 
-                    if (!context.config.space) {
-                        throw Error(
-                            'Must provide a space ID (with -s | --space | CONTENTFUL_SPACE_ID) or in the configuration',
-                        );
-                    }
-
-                    context.env = await getContentfulEnvironment(
-                        flags.token,
-                        context.config.space,
-                        context.config.environment,
-                    );
+                    context.token = flags.token;
                 },
             },
             {
-                title: 'Generating',
-                task: context => {
-                    return new Observable<string>(observer => {
-                        generateWithObserver(context.env, context.config, observer);
+                title: 'Running generator',
+                task: async context => {
+                    const tasks = flatMap(context.configs, config => {
+                        let env: Environment<string>;
+                        return [
+                            {
+                                title: `[${config.job}] Loading Contentful environment`,
+                                task: async () => {
+                                    if (!config.space) {
+                                        throw Error(
+                                            'Must provide a space ID (with -s | --space | CONTENTFUL_SPACE_ID) or in the configuration',
+                                        );
+                                    }
+
+                                    env = await getContentfulEnvironment(
+                                        context.token,
+                                        config.space,
+                                        config.environment,
+                                    );
+                                },
+                            },
+                            {
+                                title: `[${config.job}] Generating`,
+                                task: () => {
+                                    return new Observable<string>(observer => {
+                                        generateWithObserver(env, config, observer);
+                                    });
+                                },
+                            },
+                        ];
                     });
+
+                    return new Listr(tasks);
                 },
             },
         ]);
