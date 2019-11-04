@@ -71,14 +71,14 @@ export async function getConfigs(flags: { environment: string; config?: string }
 
     return map(result.config.jobs, (config, job) => ({
         job,
-        clean: config.clean ?? false,
+        clean: config.clean || false,
         outDir: config.outDir,
         space: config.space,
         environment: flags.environment,
         locales: config.locales,
         namespace: config.namespace,
         storeClass: config.storeClass,
-        localeOptional: config.localeOptional ?? false,
+        localeOptional: config.localeOptional || false,
         fieldGetters: config.fieldGetters || [],
         idField: config.idField,
         contentTypeNameMap: config.contentTypeNameMap || {},
