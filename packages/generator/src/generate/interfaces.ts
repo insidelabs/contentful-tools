@@ -195,24 +195,24 @@ export function generateInterface(
                 validation => validation.linkContentType,
             );
 
-            if (linkedContentTypes.length > 0) {
+            if (linkedContentTypes.length === 1) {
+                const interfaceName = contentTypeNameMap.get(linkedContentTypes[0]) as string;
+                interfaceImports.add(interfaceName);
+                return typeRef(interfaceName);
+            }
+
+            if (linkedContentTypes.length > 1) {
                 const unionType = union(
                     linkedContentTypes.map(contentTypeId => {
                         const interfaceName = contentTypeNameMap.get(contentTypeId) as string;
                         interfaceImports.add(interfaceName);
-                        return ref(interfaceName);
+                        return typeRef(interfaceName);
                     }),
                 );
 
-                // If the field links to entries of more than one type, create a dedicated type
-                // alias for the union type
-                if (linkedContentTypes.length > 1) {
-                    const alias = interfaceName + upperFirst(pluralize.singular(id));
-                    aliases.push(typeAlias(alias, unionType));
-                    return typeRef(alias);
-                } else {
-                    return unionType;
-                }
+                const alias = interfaceName + upperFirst(pluralize.singular(id));
+                aliases.push(typeAlias(alias, unionType));
+                return typeRef(alias);
             }
         }
 
