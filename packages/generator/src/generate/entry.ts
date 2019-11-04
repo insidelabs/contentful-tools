@@ -9,19 +9,13 @@ import { typeRef } from '../common/refs';
 import { typenameImportDecl } from '../common/imports';
 
 export function generateEntry(config: Config, contentTypes: c.ContentType[]): ts.SourceFile | null {
-    const { generate, fileExtension } = config;
-
-    const interfaceName = generate.entryType;
-    if (!interfaceName) return null;
-
-    return tsFile(interfaceName + fileExtension, [
-        typenameImportDecl(fileExtension),
-        commonEntryInterfaceDecl(interfaceName, contentTypes, true),
+    return tsFile('Entry', [
+        typenameImportDecl(),
+        commonEntryInterfaceDecl(contentTypes, true),
     ]);
 }
 
 export function commonEntryInterfaceDecl(
-    interfaceName: string,
     contentTypes: c.ContentType[],
     exported: boolean,
 ): ts.InterfaceDeclaration {
@@ -32,7 +26,7 @@ export function commonEntryInterfaceDecl(
 
     return interfaceDecl(
         exported,
-        interfaceName,
+        'Entry',
         undefined,
         undefined,
         metaFields.concat(commonFieldsFromContentTypes(contentTypes)),

@@ -32,10 +32,10 @@ export function generateStoreClass(
 
     return tsFile(config.storeClass, [
         storeImportDecl('Asset', 'ContentfulStore'),
-        config.generate.moduleName
-            ? moduleImportDecl(config.generate.moduleName)
-            : interfaceImportDecls(typenames, config.fileExtension),
-        ...(!config.generate.moduleName
+        config.namespace
+            ? moduleImportDecl(config.namespace)
+            : interfaceImportDecls(typenames),
+        ...(!config.namespace
             ? [collapse(localeTypeDecls(config)), collapse(localeConstDecls(config))]
             : [spaceAbove(storeTypeAlias(config))]),
         storeClassDecl(config, config.storeClass, typenames),
@@ -43,7 +43,7 @@ export function generateStoreClass(
 }
 
 function storeTypeAlias(config: Config): ts.Statement {
-    const moduleName = config.generate.moduleName;
+    const moduleName = config.namespace;
     return moduleName
         ? localTypeAlias(
               'Store',
@@ -72,11 +72,10 @@ function storeClassDecl(config: Config, className: string, typenames: string[]) 
 }
 
 function localeParam(config: Config): ts.ParameterDeclaration {
-    const { moduleName, localeOptional } = config.generate;
     return parameter(
         'locale',
-        moduleName ? ref(moduleName, 'Locale') : ref('Locale'),
-        localeOptional,
+        config.namespace ? ref(config.namespace, 'Locale') : ref('Locale'),
+        config.localeOptional,
     );
 }
 
@@ -84,14 +83,14 @@ function assetMethods(config: Config): ts.MethodDeclaration[] {
     const returnType = ref('Asset');
 
     const getAsset = method(
-        'get' + config.generate.assetType,
+        'getAsset',
         [parameter('__id', string()), localeParam(config)],
         union(returnType, nullType()),
         storeGetterBlock('getAsset', undefined, [prop('__id'), prop('locale')]),
     );
 
     const getAssets = method(
-        'get' + pluralize.plural(config.generate.assetType),
+        'getAssets',
         [localeParam(config)],
         arrayOf(returnType),
         storeGetterBlock('getAssets', undefined, [prop('locale')]),
@@ -101,7 +100,7 @@ function assetMethods(config: Config): ts.MethodDeclaration[] {
 }
 
 function entryMethods(config: Config, typename: string): ts.MethodDeclaration[] {
-    const moduleName = config.generate.moduleName;
+    const moduleName = config.namespace;
 
     const returnType = moduleName ? qualifiedTypeRef(moduleName, typename) : typeRef(typename);
     const typeArg = moduleName ? ref(moduleName, typename) : ref(typename);
@@ -117,7 +116,7 @@ function entryMethods(config: Config, typename: string): ts.MethodDeclaration[] 
         ),
     );
 
-    const getEntryByFieldValues = config.generate.fieldGetters.map(fieldName =>
+    const getEntryByFieldValues = config.fieldGetters.map(fieldName =>
         method(
             'get' + typename + 'By' + upperFirst(fieldName),
             [parameter(fieldName, string()), localeParam(config)],

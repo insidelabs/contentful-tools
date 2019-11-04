@@ -12,7 +12,7 @@ import { storeImportDecl } from '../common/imports';
 import { exportModifiers } from '../common/modifiers';
 import { localeConstDecls, localeTypeDecls } from './locale';
 
-export function generateModule(
+export function generateNamespace(
     config: Config,
     moduleName: string,
     contentTypes: c.ContentType[],
@@ -42,9 +42,7 @@ export function generateModule(
         ...collapse(localeConstDecls(config)),
         typenameTypeAlias(typenameMap),
         typenameMapStatement(typenameMap),
-        config.generate.entryType
-            ? commonEntryInterfaceDecl(config.generate.entryType, contentTypes, true)
-            : null,
+        commonEntryInterfaceDecl(contentTypes, true),
         ...allInterfaceDecls,
     ];
 

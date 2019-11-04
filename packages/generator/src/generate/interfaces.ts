@@ -45,8 +45,6 @@ export function generateInterface(
     | ts.SourceFile
     | { storeImports: Set<string>; declarations: ts.DeclarationStatement[] }
     | undefined {
-    const { fileExtension } = config;
-
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
     const aliases: ts.TypeAliasDeclaration[] = [];
@@ -57,10 +55,10 @@ export function generateInterface(
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
     if (type === 'FILE') {
-        return tsFile(interfaceName + fileExtension, [
+        return tsFile(interfaceName, [
             storeImports.size > 0 ? storeImportDecl(sortedArray(storeImports)) : null,
-            commonEntryImportDecl(fileExtension),
-            interfaceImportDecls(sortedArray(interfaceImports), fileExtension),
+            commonEntryImportDecl(),
+            interfaceImportDecls(sortedArray(interfaceImports)),
             interfaceDeclaration,
             aliases,
             stringTypeAliases,

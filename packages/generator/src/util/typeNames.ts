@@ -8,10 +8,6 @@ export function resolveTypeNames(contentTypes: ContentType[], config: Config): M
     );
 
     function formatTypeName(sysId: string): string {
-        return (
-            config.baseType.prefix +
-            camelCase(config.contentTypeNameMap[sysId] || sysId, { pascalCase: true }) +
-            config.baseType.suffix
-        );
+        return camelCase(config.contentTypeNameMap[sysId] || sysId, { pascalCase: true });
     }
 }

@@ -9,15 +9,8 @@ import { typeRef } from '../common/refs';
 import { objectLiteral, stringLiteral } from '../common/literals';
 import { Config } from '../config';
 
-export function generateTypename(
-    config: Config,
-    typenameMap: Map<string, string>,
-): ts.SourceFile {
-    const { fileExtension } = config;
-    return tsFile('Typename' + fileExtension, [
-        typenameTypeAlias(typenameMap),
-        typenameMapStatement(typenameMap),
-    ]);
+export function generateTypename(config: Config, typenameMap: Map<string, string>): ts.SourceFile {
+    return tsFile('Typename', [typenameTypeAlias(typenameMap), typenameMapStatement(typenameMap)]);
 }
 
 export function typenameTypeAlias(typenameMap: Map<string, string>): ts.TypeAliasDeclaration {

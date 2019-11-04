@@ -34,12 +34,9 @@ export function storeImportDecl(
     return importDecl(specs, '@contentful-tools/store', '', false);
 }
 
-export function interfaceImportDecls(
-    imports: string[],
-    fileExtension: string = '',
-): ts.ImportDeclaration[] {
+export function interfaceImportDecls(imports: string[]): ts.ImportDeclaration[] {
     return imports.map(interfaceName =>
-        importDecl([importSpec(interfaceName)], `./${interfaceName}${fileExtension}`),
+        importDecl([importSpec(interfaceName)], `./${interfaceName}`),
     );
 }
 
@@ -47,10 +44,10 @@ export function moduleImportDecl(moduleName: string): ts.ImportDeclaration {
     return importDecl([importSpec(moduleName)], moduleName);
 }
 
-export function typenameImportDecl(fileExtension: string): ts.ImportDeclaration {
-    return importDecl([importSpec('Typename')], 'Typename' + fileExtension);
+export function typenameImportDecl(): ts.ImportDeclaration {
+    return importDecl([importSpec('Typename')], 'Typename');
 }
 
-export function commonEntryImportDecl(fileExtension: string): ts.ImportDeclaration {
-    return importDecl([importSpec('Entry')], 'Entry' + fileExtension);
+export function commonEntryImportDecl(): ts.ImportDeclaration {
+    return importDecl([importSpec('Entry')], 'Entry');
 }

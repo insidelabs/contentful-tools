@@ -15,7 +15,7 @@ import { generateTypename } from './generate/typename';
 import { generateEntry } from './generate/entry';
 import { generateInterface } from './generate/interfaces';
 import { generateStoreClass } from './generate/storeClass';
-import { generateModule } from './generate/module';
+import { generateNamespace } from './generate/namespace';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);
@@ -34,9 +34,9 @@ export async function generate(
 
     let allFiles = [generateStoreClass(config, resolvedNameMap)];
 
-    if (config.generate.moduleName) {
+    if (config.namespace) {
         allFiles.push(
-            generateModule(config, config.generate.moduleName, contentTypes, resolvedNameMap),
+            generateNamespace(config, config.namespace, contentTypes, resolvedNameMap),
         );
     } else {
         allFiles.push(generateTypename(config, resolvedNameMap));

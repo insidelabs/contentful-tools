@@ -13,75 +13,68 @@ Read this first:
 [Contentful Store](https://github.com/insidelabs/contentful-tools/tree/master/packages/store#readme)
 ([npm](https://www.npmjs.com/package/@contentful-tools/store))
 
-This generator CLI pulls your content definition from Contentful and creates an interface for each
+This generator CLI pulls a content space definition from Contentful and creates an interface for each
 content type, using its field validations to create the appropriate TypeScript type. Generated
 fields are marked optional or required according to the content type definition. The following field
 types give the corresponding TypeScript types:
 
-* Boolean ⟹ `boolean`
-* Date ⟹ `string` (ISO8601)
-* Integer ⟹ `number`
-* Number ⟹ `number`
-* Text (long string) ⟹ `string` 
-* Symbol (short string) ⟹ `string`
-* Symbol enum (fixed value or values) ⟹ references a generated `enum ExampleEnum`
-* Symbol enum array ⟹ `ExampleEnum[]`
+-   Boolean ⟹ `boolean`
+-   Date ⟹ `string` (ISO8601)
+-   Integer ⟹ `number`
+-   Number ⟹ `number`
+-   Text (long string) ⟹ `string`
+-   Symbol (short string) ⟹ `string`
+-   Symbol enum (fixed value or values) ⟹ references a generated `enum ExampleEnum`
+-   Symbol enum array ⟹ `ExampleEnum[]`
 
 The following mappings reference types from `@contentful-tools/store`, allowing them to be updated with
 improved definitions, without regeneration:
 
-* Location ⟹ `Field.Location`, defined as `{ lon: number; lat: number }`
-* Object (JSON) ⟹ `Field.JSON`, defined as `{ [key: string]: any } | any[]`
-* Rich text ⟹ `Field.RichText`, defined as `any`
+-   Location ⟹ `Location`, defined as `{ lon: number; lat: number }`
+-   Object ⟹ `JSON`, defined as `{ [key: string]: any } | any[]`
+-   Rich text ⟹ `RichText`, defined as `any`
 
-Reference-type fields are generated with a `Link` type, also defined in `@contentful-tools/store`.
-The store unwraps these definitions with the `Resolved.Entry` type alias. As you would expect,
-instead of links, the resolved version of a content type has fields which map to the linked,
-resolved type — either another entry type, or an asset. This is what allows you to follow links to
-arbitrary depth in a type-safe way, for entries retrieved from the store.
+Reference-type fields can be followed to the linked entry or asset — the store lazily evaluates the links
+using getters, so circular references are no problem.
 
-* Entry link ⟹ `Link.Entry<EntryType>` / `Resolved.Entry<EntryType>`
-* Entry link array ⟹ `Link.Entry<EntryType>[]` / `Resolved.Entry<EntryType>[]`
-* Asset link ⟹ `Link.Asset` / `Content.Asset`
-* Asset link array ⟹ `Link.Asset[]` / `Content.Asset[]`
-
-An enum of all content type IDs for your space is also generated, allowing you to differentiate
-between content types for mixed reference fields with a switch statement on
-`entry.sys.contentType.sys.id`.
+Entries are flattened for ease-of-use (especially within a GraphQL API) with top-level `__typename` and `__id`
+properties. `__id` is the Contentful ‘sys’ ID; `__typename` uses the provided values from the generator config
+(see below), or otherwise just the API name for the content type (if no mapping is provided).
 
 #### Example generated interface:
 
 ```ts
-export interface Post extends Content.Entry<ContentTypeId.Post> {
-    fields: {
-	title: string;
-	content: string;
-        author: Link.Entry<Author>;
-    };
+export interface Post extends Entry {
+    __typename: 'Post';
+    __id: string;
+    title: string;
+    content: string;
+    author: Author;
 }
 ```
 
-### Getters
+### Store class
 
-Optionally, the generator will create a module which exports typed functions to get your assets and
-entries from the store. You __must__ call the `setStore()` function also exported by this module
-with an instance of `ContentfulStore`, before using any of the provided getters:
+The generator creates a class with typed methods to get your assets and entries from the store.
+It must be instantiated with an instance of `ContentfulStore`, before using any of its methods.
 
 ```ts
-export type BaseLocale = 'en';
-export type ExtraLocales = 'de';
-export type Locales = BaseLocale | ExtraLocales;
+export class ContentStore {
+    private readonly store: Store;
 
-export const baseLocale: BaseLocale = 'en';
-export const extraLocales: ExtraLocales[] = ['de'];
-export const locales: [BaseLocale, ...ExtraLocales[]] = [baseLocale, ...extraLocales];
+    constructor(contentfulStore: Store) {
+        this.store = contentfulStore;
+    }
 
-type Store = ContentfulStore<BaseLocale, ExtraLocales>;
+    getAsset(__id: string, locale: Locale): Asset | null {
+        return this.store.getAsset(__id, locale);
+    }
 
-let store: Store;
+    getAssets(locale: Locale): Asset[] {
+        return this.store.getAssets(locale);
+    }
 
-export function setStore(contentfulStore: Store): void {
-    store = contentfulStore;
+    // ...
 }
 ```
 
@@ -90,40 +83,16 @@ generator config. Separating the base and extra locales is what allows type-safe
 marked as required, without having to make a null check — on the basis that an entry cannot be
 published if it is missing a value for your space’s default locale.
 
-__Note__, you should also make sure to call `await store.sync()` before attempting to use any of the
+**Note**, you should also make sure to call `await store.sync()` before attempting to use any of the
 getters (typically before your server starts accepting requests), otherwise you will get no content
 on first use.
 
-#### Example generated getters:
-
-```ts
-export function getAsset(id: string, locale?: Locales): Content.Asset | null {
-    return store.getAsset(id, locale);
-}
-
-export function getAssets(locale?: Locales): Content.Asset[] {
-    return store.getAssets(locale);
-}
-
-export function getPost(id: string, locale?: Locales): Resolved.Entry<Post> | null {
-    return store.getEntry<Post>(id, locale, ContentTypeId.Post);
-}
-
-export function getAllPosts(locale?: Locales): Resolved.Entry<Post>[] {
-    return store.getEntries<Post>(locale, ContentTypeId.Post);
-}
-
-```
-
-With these functions, you can do something like the following in a type-safe way:
-
 ```ts
 function getPostAuthorAvatar(postId: string): Content.Asset | null {
-    const post = getPost('123');
-    return post ? post.fields.author.fields.avatar : null;
+    const post = contentStore.getPost('123');
+    return post ? post.author.avatar : null;
 }
 ```
-
 
 ### Config
 
@@ -131,43 +100,49 @@ Example `contentful.json` config file (a different name can be specified via the
 
 ```json5
 {
-    // (required)
-    // Where to put the generated TypeScript files;
-    // created for you using the equivalent of mkdir -p
-    "outDir": "./store",
-
-    // (required)
-    // Specify at least a base locale; extra may be an empty array
-    "locales": {
-        "base": "en",
-        "extra": ["de"]
-    },
-
     // (default = false)
     // Whether to remove everything in the output directory before generation;
     // use at your own risk!
     "clean": true,
 
-    // (default = '')
-    // File extension to add before '.ts' for entry / asset interface files
-    // (does not apply to getters file, which by default will be 'index.ts' if enabled);
-    // for example, BlogPost ⟹ 'BlogPost.data.ts'
-    "fileExtension": ".data",
+    // (required)
+    // Where to put the generated TypeScript files;
+    // created for you using the equivalent of mkdir -p
+    "outDir": "./store",
+    
+    // (optional)
+    // Contentful space ID. Must be specified via environment if not here.
+    "space": "abcd1234",
+    
+    // (default = "master")
+    // Contentful environment. Can be specified via environment if not here.
+    "environment": "master",
 
-    // Options to control generated code
-    "generate": {
-        // (default = 'Asset')
-        // Name for generated asset type
-        "assetType": "ImageAsset",
-
-        // (default = 'Entry')
-        // Name for generated generic entry type
-        "entryType": "GenericEntry",
-
-        // (default = false)
-        // Whether the locale parameter to the generated getters is optional
-        "localeOptional": true
+    // (required)
+    // Specify at least a base locale; extra may be an empty array.
+    "locales": {
+        "base": "en",
+        "extra": ["de"]
     },
+    
+    // (optional)
+    // If specified, all types will be grouped together in a single namespace file with the given name.
+    "namespace": "Content",
+    
+    // (required)
+    // Name of the generated class containing methods to get content entries & assets.
+    "storeClass": "ContentStore",
+
+    // (default = false)
+    // Whether the locale parameter to the generated methods is optional.
+    "localeOptional": true,
+    
+    // (optional)
+    // Array of field IDs, for which getter methods are generated.
+    // For example, given ["id"] and a content type "BlogPost", the method "getBlogPostById" is generated.
+    "fieldGetters": [
+        "id"
+    ],
 
     // (optional)
     // Mapping from your content type IDs to desired interface names; the generated ContentTypeId
@@ -176,18 +151,7 @@ Example `contentful.json` config file (a different name can be specified via the
     "contentTypeNameMap": {
         "blogPost": "Post",
         // ...
-    },
-
-    // (optional)
-    // Specify one or both of the following to control the generated interface names;
-    // for example: Post ⟹ MyPostData
-    "baseType": {
-        // (default = '')
-        "prefix": "My",
-
-        // (default = '')
-        "suffix": "Data"
-    },
+    }
 }
 ```
 
@@ -231,4 +195,3 @@ DESCRIPTION
 * Fetch locales, instead of requiring them in the config
 * Use [cosmiconfig](https://github.com/davidtheclark/cosmiconfig), to allow JS or YAML config files
 * Document the config with a JSON schema and upload to [JSON Schema Store](http://schemastore.org/json/)
-* Add a flag to prefer values from .env over ones set in the environment (makes it easier to use for multiple spaces)

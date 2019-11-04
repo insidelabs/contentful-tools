@@ -19,23 +19,10 @@ const options = t.partial({
     clean: t.boolean,
     space: t.string,
     environment: t.string,
+    namespace: t.string,
+    localeOptional: t.boolean,
+    fieldGetters: t.array(t.string),
     contentTypeNameMap: t.record(t.string, t.string),
-    fileExtension: t.string,
-    generate: t.partial({
-        assetType: t.string,
-        entryType: t.string,
-        fieldGetters: t.array(t.string),
-        localeOptional: t.boolean,
-        moduleName: t.string,
-    }),
-    baseType: t.partial({
-        prefix: t.string,
-        suffix: t.string,
-    }),
-    resolvedType: t.partial({
-        prefix: t.string,
-        suffix: t.string,
-    }),
 });
 
 const config = t.intersection([required, options]);
@@ -61,37 +48,28 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
 
     const {
         clean = false,
+        outDir,
         space,
         environment,
-        contentTypeNameMap = {},
-        fileExtension = '',
         locales,
-        outDir,
+        namespace,
         storeClass,
-        generate = {},
-        baseType = {},
+        localeOptional,
+        fieldGetters,
+        contentTypeNameMap = {},
     } = parsed;
 
     return {
         clean,
+        outDir,
         space: space || flags.space,
         environment: environment || flags.environment,
-        contentTypeNameMap,
-        fileExtension,
         locales,
-        outDir,
+        namespace,
         storeClass,
-        generate: {
-            assetType: generate.assetType || 'Asset',
-            entryType: generate.entryType || 'Entry',
-            fieldGetters: generate.fieldGetters || [],
-            localeOptional: generate.localeOptional || false,
-            moduleName: generate.moduleName,
-        },
-        baseType: {
-            prefix: baseType.prefix || '',
-            suffix: baseType.suffix || '',
-        },
+        localeOptional: localeOptional || false,
+        fieldGetters: fieldGetters || [],
+        contentTypeNameMap,
     };
 
     function isValidConfig(value: unknown): value is t.TypeOf<typeof config> {
