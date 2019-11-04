@@ -23,15 +23,18 @@ export function generateNamespace(
     );
 
     const allStoreImports = new Set<string>();
+    let allTypeOverrideImports: ts.ImportDeclaration[] = [];
     let allInterfaceDecls: ts.DeclarationStatement[] = [];
 
     for (const contentType of sortedContentTypes) {
-        const { storeImports, declarations } = generateInterface(
+        const { storeImports, typeOverrideImports, declarations } = generateInterface(
             config,
             typenameMap,
             contentType,
             'DECLARATIONS',
         );
+
+        allTypeOverrideImports = allTypeOverrideImports.concat(typeOverrideImports);
 
         for (const storeImport of storeImports) allStoreImports.add(storeImport);
         allInterfaceDecls = allInterfaceDecls.concat(declarations);
@@ -48,6 +51,7 @@ export function generateNamespace(
 
     return tsFile(namespace, [
         storeImportDecl(Array.from(allStoreImports)),
+        allTypeOverrideImports,
         ts.createModuleDeclaration(
             undefined,
             exportModifiers(),

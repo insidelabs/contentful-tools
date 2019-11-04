@@ -6,7 +6,13 @@ import { Config } from '../config';
 import { typeAlias } from '../common/aliases';
 import { array } from '../common/arrays';
 import { tsFile } from '../common/files';
-import { commonEntryImportDecl, interfaceImportDecls, storeImportDecl } from '../common/imports';
+import {
+    commonEntryImportDecl,
+    importDecl,
+    importSpec,
+    interfaceImportDecls,
+    storeImportDecl,
+} from '../common/imports';
 import { extendsExpression } from '../common/heritage';
 import { ref, typeRef } from '../common/refs';
 import { boolean, number, string, stringLiteralType } from '../common/scalars';
@@ -33,6 +39,7 @@ export function generateInterface(
     type: 'DECLARATIONS',
 ): {
     storeImports: Set<string>;
+    typeOverrideImports: ts.ImportDeclaration[];
     declarations: ts.DeclarationStatement[];
 };
 
@@ -43,7 +50,11 @@ export function generateInterface(
     type: 'FILE' | 'DECLARATIONS',
 ):
     | ts.SourceFile
-    | { storeImports: Set<string>; declarations: ts.DeclarationStatement[] }
+    | {
+          storeImports: Set<string>;
+          typeOverrideImports: ts.ImportDeclaration[];
+          declarations: ts.DeclarationStatement[];
+      }
     | undefined {
     const interfaceName = contentTypeNameMap.get(contentType.sys.id) as string;
 
@@ -52,6 +63,11 @@ export function generateInterface(
     const storeImports: Set<string> = new Set();
     const interfaceImports: Set<string> = new Set();
 
+    const typeOverrides = config.typeOverrides[interfaceName] || {};
+    const typeOverrideImports = Object.values(typeOverrides).map(({ path, type }) =>
+        importDecl([importSpec(type)], path),
+    );
+
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
     if (type === 'FILE') {
@@ -59,6 +75,7 @@ export function generateInterface(
             storeImports.size > 0 ? storeImportDecl(sortedArray(storeImports)) : null,
             commonEntryImportDecl(),
             interfaceImportDecls(sortedArray(interfaceImports)),
+            typeOverrideImports,
             interfaceDeclaration,
             aliases,
             stringTypeAliases,
@@ -68,6 +85,7 @@ export function generateInterface(
     if (type === 'DECLARATIONS') {
         return {
             storeImports,
+            typeOverrideImports,
             declarations: [interfaceDeclaration, ...aliases, ...stringTypeAliases],
         };
     }
@@ -99,6 +117,10 @@ export function generateInterface(
     }
 
     function createFieldTypeNode(field: c.ContentTypeField): ts.TypeNode {
+        if (typeOverrides[field.id]) {
+            return ref(typeOverrides[field.id].type);
+        }
+
         switch (field.type) {
             case 'Boolean':
                 return boolean();

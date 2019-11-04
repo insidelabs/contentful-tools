@@ -151,6 +151,18 @@ Example `contentful.json` config file (a different name can be specified via the
     "contentTypeNameMap": {
         "blogPost": "Post",
         // ...
+    },
+    
+    // (optional)
+    // Useful to override the very generic JSON type for object fields. Path is relative to the generated output;
+    // type should be the name of an exported interface or type alias.
+    "typeOverrides": {
+        "Post": {
+            "extra": {
+                "path": "./overrides/Post",
+                "type": "PostExtra"
+            }
+        }
     }
 }
 ```

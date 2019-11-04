@@ -23,6 +23,16 @@ const options = t.partial({
     localeOptional: t.boolean,
     fieldGetters: t.array(t.string),
     contentTypeNameMap: t.record(t.string, t.string),
+    typeOverrides: t.record(
+        t.string,
+        t.record(
+            t.string,
+            t.interface({
+                path: t.string,
+                type: t.string,
+            }),
+        ),
+    ),
 });
 
 const config = t.intersection([required, options]);
@@ -57,6 +67,7 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
         localeOptional: parsed.localeOptional ?? false,
         fieldGetters: parsed.fieldGetters || [],
         contentTypeNameMap: parsed.contentTypeNameMap || {},
+        typeOverrides: parsed.typeOverrides || {},
     };
 
     function isValidConfig(value: unknown): value is t.TypeOf<typeof config> {
