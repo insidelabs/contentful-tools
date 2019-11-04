@@ -33,7 +33,6 @@ class ContentfulClientGenerator extends Command {
         config: flags.string({
             char: 'c',
             description: 'Path to JSON configuration file',
-            default: 'contentful.json',
         }),
 
         token: flags.string({
@@ -72,7 +71,7 @@ class ContentfulClientGenerator extends Command {
             {
                 title: 'Loading configuration',
                 task: async context => {
-                    context.configs = await getConfigs(flags.config, flags);
+                    context.configs = await getConfigs(flags);
                 },
             },
             {

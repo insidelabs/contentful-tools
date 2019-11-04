@@ -1,11 +1,12 @@
 import { map } from 'lodash';
+import { cosmiconfig } from 'cosmiconfig';
 import createDebugger from 'debug';
-import { existsSync, readFileSync } from 'fs';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isRight } from 'fp-ts/lib/Either';
 
-export type Config = ReturnType<typeof getConfigs>[0];
+type Promised<T> = T extends Promise<infer R> ? R : never;
+export type Config = Promised<ReturnType<typeof getConfigs>>[0];
 
 const required = t.interface({
     outDir: t.string,
@@ -44,24 +45,30 @@ t.intersection([required, options]);
 
 const debug = createDebugger('@contentful-tools/generator:config');
 
-export function getConfigs(configFilePath: string, flags: { space?: string; environment: string }) {
-    if (!existsSync(configFilePath)) {
-        throw Error(`Config file not found (${configFilePath})`);
-    }
+export async function getConfigs(flags: { space?: string; environment: string; config?: string }) {
+    const moduleName = 'contentful-generator';
 
-    const json: string = readFileSync(configFilePath, 'utf-8');
-    const parsed: unknown = JSON.parse(json);
-    const validation = config.decode(parsed);
+    const explorer = cosmiconfig(moduleName, {
+        searchPlaces: [
+            'package.json',
+            `${moduleName}.json`,
+            `${moduleName}.yaml`,
+            `.${moduleName}.json`,
+            `.${moduleName}.yaml`,
+        ]
+    });
 
+    const result = await (flags.config ? explorer.load(flags.config) : explorer.search());
+    if (!result || !result.config) throw Error(`Config not found`);
     debug('Configuration loaded');
 
-    if (!isValidConfig(parsed)) {
+    const validation = config.decode(result.config);
+    if (!isValidConfig(result.config)) {
         throw Error(JSON.stringify(PathReporter.report(validation), null, 4));
     }
-
     debug('Configuration validated');
 
-    return map(parsed.jobs, (config, job) => ({
+    return map(result.config.jobs, (config, job) => ({
         job,
         clean: config.clean ?? false,
         outDir: config.outDir,
