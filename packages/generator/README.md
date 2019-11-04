@@ -143,6 +143,10 @@ Example `contentful.json` config file (a different name can be specified via the
     "fieldGetters": [
         "id"
     ],
+    
+    // (optional)
+    // Uses the specified field in default getter methods, instead of "__id"
+    "idField": "id",
 
     // (optional)
     // Mapping from your content type IDs to desired interface names; the generated ContentTypeId

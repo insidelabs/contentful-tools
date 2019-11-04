@@ -114,10 +114,10 @@ function entryMethods(config: Config, typename: string): ts.MethodDeclaration[] 
                         ts.createCall(
                             prop('this', 'store', 'getEntries'),
                             [typeArg],
-                            [prop('locale'), stringLiteral(typename)]
+                            [prop('locale'), stringLiteral(typename)],
                         ),
-                        0
-                    )
+                        0,
+                    ),
                 ),
             ),
         );
@@ -125,16 +125,32 @@ function entryMethods(config: Config, typename: string): ts.MethodDeclaration[] 
         return [getSingletonEntry];
     }
 
-    const getEntry = method(
-        'get' + typename,
-        [parameter('__id', string()), localeParam(config)],
-        union(returnType, nullType()),
-        storeGetterBlock(
-            'getEntry',
-            [typeArg],
-            [prop('__id'), prop('locale'), stringLiteral(typename)],
-        ),
-    );
+    const getEntry = config.idField
+        ? method(
+              'get' + typename,
+              [parameter(config.idField, string()), localeParam(config)],
+              union(returnType, nullType()),
+              storeGetterBlock(
+                  'getEntryByFieldValue',
+                  [typeArg],
+                  [
+                      stringLiteral(config.idField),
+                      prop(config.idField),
+                      prop('locale'),
+                      stringLiteral(typename),
+                  ],
+              ),
+          )
+        : method(
+              'get' + typename,
+              [parameter('__id', string()), localeParam(config)],
+              union(returnType, nullType()),
+              storeGetterBlock(
+                  'getEntry',
+                  [typeArg],
+                  [prop('__id'), prop('locale'), stringLiteral(typename)],
+              ),
+          );
 
     const getEntryByFieldValues = config.fieldGetters.map(fieldName =>
         method(

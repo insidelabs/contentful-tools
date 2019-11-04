@@ -24,6 +24,7 @@ const options = t.partial({
     namespace: t.string,
     localeOptional: t.boolean,
     fieldGetters: t.array(t.string),
+    idField: t.string,
     contentTypeNameMap: t.record(t.string, t.string),
     singletons: t.array(t.string),
     typeOverrides: t.record(
@@ -80,6 +81,7 @@ export async function getConfigs(flags: { space?: string; environment: string; c
         storeClass: config.storeClass,
         localeOptional: config.localeOptional ?? false,
         fieldGetters: config.fieldGetters || [],
+        idField: config.idField,
         contentTypeNameMap: config.contentTypeNameMap || {},
         singletons: config.singletons || [],
         typeOverrides: config.typeOverrides || {},
