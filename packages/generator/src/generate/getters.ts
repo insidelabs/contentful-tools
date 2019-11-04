@@ -2,19 +2,20 @@ import { flatMap, upperFirst } from 'lodash';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
-import { localTypeAlias, typeAlias } from '../common/aliases';
+import { localTypeAlias } from '../common/aliases';
 import { arrayOf } from '../common/arrays';
 import { tsFile } from '../common/files';
 import { block, fn, parameter } from '../common/functions';
 import { interfaceImportDecls, storeImportDecl } from '../common/imports';
-import { arrayLiteral, stringLiteral } from '../common/literals';
+import { stringLiteral } from '../common/literals';
 import { prop } from '../common/props';
 import { ref, typeRef } from '../common/refs';
-import { nullType, string, stringLiteralType, voidType } from '../common/scalars';
+import { nullType, string, voidType } from '../common/scalars';
 import { union } from '../common/types';
 import { assign } from '../common/vars';
 import { collapse, spaceAbove } from '../common/whitespace';
 import { isNonNullable, Nullable } from '../util/Nullable';
+import { localeConstDecls, localeTypeDecls } from './locale';
 
 export function generateGetters(
     contentTypeNameMap: Map<string, string>,
@@ -41,34 +42,6 @@ export function generateGetters(
             return entryGetters(config, typeName, stringLiteral(typeName), fieldGetters);
         }),
     ]);
-}
-
-function localeTypeDecls(config: Config): ts.DeclarationStatement[] {
-    const { base, extra } = config.locales;
-    return [
-        typeAlias('BaseLocale', stringLiteralType(base)),
-        typeAlias('ExtraLocale', union(extra.map(stringLiteralType))),
-        typeAlias('Locale', union(ref('BaseLocale'), ref('ExtraLocale'))),
-    ];
-}
-
-function localeConstDecls(config: Config): ts.VariableStatement[] {
-    const { base, extra } = config.locales;
-
-    const localesType = ts.createTupleTypeNode([
-        ref('BaseLocale'),
-        ts.createRestTypeNode(arrayOf(ref('ExtraLocale'))),
-    ]);
-
-    return [
-        assign('baseLocale', ref('BaseLocale'), stringLiteral(base)),
-        assign('extraLocales', arrayOf(ref('ExtraLocale')), arrayLiteral(extra.map(stringLiteral))),
-        assign(
-            'locales',
-            localesType,
-            arrayLiteral([prop('baseLocale'), ts.createSpread(prop('extraLocales'))]),
-        ),
-    ];
 }
 
 const Store = ref('Store');

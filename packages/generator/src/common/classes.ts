@@ -1,12 +1,14 @@
 import * as ts from 'typescript';
 import { exportModifiers } from './modifiers';
 import { extendsClause } from './heritage';
+import { isNonNullable, Nullable } from '../util/Nullable';
+import { spaceAbove } from './whitespace';
 
 export function classDecl(
     className: string,
     typeParameters?: ts.TypeParameterDeclaration[],
     extendsExpressions?: ts.ExpressionWithTypeArguments[],
-    classElements: ts.ClassElement[] = [],
+    classElements: Nullable<ts.ClassElement>[] = [],
 ): ts.ClassDeclaration {
     return ts.createClassDeclaration(
         undefined,
@@ -14,8 +16,19 @@ export function classDecl(
         className,
         typeParameters,
         extendsClause(extendsExpressions),
-        classElements,
+        classElements
+            .filter(isNonNullable)
+            .map((element, i) => (i === 0 ? element : spaceAbove(element))),
     );
+}
+
+export function field(
+    modifiers: ts.Modifier[],
+    name: string,
+    type: ts.TypeNode,
+    initializer?: ts.Expression,
+): ts.PropertyDeclaration {
+    return ts.createProperty(undefined, modifiers, name, undefined, type, initializer);
 }
 
 export function constructor(parameters: ts.ParameterDeclaration[], body: ts.Block = block()) {
@@ -29,6 +42,16 @@ export function constructor(parameters: ts.ParameterDeclaration[], body: ts.Bloc
         parameters,
         undefined,
         body,
+    );
+}
+
+export function assignThis(name: string, value: ts.Expression): ts.ExpressionStatement {
+    return ts.createExpressionStatement(
+        ts.createBinary(
+            ts.createPropertyAccess(ts.createThis(), name),
+            ts.SyntaxKind.EqualsToken,
+            value,
+        ),
     );
 }
 

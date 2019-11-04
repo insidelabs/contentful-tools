@@ -15,6 +15,7 @@ import { generateTypename } from './generate/Typename';
 import { generateEntry } from './generate/Entry';
 import { generateGetters } from './generate/getters';
 import { generateInterface } from './generate/interfaces';
+import { generateStoreClass } from './generate/storeClass';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);
@@ -33,6 +34,7 @@ export async function generate(
         generateTypename(resolvedNameMap, config),
         generateEntry(contentTypes, config),
         generateGetters(resolvedNameMap, config),
+        generateStoreClass(resolvedNameMap, config),
         ...contentTypes.map(contentType => generateInterface(contentType, resolvedNameMap, config)),
     ];
 
