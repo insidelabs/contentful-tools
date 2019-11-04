@@ -68,7 +68,6 @@ export function getConfig(configFilePath: string, flags: { space?: string; envir
         outDir,
         generate = {},
         baseType = {},
-        resolvedType,
     } = parsed;
 
     return {

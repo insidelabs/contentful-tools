@@ -3,7 +3,6 @@ import * as c from 'contentful-management';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
 import { Config } from '../config';
-import { LinkType } from '../types';
 import { typeAlias } from '../common/aliases';
 import { array } from '../common/arrays';
 import { tsFile } from '../common/files';
@@ -144,7 +143,7 @@ export function generateInterface(
 
     function linkWithImports(
         id: string,
-        linkType: LinkType,
+        linkType: 'Asset' | 'Entry',
         validations: c.LinkedEntryValidation[] | c.LinkedAssetValidation[],
     ): ts.TypeNode {
         switch (linkType) {

@@ -8,7 +8,7 @@ import { Observer } from 'rxjs';
 import * as ts from 'typescript';
 
 import { Config } from './config';
-import { resolveTypeNames } from './typeNames';
+import { resolveTypeNames } from './util/typeNames';
 
 import { processNewLines } from './common/whitespace';
 import { generateTypename } from './generate/Typename';
