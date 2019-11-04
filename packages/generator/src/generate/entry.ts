@@ -9,10 +9,7 @@ import { typeRef } from '../common/refs';
 import { typenameImportDecl } from '../common/imports';
 
 export function generateEntry(config: Config, contentTypes: c.ContentType[]): ts.SourceFile | null {
-    return tsFile('Entry', [
-        typenameImportDecl(),
-        commonEntryInterfaceDecl(contentTypes, true),
-    ]);
+    return tsFile('Entry', [typenameImportDecl(), commonEntryInterfaceDecl(contentTypes, true)]);
 }
 
 export function commonEntryInterfaceDecl(

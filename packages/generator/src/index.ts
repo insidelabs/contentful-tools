@@ -35,9 +35,7 @@ export async function generate(
     let allFiles = [generateStoreClass(config, resolvedNameMap)];
 
     if (config.namespace) {
-        allFiles.push(
-            generateNamespace(config, config.namespace, contentTypes, resolvedNameMap),
-        );
+        allFiles.push(generateNamespace(config, config.namespace, contentTypes, resolvedNameMap));
     } else {
         allFiles.push(generateTypename(config, resolvedNameMap));
         allFiles.push(generateEntry(config, contentTypes));

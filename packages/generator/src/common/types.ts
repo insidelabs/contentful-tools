@@ -11,7 +11,8 @@ export function interfaceDecl(
     interfaceName: string,
     typeParameters?: ts.TypeParameterDeclaration[],
     extendsExpressions?: ts.ExpressionWithTypeArguments[],
-    members?: TypeMembers | ts.PropertySignature[]) {
+    members?: TypeMembers | ts.PropertySignature[],
+) {
     return ts.createInterfaceDeclaration(
         undefined,
         exported ? exportModifiers() : undefined,
