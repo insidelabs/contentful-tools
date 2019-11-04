@@ -14,7 +14,7 @@ import { localeConstDecls, localeTypeDecls } from './locale';
 
 export function generateNamespace(
     config: Config,
-    moduleName: string,
+    namespace: string,
     contentTypes: c.ContentType[],
     typenameMap: Map<string, string>,
 ) {
@@ -40,23 +40,24 @@ export function generateNamespace(
     const statements = [
         ...collapse(localeTypeDecls(config)),
         ...collapse(localeConstDecls(config)),
-        typenameTypeAlias(typenameMap),
-        typenameMapStatement(typenameMap),
         commonEntryInterfaceDecl(contentTypes, true),
         ...allInterfaceDecls,
+        typenameTypeAlias(typenameMap),
+        typenameMapStatement(typenameMap),
     ];
 
-    return tsFile(moduleName, [
+    return tsFile(namespace, [
         storeImportDecl(Array.from(allStoreImports)),
         ts.createModuleDeclaration(
             undefined,
             exportModifiers(),
-            ts.createIdentifier(moduleName),
+            ts.createIdentifier(namespace),
             ts.createModuleBlock(
                 statements
                     .filter(isNonNullable)
                     .map((statement, i) => (i === 0 ? statement : spaceAbove(statement))),
             ),
+            ts.NodeFlags.Namespace,
         ),
     ]);
 }
