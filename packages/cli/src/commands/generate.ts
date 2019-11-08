@@ -1,5 +1,4 @@
 import Listr from 'listr';
-import { flatMap } from 'lodash';
 import { Observable } from 'rxjs';
 import { generateWithObserver } from '../generate/generate';
 import { getDescription } from '../common/getDescription';
@@ -20,16 +19,20 @@ class Generate extends BaseCommand {
 
     runJobs(context: Context) {
         return new Listr(
-            flatMap(context.configs, config => [
-                {
-                    title: `[${config.job}] Load environment`,
-                    task: () => this.loadEnvironment(context, config),
-                },
-                {
-                    title: `[${config.job}] Generate`,
-                    task: () => this.generate(context, config),
-                },
-            ]),
+            context.configs.map(config => ({
+                title: config.job,
+                task: () =>
+                    new Listr([
+                        {
+                            title: 'Load environment',
+                            task: () => this.loadEnvironment(context, config),
+                        },
+                        {
+                            title: 'Generate',
+                            task: () => this.generate(context, config),
+                        },
+                    ]),
+            })),
         );
     }
 
