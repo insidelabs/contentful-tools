@@ -4,7 +4,7 @@ import createDebugger from 'debug';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isRight } from 'fp-ts/lib/Either';
-import { CommonFlags } from './common/flags';
+import { CommonFlags } from './common/BaseCommand';
 
 type Promised<T> = T extends Promise<infer R> ? R : never;
 export type Config = Promised<ReturnType<typeof getConfigs>>[0];

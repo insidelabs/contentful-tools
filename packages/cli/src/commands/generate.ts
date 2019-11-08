@@ -1,64 +1,23 @@
-import { Command } from '@oclif/command';
-import { Environment } from 'contentful-management';
-import { config as loadDotEnv } from 'dotenv';
 import Listr from 'listr';
 import { flatMap } from 'lodash';
 import { Observable } from 'rxjs';
 import { getContentfulEnvironment } from '../contentful';
-import { Config, getConfigs } from '../config';
+import { Config } from '../config';
 import { generateWithObserver } from '../generate/generate';
-import { commonFlags } from '../common/flags';
-import { commonDescription } from '../common/description';
+import { getDescription } from '../common/description';
+import { BaseCommand } from '../common/BaseCommand';
+import { Context } from '../common/Context';
 
-const description = `
+const description = getDescription(`
 Generates a type-safe Contentful content delivery client.
+`);
 
-${commonDescription}
-`;
-
-interface Context {
-    configs: Config[];
-    token: string;
-    environment: string;
-    env: Environment<string>;
-}
-
-class Generate extends Command {
+class Generate extends BaseCommand {
     static description = description.trim();
-    static flags = commonFlags;
 
-    async run() {
-        loadDotEnv();
-        try {
-            await this.tasks.run();
-        } catch (error) {
-            process.exit(1);
-        }
+    getTitle() {
+        return 'Generating';
     }
-
-    tasks = new Listr<Context>([
-        {
-            title: 'Loading configuration',
-            task: context => this.loadConfig(context),
-        },
-        {
-            title: 'Running',
-            task: context => this.runJobs(context),
-        },
-    ]);
-
-    loadConfig = async (context: Context) => {
-        const { flags } = this.parse(Generate);
-
-        context.configs = await getConfigs(flags);
-
-        if (!flags.token)
-            throw Error(
-                'Must provide a management API access token (with -t | --token | CONTENTFUL_MANAGEMENT_ACCESS_TOKEN)',
-            );
-
-        context.token = flags.token;
-    };
 
     runJobs(context: Context) {
         return new Listr(
