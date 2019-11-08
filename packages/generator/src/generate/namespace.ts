@@ -1,4 +1,4 @@
-import { flatten, sortBy } from 'lodash';
+import { sortBy } from 'lodash';
 import * as ts from 'typescript';
 import { tsFile } from '../common/files';
 import { Config } from '../config';
@@ -12,17 +12,19 @@ import { storeImportDecl } from '../common/imports';
 import { exportModifiers } from '../common/modifiers';
 import { localeConstDecls, localeTypeDecls } from './locale';
 import { assign } from '../common/vars';
-import { ref } from '../common/refs';
 import { stringLiteral } from '../common/literals';
+import { ContentTypeNameMap, ContentTypeWhitelist } from '../util/typeNames';
+import { whitelistStatement } from './whitelist';
 
 export function generateNamespace(
     config: Config,
     namespace: string,
     contentTypes: c.ContentType[],
-    typenameMap: Map<string, string>,
+    contentTypeNameMap: ContentTypeNameMap,
+    contentTypeWhitelist: ContentTypeWhitelist,
 ) {
     const sortedContentTypes = sortBy(contentTypes, contentType =>
-        typenameMap.get(contentType.sys.id),
+        contentTypeNameMap.get(contentType.sys.id),
     );
 
     const allStoreImports = new Set<string>();
@@ -32,7 +34,7 @@ export function generateNamespace(
     for (const contentType of sortedContentTypes) {
         const { storeImports, typeOverrideImports, declarations } = generateInterface(
             config,
-            typenameMap,
+            contentTypeNameMap,
             contentType,
             'DECLARATIONS',
         );
@@ -49,8 +51,9 @@ export function generateNamespace(
         ...collapse(localeConstDecls(config)),
         commonEntryInterfaceDecl(contentTypes, true),
         ...allInterfaceDecls,
-        typenameTypeAlias(typenameMap),
-        typenameMapStatement(typenameMap),
+        typenameTypeAlias(contentTypeNameMap),
+        typenameMapStatement(contentTypeNameMap),
+        config.whitelist ? whitelistStatement(contentTypeWhitelist) : null,
     ];
 
     return tsFile(namespace, [

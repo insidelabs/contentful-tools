@@ -16,6 +16,7 @@ import { generateEntry } from './generate/entry';
 import { generateInterface } from './generate/interfaces';
 import { generateStoreClass } from './generate/storeClass';
 import { generateNamespace } from './generate/namespace';
+import { generateWhitelist } from './generate/whitelist';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);
@@ -25,23 +26,36 @@ export async function generate(
     config: Config,
     log: Logger = defaultLogger,
 ): Promise<void> {
-    const contentTypes = (await env.getContentTypes()).items;
+    let contentTypes = (await env.getContentTypes()).items;
 
     if (config.clean) rimraf.sync(config.outDir);
     mkdirSync(config.outDir);
 
-    const resolvedNameMap = resolveTypeNames(contentTypes, config);
+    const { contentTypeNameMap, contentTypeWhitelist } = resolveTypeNames(contentTypes, config);
 
-    let allFiles = [generateStoreClass(config, resolvedNameMap)];
+    contentTypes = contentTypes.filter(contentType =>
+        contentTypeWhitelist.includes(contentType.sys.id),
+    );
+
+    let allFiles = [generateStoreClass(config, contentTypeNameMap)];
 
     if (config.namespace) {
-        allFiles.push(generateNamespace(config, config.namespace, contentTypes, resolvedNameMap));
+        allFiles.push(
+            generateNamespace(
+                config,
+                config.namespace,
+                contentTypes,
+                contentTypeNameMap,
+                contentTypeWhitelist,
+            ),
+        );
     } else {
-        allFiles.push(generateTypename(config, resolvedNameMap));
+        allFiles.push(generateTypename(config, contentTypeNameMap));
+        if (config.whitelist) allFiles.push(generateWhitelist(config, contentTypeWhitelist));
         allFiles.push(generateEntry(config, contentTypes));
         allFiles = allFiles.concat(
             contentTypes.map(contentType =>
-                generateInterface(config, resolvedNameMap, contentType, 'FILE'),
+                generateInterface(config, contentTypeNameMap, contentType, 'FILE'),
             ),
         );
     }

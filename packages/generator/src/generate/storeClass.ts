@@ -23,10 +23,11 @@ import { arrayOf } from '../common/arrays';
 import { prop } from '../common/props';
 import { isNonNullable, Nullable } from '../util/Nullable';
 import { stringLiteral } from '../common/literals';
+import { ContentTypeNameMap } from '../util/typeNames';
 
 export function generateStoreClass(
     config: Config,
-    contentTypeNameMap: Map<string, string>,
+    contentTypeNameMap: ContentTypeNameMap,
 ): ts.SourceFile | null {
     const typenames = Array.from(contentTypeNameMap.values()).sort();
 

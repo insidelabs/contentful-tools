@@ -24,10 +24,11 @@ import {
     union,
 } from '../common/types';
 import { sortedArray } from '../util/arrays';
+import { ContentTypeNameMap } from '../util/typeNames';
 
 export function generateInterface(
     config: Config,
-    contentTypeNameMap: Map<string, string>,
+    contentTypeNameMap: ContentTypeNameMap,
     contentType: c.ContentType,
     type: 'FILE',
 ): ts.SourceFile;

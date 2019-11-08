@@ -8,9 +8,16 @@ import { assign } from '../common/vars';
 import { typeRef } from '../common/refs';
 import { objectLiteral, stringLiteral } from '../common/literals';
 import { Config } from '../config';
+import { ContentTypeNameMap } from '../util/typeNames';
 
-export function generateTypename(config: Config, typenameMap: Map<string, string>): ts.SourceFile {
-    return tsFile('Typename', [typenameTypeAlias(typenameMap), typenameMapStatement(typenameMap)]);
+export function generateTypename(
+    config: Config,
+    contentTypeNameMap: ContentTypeNameMap,
+): ts.SourceFile {
+    return tsFile('Typename', [
+        typenameTypeAlias(contentTypeNameMap),
+        typenameMapStatement(contentTypeNameMap),
+    ]);
 }
 
 export function typenameTypeAlias(typenameMap: Map<string, string>): ts.TypeAliasDeclaration {

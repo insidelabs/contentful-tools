@@ -145,6 +145,10 @@ Example `contentful.json` config file (a different name can be specified via the
     "idField": "id",
 
     // (optional)
+    // Only generates types and methods for the content types listed in the "contentTypeNameMap"
+    "whitelist": true,
+
+    // (optional)
     // Mapping from your content type IDs to desired interface names; the generated ContentTypeId
     // enum uses the actual IDs as its string values. If omitted, interfaces will be generated with
     // your content type IDs capitalized (e.g. blogPost ⟹ BlogPost).
