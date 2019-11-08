@@ -1,7 +1,7 @@
 import createDebugger from 'debug';
 import { createClient, Environment } from 'contentful-management';
 
-const debug = createDebugger('@contentful-tools/generator:client');
+const debug = createDebugger('@contentful-tools/cli:contentful');
 
 export async function getContentfulEnvironment(
     accessToken: string,

@@ -45,10 +45,10 @@ const config = t.interface({
 
 t.intersection([required, options]);
 
-const debug = createDebugger('@contentful-tools/generator:config');
+const debug = createDebugger('@contentful-tools/cli:config');
 
 export async function getConfigs(flags: { environment: string; config?: string }) {
-    const moduleName = 'contentful-generator';
+    const moduleName = 'contentful-tools';
 
     const explorer = cosmiconfig(moduleName, {
         searchPlaces: [

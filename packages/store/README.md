@@ -9,8 +9,8 @@
 `npm install @contentful-tools/store`
 
 Use in conjunction with:
-[Contentful Generator](https://github.com/insidelabs/contentful-tools/tree/master/packages/generator#readme)
-([npm](https://www.npmjs.com/package/@contentful-tools/generator))
+[Contentful Tools CLI](https://github.com/insidelabs/contentful-tools/tree/master/packages/cli#readme)
+([npm](https://www.npmjs.com/package/@contentful-tools/cli))
 
 The store caches content in-memory, and can be accessed synchronously in microseconds. It
 can be set up to synchronize whenever content is accessed, throttled to a configurable minimum

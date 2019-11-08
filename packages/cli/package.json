@@ -1,14 +1,14 @@
 {
-    "name": "@contentful-tools/generator",
+    "name": "@contentful-tools/cli",
     "version": "0.6.0",
-    "description": "A generator for type declarations based on Contentful content types",
+    "description": "A CLI for generating type declarations based on Contentful content types.",
     "keywords": [
         "contentful",
         "typescript",
         "codegen"
     ],
     "author": "Inside Labs",
-    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/generator#readme",
+    "homepage": "https://github.com/insidelabs/contentful-tools/tree/master/packages/cli#readme",
     "license": "ISC",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -27,7 +27,7 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/insidelabs/contentful-tools.git",
-        "directory": "packages/generator"
+        "directory": "packages/cli"
     },
     "bugs": {
         "url": "https://github.com/insidelabs/contentful-tools/issues"
