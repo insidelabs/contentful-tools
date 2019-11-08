@@ -4,6 +4,7 @@ import createDebugger from 'debug';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isRight } from 'fp-ts/lib/Either';
+import { CommonFlags } from './common/flags';
 
 type Promised<T> = T extends Promise<infer R> ? R : never;
 export type Config = Promised<ReturnType<typeof getConfigs>>[0];
@@ -47,7 +48,7 @@ t.intersection([required, options]);
 
 const debug = createDebugger('@contentful-tools/cli:config');
 
-export async function getConfigs(flags: { environment: string; config?: string }) {
+export async function getConfigs(flags: CommonFlags) {
     const moduleName = 'contentful-tools';
 
     const explorer = cosmiconfig(moduleName, {
