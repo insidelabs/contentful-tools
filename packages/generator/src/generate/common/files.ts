@@ -1,6 +1,6 @@
 import { flatten } from 'lodash';
 import * as ts from 'typescript';
-import { isNonNullable, Nullable } from '../util/Nullable';
+import { isNonNullable, Nullable } from '../../util/Nullable';
 
 export function tsFile(
     fileName: string,

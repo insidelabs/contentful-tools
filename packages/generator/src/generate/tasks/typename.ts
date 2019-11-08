@@ -7,8 +7,8 @@ import { string, stringLiteralType } from '../common/scalars';
 import { assign } from '../common/vars';
 import { typeRef } from '../common/refs';
 import { objectLiteral, stringLiteral } from '../common/literals';
-import { Config } from '../config';
-import { ContentTypeNameMap } from '../util/typeNames';
+import { Config } from '../../config';
+import { ContentTypeNameMap } from '../../util/typeNames';
 
 export function generateTypename(
     config: Config,

@@ -1,7 +1,7 @@
 import { flatten } from 'lodash';
 import { join } from 'path';
 import * as ts from 'typescript';
-import { isNonNullable, Nullable } from '../util/Nullable';
+import { isNonNullable, Nullable } from '../../util/Nullable';
 
 export function importSpec(name: string) {
     return ts.createImportSpecifier(undefined, ts.createIdentifier(name));

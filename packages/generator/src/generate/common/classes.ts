@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { exportModifiers } from './modifiers';
 import { extendsClause } from './heritage';
-import { isNonNullable, Nullable } from '../util/Nullable';
+import { isNonNullable, Nullable } from '../../util/Nullable';
 import { spaceAbove } from './whitespace';
 
 export function classDecl(

@@ -1,7 +1,7 @@
 import * as c from 'contentful-management';
 import { every, find } from 'lodash';
 import * as ts from 'typescript';
-import { Config } from '../config';
+import { Config } from '../../config';
 import { tsFile } from '../common/files';
 import { string } from '../common/scalars';
 import { interfaceDecl, propertySignature, typeMembers } from '../common/types';

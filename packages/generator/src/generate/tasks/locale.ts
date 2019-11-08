@@ -1,4 +1,4 @@
-import { Config } from '../config';
+import { Config } from '../../config';
 import * as ts from 'typescript';
 import { typeAlias } from '../common/aliases';
 import { stringLiteralType } from '../common/scalars';

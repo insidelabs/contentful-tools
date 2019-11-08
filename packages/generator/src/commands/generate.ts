@@ -5,9 +5,9 @@ import { config as loadDotEnv } from 'dotenv';
 import Listr from 'listr';
 import { flatMap } from 'lodash';
 import { Observable } from 'rxjs';
-import { getContentfulEnvironment } from './contentful';
-import { Config, getConfigs } from './config';
-import { generateWithObserver } from './index';
+import { getContentfulEnvironment } from '../contentful';
+import { Config, getConfigs } from '../config';
+import { generateWithObserver } from '../generate/generate';
 
 const debug = createDebugger('@contentful-tools/generator:cli');
 
@@ -22,7 +22,7 @@ specified with the following environment variable:
 This may also be sourced from a .env file, located in the working directory.
 `;
 
-class ContentfulClientGenerator extends Command {
+class Generate extends Command {
     static description = description;
 
     static flags = {
@@ -50,7 +50,7 @@ class ContentfulClientGenerator extends Command {
 
     async run() {
         loadDotEnv();
-        const { flags } = this.parse(ContentfulClientGenerator);
+        const { flags } = this.parse(Generate);
 
         debug('Config file: %s', flags.config);
         debug('Access token: %s', flags.token);
@@ -122,4 +122,4 @@ class ContentfulClientGenerator extends Command {
     }
 }
 
-export = ContentfulClientGenerator;
+export = Generate;

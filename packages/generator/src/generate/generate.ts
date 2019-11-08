@@ -7,16 +7,16 @@ import * as rimraf from 'rimraf';
 import { Observer } from 'rxjs';
 import * as ts from 'typescript';
 
-import { Config } from './config';
-import { resolveTypeNames } from './util/typeNames';
+import { Config } from '../config';
+import { resolveTypeNames } from '../util/typeNames';
 
 import { processNewLines } from './common/whitespace';
-import { generateTypename } from './generate/typename';
-import { generateEntry } from './generate/entry';
-import { generateInterface } from './generate/interfaces';
-import { generateStoreClass } from './generate/storeClass';
-import { generateNamespace } from './generate/namespace';
-import { generateWhitelist } from './generate/whitelist';
+import { generateTypename } from './tasks/typename';
+import { generateEntry } from './tasks/entry';
+import { generateInterface } from './tasks/interfaces';
+import { generateStoreClass } from './tasks/storeClass';
+import { generateNamespace } from './tasks/namespace';
+import { generateWhitelist } from './tasks/whitelist';
 
 type Logger = (s: string) => void;
 const defaultLogger: Logger = (s: string) => console.log(s);

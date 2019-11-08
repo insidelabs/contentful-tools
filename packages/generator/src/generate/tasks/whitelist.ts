@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import { Config } from '../config';
-import { ContentTypeWhitelist } from '../util/typeNames';
+import { Config } from '../../config';
+import { ContentTypeWhitelist } from '../../util/typeNames';
 import { tsFile } from '../common/files';
 import { string } from '../common/scalars';
 import { assign } from '../common/vars';

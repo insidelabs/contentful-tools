@@ -76,7 +76,11 @@
         "typescript": "^3.7.1-rc"
     },
     "oclif": {
-        "bin": "contentful-generate"
+        "commands": "./lib/commands",
+        "bin": "contentful-tools",
+        "plugins": [
+            "@oclif/plugin-help"
+        ]
     },
     "scripts": {
         "test": "echo NO TESTS",

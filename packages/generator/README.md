@@ -217,5 +217,4 @@ DESCRIPTION
 * Add tests!
 * Produce a useful error message if you try to use the getters without first setting up the store properly
 * Fetch locales, instead of requiring them in the config
-* Use [cosmiconfig](https://github.com/davidtheclark/cosmiconfig), to allow JS or YAML config files
 * Document the config with a JSON schema and upload to [JSON Schema Store](http://schemastore.org/json/)
