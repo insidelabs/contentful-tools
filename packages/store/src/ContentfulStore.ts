@@ -10,6 +10,7 @@ export interface ContentfulStoreConfig<BaseLocale extends string, ExtraLocales e
     spaceId: string;
     locales: [BaseLocale, ...ExtraLocales[]];
     typenameMap?: { [K in string]: string };
+    contentTypeWhitelist?: string[];
     handleError?: (error: Error) => void;
     autoSync?: {
         minInterval: number;
@@ -20,6 +21,7 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
     private readonly client: ContentfulClientApi;
     private readonly locales: [BaseLocale, ...ExtraLocales[]];
     private readonly typenameMap: { [K in string]: string };
+    private readonly whitelist?: string[];
 
     private readonly debug: Debugger;
     private readonly handleError: (error: Error) => void;
@@ -41,12 +43,14 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         spaceId,
         locales,
         typenameMap,
+        contentTypeWhitelist,
         handleError,
         autoSync,
     }: ContentfulStoreConfig<BaseLocale, ExtraLocales>) {
         this.client = client;
         this.locales = locales;
         this.typenameMap = typenameMap || {};
+        this.whitelist = contentTypeWhitelist;
 
         this.debug = createDebugger(`@contentful-tools/store:${spaceId}`);
 
@@ -141,12 +145,17 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
 
         this.syncToken = nextSyncToken;
 
+        const whitelist = this.whitelist;
+        const filteredEntries = whitelist
+            ? entries.filter(entry => whitelist.includes(entry.sys.contentType.sys.id))
+            : entries;
+
         for (const locale of this.locales) {
             for (const asset of assets) {
                 this.assets[locale].set(asset.sys.id, this.processSyncAsset(asset, locale));
             }
 
-            for (const entry of entries) {
+            for (const entry of filteredEntries) {
                 this.entries[locale].set(entry.sys.id, this.processSyncEntry(entry, locale));
             }
 

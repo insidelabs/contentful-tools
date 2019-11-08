@@ -145,7 +145,9 @@ Example `contentful.json` config file (a different name can be specified via the
     "idField": "id",
 
     // (optional)
-    // Only generates types and methods for the content types listed in the "contentTypeNameMap"
+    // Only generates types and methods for the content types listed in the "contentTypeNameMap". Also generates a
+    // whitelist to pass to the ContentfulStore constructor. It is your responsibility to ensure all necessary linked
+    // content types are included in your whitelist.
     "whitelist": true,
 
     // (optional)
