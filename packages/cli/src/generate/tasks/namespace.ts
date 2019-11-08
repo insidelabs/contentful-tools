@@ -1,7 +1,6 @@
 import { sortBy } from 'lodash';
 import * as ts from 'typescript';
 import { tsFile } from '../common/files';
-import { Config } from '../../config';
 import { commonEntryInterfaceDecl } from './entry';
 import * as c from 'contentful-management';
 import { isNonNullable } from '../../util/Nullable';
@@ -13,8 +12,9 @@ import { exportModifiers } from '../common/modifiers';
 import { localeConstDecls, localeTypeDecls } from './locale';
 import { assign } from '../common/vars';
 import { stringLiteral } from '../common/literals';
-import { ContentTypeNameMap, ContentTypeWhitelist } from '../../util/typeNames';
+import { ContentTypeNameMap, ContentTypeWhitelist } from '../util/typeNames';
 import { whitelistStatement } from './whitelist';
+import { Config } from '../../common/Config';
 
 export function generateNamespace(
     config: Config,

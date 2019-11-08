@@ -2,7 +2,6 @@ import { flatMap, upperFirst } from 'lodash';
 import * as c from 'contentful-management';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
-import { Config } from '../../config';
 import { typeAlias } from '../common/aliases';
 import { array } from '../common/arrays';
 import { tsFile } from '../common/files';
@@ -24,7 +23,8 @@ import {
     union,
 } from '../common/types';
 import { sortedArray } from '../../util/arrays';
-import { ContentTypeNameMap } from '../../util/typeNames';
+import { ContentTypeNameMap } from '../util/typeNames';
+import { Config } from '../../common/Config';
 
 export function generateInterface(
     config: Config,

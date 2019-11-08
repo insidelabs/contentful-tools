@@ -1,5 +1,5 @@
-import { Config } from "../config";
-import { Environment } from "contentful-management";
+import { Environment } from 'contentful-management';
+import { Config } from './Config';
 
 export interface Context {
     configs: Config[];
@@ -7,4 +7,3 @@ export interface Context {
     environment: string;
     env: Environment<string>;
 }
-

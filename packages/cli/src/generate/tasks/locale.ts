@@ -1,4 +1,3 @@
-import { Config } from '../../config';
 import * as ts from 'typescript';
 import { typeAlias } from '../common/aliases';
 import { stringLiteralType } from '../common/scalars';
@@ -8,6 +7,7 @@ import { arrayOf } from '../common/arrays';
 import { assign } from '../common/vars';
 import { arrayLiteral, stringLiteral } from '../common/literals';
 import { prop } from '../common/props';
+import { Config } from '../../common/Config';
 
 export function localeTypeDecls(config: Config): ts.DeclarationStatement[] {
     const { base, extra } = config.locales;

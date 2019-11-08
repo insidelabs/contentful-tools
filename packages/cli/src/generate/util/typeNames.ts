@@ -1,6 +1,6 @@
 import { ContentType } from 'contentful-management';
 import camelCase from 'camelcase';
-import { Config } from '../config';
+import { Config } from '../../common/Config';
 
 export type ContentTypeNameMap = Map<string, string>;
 export type ContentTypeWhitelist = string[];

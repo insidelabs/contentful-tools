@@ -1,5 +1,4 @@
 import { flatMap, upperFirst } from 'lodash';
-import { Config } from '../../config';
 import * as ts from 'typescript';
 import { tsFile } from '../common/files';
 import { localeConstDecls, localeTypeDecls } from './locale';
@@ -23,7 +22,8 @@ import { arrayOf } from '../common/arrays';
 import { prop } from '../common/props';
 import { isNonNullable, Nullable } from '../../util/Nullable';
 import { stringLiteral } from '../common/literals';
-import { ContentTypeNameMap } from '../../util/typeNames';
+import { ContentTypeNameMap } from '../util/typeNames';
+import { Config } from '../../common/Config';
 
 export function generateStoreClass(
     config: Config,

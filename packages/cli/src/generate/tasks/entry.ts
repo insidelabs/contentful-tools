@@ -1,12 +1,12 @@
 import * as c from 'contentful-management';
 import { every, find } from 'lodash';
 import * as ts from 'typescript';
-import { Config } from '../../config';
 import { tsFile } from '../common/files';
 import { string } from '../common/scalars';
 import { interfaceDecl, propertySignature, typeMembers } from '../common/types';
 import { typeRef } from '../common/refs';
 import { typenameImportDecl } from '../common/imports';
+import { Config } from '../../common/Config';
 
 export function generateEntry(config: Config, contentTypes: c.ContentType[]): ts.SourceFile | null {
     return tsFile('Entry', [typenameImportDecl(), commonEntryInterfaceDecl(contentTypes, true)]);

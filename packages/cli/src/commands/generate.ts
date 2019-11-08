@@ -1,12 +1,11 @@
 import Listr from 'listr';
 import { flatMap } from 'lodash';
 import { Observable } from 'rxjs';
-import { getContentfulEnvironment } from '../contentful';
-import { Config } from '../config';
 import { generateWithObserver } from '../generate/generate';
-import { getDescription } from '../common/description';
+import { getDescription } from '../common/getDescription';
 import { BaseCommand } from '../common/BaseCommand';
 import { Context } from '../common/Context';
+import { Config } from '../common/Config';
 
 const description = getDescription(`
 Generates a type-safe Contentful content delivery client.
@@ -31,18 +30,6 @@ class Generate extends BaseCommand {
                     task: () => this.generate(context, config),
                 },
             ]),
-        );
-    }
-
-    async loadEnvironment(context: Context, config: Config) {
-        if (!config.space) {
-            throw Error('Must provide a space ID in the configuration');
-        }
-
-        context.env = await getContentfulEnvironment(
-            context.token,
-            config.space,
-            config.environment,
         );
     }
 

@@ -1,8 +1,10 @@
 import { Command, flags } from '@oclif/command';
 import { config as loadDotEnv } from 'dotenv';
 import Listr from 'listr';
-import { getConfigs } from '../config';
+import { getConfigs } from './getConfigs';
 import { Context } from './Context';
+import { getContentfulEnvironment } from './getContentfulEnvironment';
+import { Config } from './Config';
 
 export interface CommonFlags {
     help: void;
@@ -47,6 +49,18 @@ export abstract class BaseCommand extends Command {
             );
 
         context.token = flags.token;
+    }
+
+    async loadEnvironment(context: Context, config: Config) {
+        if (!config.space) {
+            throw Error('Must provide a space ID in the configuration');
+        }
+
+        context.env = await getContentfulEnvironment(
+            context.token,
+            config.space,
+            config.environment,
+        );
     }
 }
 
