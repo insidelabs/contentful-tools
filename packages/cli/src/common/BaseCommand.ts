@@ -1,18 +1,11 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import { config as loadDotEnv } from 'dotenv';
 import Listr from 'listr';
 import { getConfigs } from './getConfigs';
 import { Context } from './Context';
 import { getContentfulEnvironment } from './getContentfulEnvironment';
 import { Config } from './Config';
-
-export interface CommonFlags {
-    help: void;
-    version: void;
-    config?: string;
-    token?: string;
-    environment: string;
-}
+import { commonFlags } from './CommonFlags';
 
 export abstract class BaseCommand extends Command {
     abstract getTitle(): string;
@@ -20,7 +13,7 @@ export abstract class BaseCommand extends Command {
 
     tasks = new Listr<Context>([
         {
-            title: 'Loading configuration',
+            title: 'Load configuration',
             task: context => this.loadConfig(context),
         },
         {
@@ -56,33 +49,13 @@ export abstract class BaseCommand extends Command {
             throw Error('Must provide a space ID in the configuration');
         }
 
-        context.env = await getContentfulEnvironment(
+        const { space, env } = await getContentfulEnvironment(
             context.token,
             config.space,
             config.environment,
         );
+
+        context.space = space;
+        context.env = env;
     }
 }
-
-const commonFlags = {
-    help: flags.help({ char: 'h' }),
-    version: flags.version({ char: 'v' }),
-
-    config: flags.string({
-        char: 'c',
-        description: 'Path to JSON or YAML configuration file',
-    }),
-
-    token: flags.string({
-        char: 't',
-        description: 'Contentful management API access token',
-        env: 'CONTENTFUL_MANAGEMENT_ACCESS_TOKEN',
-    }),
-
-    environment: flags.string({
-        char: 'e',
-        description: 'Contentful environment name',
-        env: 'CONTENTFUL_ENVIRONMENT',
-        default: 'master',
-    }),
-};

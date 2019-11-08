@@ -4,8 +4,8 @@ import createDebugger from 'debug';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { isRight } from 'fp-ts/lib/Either';
-import { CommonFlags } from './BaseCommand';
 import { config } from './Config';
+import { CommonFlags } from './CommonFlags';
 
 const debug = createDebugger('@contentful-tools/cli:config');
 
@@ -35,6 +35,7 @@ export async function getConfigs(flags: CommonFlags) {
     return map(result.config.jobs, (config, job) => ({
         job,
         clean: config.clean || false,
+        sync: config.sync || false,
         outDir: config.outDir,
         space: config.space,
         environment: flags.environment,

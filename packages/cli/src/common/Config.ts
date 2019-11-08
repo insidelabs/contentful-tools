@@ -17,6 +17,7 @@ export const required = t.interface({
 
 export const options = t.partial({
     clean: t.boolean,
+    sync: t.boolean,
     namespace: t.string,
     localeOptional: t.boolean,
     fieldGetters: t.array(t.string),

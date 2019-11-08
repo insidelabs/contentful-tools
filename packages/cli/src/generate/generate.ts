@@ -26,11 +26,10 @@ export async function generate(
     config: Config,
     log: Logger = defaultLogger,
 ): Promise<void> {
-    let contentTypes = (await env.getContentTypes()).items;
-
     if (config.clean) rimraf.sync(config.outDir);
     mkdirSync(config.outDir);
 
+    let contentTypes = (await env.getContentTypes()).items;
     const { contentTypeNameMap, contentTypeWhitelist } = resolveTypeNames(contentTypes, config);
 
     contentTypes = contentTypes.filter(contentType =>

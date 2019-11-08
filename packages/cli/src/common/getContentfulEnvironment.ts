@@ -1,5 +1,5 @@
 import createDebugger from 'debug';
-import { createClient, Environment } from 'contentful-management';
+import { createClient, Environment, Space } from 'contentful-management';
 
 const debug = createDebugger('@contentful-tools/cli:contentful');
 
@@ -7,7 +7,10 @@ export async function getContentfulEnvironment(
     accessToken: string,
     spaceId: string,
     environment: string,
-): Promise<Environment<string>> {
+): Promise<{
+    space: Space<string>;
+    env: Environment<string>;
+}> {
     const client = createClient({ accessToken });
 
     const space = await client.getSpace(spaceId);
@@ -16,5 +19,8 @@ export async function getContentfulEnvironment(
     const env = await space.getEnvironment(environment);
     debug('Got Contentful environment: %s', env.name);
 
-    return env;
+    return {
+        space,
+        env,
+    };
 }

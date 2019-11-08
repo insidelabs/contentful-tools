@@ -15,18 +15,18 @@ class Generate extends BaseCommand {
     static description = description.trim();
 
     getTitle() {
-        return 'Generating';
+        return 'Generate';
     }
 
     runJobs(context: Context) {
         return new Listr(
             flatMap(context.configs, config => [
                 {
-                    title: `[${config.job}] Loading Contentful environment`,
+                    title: `[${config.job}] Load environment`,
                     task: () => this.loadEnvironment(context, config),
                 },
                 {
-                    title: `[${config.job}] Generating`,
+                    title: `[${config.job}] Generate`,
                     task: () => this.generate(context, config),
                 },
             ]),

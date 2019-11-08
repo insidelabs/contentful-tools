@@ -124,10 +124,10 @@ declare module 'contentful-management' {
         ): Promise<Entry<L, F>>;
         createUpload(data: CreateUploadData): Promise<Upload>;
         getAsset(id: string): Promise<Asset<L>>;
-        getAssets(): Promise<Collection<Asset<L>>>;
+        getAssets(options: Record<string, any>): Promise<Collection<Asset<L>>>;
         getContentType(id: string): Promise<ContentType>;
         getContentTypes(): Promise<Collection<ContentType>>;
-        getEntries(): Promise<Collection<Entry<L, EntryFields>>>;
+        getEntries(options: Record<string, any>): Promise<Collection<Entry<L, EntryFields>>>;
         getEntry<F = EntryFields>(id: string): Promise<Entry<L, F>>;
         getLocale(id: string): Promise<Locale>;
         getLocales(): Promise<Collection<Locale>>;

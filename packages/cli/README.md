@@ -104,6 +104,11 @@ Example `contentful.json` config file (a different name can be specified via the
     // Whether to remove everything in the output directory before generation;
     // use at your own risk!
     "clean": true,
+    
+    // (default = false)
+    // If true, the sync command performs an initial sync for this job via the Contentful delivery client, and writes
+    // the result to disk as JSON.
+    "sync": true,
 
     // (required)
     // Where to put the generated TypeScript files;
