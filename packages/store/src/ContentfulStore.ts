@@ -122,6 +122,11 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         return (typename ? entries.filter(entry => entry.__typename === typename) : entries) as E[];
     }
 
+    public init(result: object): void {
+        this.processSyncResult(result as SyncResult<BaseLocale, ExtraLocales>);
+        this.onContentAccess();
+    }
+
     public async sync(): Promise<void> {
         const query: SyncQuery = { resolveLinks: false };
 
@@ -129,14 +134,11 @@ export class ContentfulStore<BaseLocale extends string, ExtraLocales extends str
         else query.initial = true;
 
         const result = await this.client.sync(query);
+        this.processSyncResult(result.toPlainObject() as SyncResult<BaseLocale, ExtraLocales>);
+    }
 
-        const {
-            assets,
-            entries,
-            deletedAssets,
-            deletedEntries,
-            nextSyncToken,
-        } = result.toPlainObject() as SyncResult<BaseLocale, ExtraLocales>;
+    private processSyncResult(result: SyncResult<BaseLocale, ExtraLocales>): void {
+        const { assets, entries, deletedAssets, deletedEntries, nextSyncToken } = result;
 
         this.debug(`Synced ${assets.length} assets`);
         this.debug(`Synced ${entries.length} entries`);
