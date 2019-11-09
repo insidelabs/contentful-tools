@@ -26,24 +26,26 @@ class Sync extends BaseCommand {
 
     runJobs(context: SyncContext) {
         return new Listr(
-            context.configs.filter(config => config.sync).map(config => ({
-                title: config.job,
-                task: () =>
-                    new Listr([
-                        {
-                            title: 'Load environment',
-                            task: () => this.loadEnvironment(context, config),
-                        },
-                        {
-                            title: 'Load delivery client',
-                            task: () => this.loadDeliveryClient(context, config),
-                        },
-                        {
-                            title: 'Sync',
-                            task: () => this.sync(context, config),
-                        },
-                    ]),
-            })),
+            context.configs
+                .filter(config => config.sync)
+                .map(config => ({
+                    title: config.job,
+                    task: () =>
+                        new Listr([
+                            {
+                                title: 'Load environment',
+                                task: () => this.loadEnvironment(context, config),
+                            },
+                            {
+                                title: 'Load delivery client',
+                                task: () => this.loadDeliveryClient(context, config),
+                            },
+                            {
+                                title: 'Sync',
+                                task: () => this.sync(context, config),
+                            },
+                        ]),
+                })),
         );
     }
 
