@@ -17,8 +17,10 @@ export async function getConfigs(flags: CommonFlags) {
             'package.json',
             `${moduleName}.json`,
             `${moduleName}.yaml`,
+            `${moduleName}.yml`,
             `.${moduleName}.json`,
             `.${moduleName}.yaml`,
+            `.${moduleName}.yml`,
         ],
     });
 
