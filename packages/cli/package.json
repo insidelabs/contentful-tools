@@ -84,7 +84,9 @@
         ]
     },
     "scripts": {
-        "test": "./bin/contentful-tools generate && ./bin/contentful-tools sync",
+        "generate": "./bin/contentful-tools generate",
+        "sync": "./bin/contentful-tools sync",
+        "test": "npm run generate && npm run sync",
         "format": "prettier --write 'src/**/*.ts'",
         "prepack": "rm -rf lib && tsc",
         "version": "npm run format && git add -A src",
