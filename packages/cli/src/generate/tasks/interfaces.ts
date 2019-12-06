@@ -1,4 +1,4 @@
-import { flatMap, upperFirst } from 'lodash';
+import { flatMap, groupBy, mapValues, uniqBy, upperFirst } from 'lodash';
 import * as c from 'contentful-management';
 import * as pluralize from 'pluralize';
 import * as ts from 'typescript';
@@ -40,7 +40,7 @@ export function generateInterface(
     type: 'DECLARATIONS',
 ): {
     storeImports: Set<string>;
-    typeOverrideImports: ts.ImportDeclaration[];
+    typeOverrideMap: Map<string, Set<string>>;
     declarations: ts.DeclarationStatement[];
 };
 
@@ -53,7 +53,7 @@ export function generateInterface(
     | ts.SourceFile
     | {
           storeImports: Set<string>;
-          typeOverrideImports: ts.ImportDeclaration[];
+          typeOverrideMap: Map<string, Set<string>>;
           declarations: ts.DeclarationStatement[];
       }
     | undefined {
@@ -65,13 +65,18 @@ export function generateInterface(
     const interfaceImports: Set<string> = new Set();
 
     const typeOverrides = config.typeOverrides[interfaceName] || {};
-    const typeOverrideImports = Object.values(typeOverrides).map(({ path, type }) =>
-        importDecl([importSpec(type)], path),
+    const groupedTypeOverrides = groupBy(typeOverrides, ({ path }) => path);
+    const deduplicatedTypeOverrides = mapValues(groupedTypeOverrides, overrides =>
+        uniqBy(overrides, ({ type }) => type).map(({ type }) => type),
     );
 
     const interfaceDeclaration = contentTypeInterfaceDecl();
 
     if (type === 'FILE') {
+        const typeOverrideImports = Object.entries(deduplicatedTypeOverrides).map(([path, types]) =>
+            importDecl(types.map(type => importSpec(type)), path),
+        );
+
         return tsFile(interfaceName, [
             storeImports.size > 0 ? storeImportDecl(sortedArray(storeImports)) : null,
             commonEntryImportDecl(),
@@ -84,9 +89,16 @@ export function generateInterface(
     }
 
     if (type === 'DECLARATIONS') {
+        const typeOverrideMap = new Map(
+            Object.entries(deduplicatedTypeOverrides).map(([path, types]) => [
+                path,
+                new Set(types),
+            ]),
+        );
+
         return {
             storeImports,
-            typeOverrideImports,
+            typeOverrideMap,
             declarations: [interfaceDeclaration, ...aliases, ...stringTypeAliases],
         };
     }

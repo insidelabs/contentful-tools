@@ -7,7 +7,7 @@ import { isNonNullable } from '../../util/Nullable';
 import { generateInterface } from './interfaces';
 import { collapse, spaceAbove } from '../common/whitespace';
 import { typenameMapStatement, typenameTypeAlias } from './typename';
-import { storeImportDecl } from '../common/imports';
+import { importDecl, importSpec, storeImportDecl } from '../common/imports';
 import { exportModifiers } from '../common/modifiers';
 import { localeConstDecls, localeTypeDecls } from './locale';
 import { assign } from '../common/vars';
@@ -28,22 +28,39 @@ export function generateNamespace(
     );
 
     const allStoreImports = new Set<string>();
-    let allTypeOverrideImports: ts.ImportDeclaration[] = [];
+    const allTypeOverridesMap: Map<string, Set<string>> = new Map();
     let allInterfaceDecls: ts.DeclarationStatement[] = [];
 
     for (const contentType of sortedContentTypes) {
-        const { storeImports, typeOverrideImports, declarations } = generateInterface(
+        const { storeImports, typeOverrideMap, declarations } = generateInterface(
             config,
             contentTypeNameMap,
             contentType,
             'DECLARATIONS',
         );
 
-        allTypeOverrideImports = allTypeOverrideImports.concat(typeOverrideImports);
+        for (const [path, types] of typeOverrideMap) {
+            const typeSet = allTypeOverridesMap.get(path);
+            if (typeSet) {
+                for (const type of types) typeSet.add(type);
+            } else {
+                allTypeOverridesMap.set(path, new Set(types));
+            }
+        }
 
         for (const storeImport of storeImports) allStoreImports.add(storeImport);
         allInterfaceDecls = allInterfaceDecls.concat(declarations);
     }
+
+    const allTypeOverrideImports = Array.from(allTypeOverridesMap).map(
+        ([path, typeSet]: [string, Set<string>]) =>
+            importDecl(
+                Array.from(typeSet)
+                    .sort()
+                    .map(type => importSpec(type)),
+                path,
+            ),
+    );
 
     const statements = [
         assign('space', undefined, stringLiteral(config.space)),
