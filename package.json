@@ -3,7 +3,9 @@
     "private": true,
     "license": "ISC",
     "scripts": {
-        "upgrade": "npm-check -u"
+        "upgrade": "npm-check -u",
+	"publish": "lerna publish",
+	"version": "lerna version"
     },
     "devDependencies": {
         "lerna": "^3.18.3",
