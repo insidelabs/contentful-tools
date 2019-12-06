@@ -1,6 +1,6 @@
 {
     "name": "@contentful-tools/cli",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "description": "A CLI for generating type declarations based on Contentful content types.",
     "keywords": [
         "contentful",
