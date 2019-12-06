@@ -84,7 +84,7 @@
         ]
     },
     "scripts": {
-        "test": "echo NO TESTS",
+        "test": "./bin/contentful-tools generate && ./bin/contentful-tools sync",
         "format": "prettier --write 'src/**/*.ts'",
         "prepack": "rm -rf lib && tsc",
         "version": "npm run format && git add -A src",
