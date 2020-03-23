@@ -45,7 +45,7 @@
         "contentful": "^7.9.1",
         "dotenv": "^8.0.0",
         "jest": "^24.8.0",
-        "prettier": "^1.18.2",
+        "prettier": "^2.0.1",
         "ts-jest": "^24.0.2",
         "ts-node": "^8.3.0",
         "typescript": "^3.5.3"
